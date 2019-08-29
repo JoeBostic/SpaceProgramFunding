@@ -1,4 +1,5 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿using System.Resources;
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Project: SpaceProgramFunding -- AssemblyInfo.cs
 // 
 // Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
@@ -11,7 +12,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SpaceProgramFunding")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Mod for Kerbal Space Program")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SpaceProgramFunding")]
@@ -37,5 +38,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("5.0.0.0")]
-[assembly: AssemblyFileVersion("5.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguage("en-US")]
+
