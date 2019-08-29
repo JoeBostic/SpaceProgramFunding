@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SpaceProgramFunding.Source
 {
@@ -654,6 +655,7 @@ namespace SpaceProgramFunding.Source
 			const int indentWidth = 35;
 			const int modWidth = ledgerWidth + labelWidth;
 
+			Assert.IsTrue(BudgetSettings.Instance != null);
 			if (BudgetSettings.Instance == null) return;
 
 			var label_style = new GUIStyle(GUI.skin.label);
