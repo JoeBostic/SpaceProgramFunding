@@ -71,23 +71,14 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should some portion of funds be diverted to Public Relations in an effort to increase reputation?</summary>
-		public bool isPREnabled;
+		/// <summary> The public relations department. This department is in charge of spending funds to raise the
+		/// 		  reputation of the Space Agency.</summary>
+		public PublicRelations publicRelations;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The percentage of available funds that should be diverted to public relations in order to
-		///     increase reputation. This is a value from 1..100.
-		/// </summary>
-		public float reputationDivertPercentage;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The last time the budget process was run. This is the time of the start of the fiscal budget
-		///     period that the budget was last processed.
-		/// </summary>
+		/// <summary> The last time the budget process was run. This is the time of the start of the fiscal budget
+		/// 		  period that the budget was last processed.</summary>
 		public double lastUpdate;
 
 
@@ -238,9 +229,8 @@ namespace SpaceProgramFunding.Source
 		{
 			node.SetValue("LastBudgetUpdate", lastUpdate, true);
 			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
-			node.SetValue("PRPercent", Instance.reputationDivertPercentage, true);
-			node.SetValue("PREnabled", Instance.isPREnabled, true);
 
+			publicRelations.OnSave(node);
 			researchLab.OnSave(node);
 			bigProject.OnSave(node);
 		}
@@ -253,9 +243,8 @@ namespace SpaceProgramFunding.Source
 		{
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
-			node.TryGetValue("PRPercent", ref Instance.reputationDivertPercentage);
-			node.TryGetValue("PREnabled", ref Instance.isPREnabled);
 
+			publicRelations.OnLoad(node);
 			researchLab.OnLoad(node);
 			bigProject.OnLoad(node);
 		}
@@ -277,7 +266,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Called when the game wants the HI to be hidden -- temporarily.</summary>
+		/// <summary> Called when the game wants the UI to be hidden -- temporarily.</summary>
 		private void OnHideUI()
 		{
 			_visibleGui = false;
@@ -381,8 +370,12 @@ namespace SpaceProgramFunding.Source
 				/*
 				 * Divert some funds to Public Relations in order to keep reputation points up.
 				 */
-				if (net_funds > 0 && reputationDivertPercentage > 0 && isPREnabled) {
-					var percent_diverted_to_pr = reputationDivertPercentage / 100;
+				net_funds = publicRelations.SiphonFunds(net_funds);
+
+#if false
+
+				if (net_funds > 0 && publicRelations.reputationDivertPercentage > 0 && publicRelations.isPREnabled) {
+					var percent_diverted_to_pr = publicRelations.reputationDivertPercentage / 100;
 					var max_reputation_points = (float) (net_funds / BudgetSettings.Instance.fundsPerRep);
 					var desired_reputation_points = (float) Math.Round(max_reputation_points * percent_diverted_to_pr, 1);
 
@@ -391,9 +384,10 @@ namespace SpaceProgramFunding.Source
 					net_funds -= desired_reputation_points * BudgetSettings.Instance.fundsPerRep;
 
 					// Let the player know what happened.
-					ScreenMessages.PostScreenMessage("PR Department generated " +
+					ScreenMessages.PostScreenMessage("Public Relations generated " +
 					                                 Math.Round(desired_reputation_points, 1) + " reputation");
 				}
+#endif
 
 
 				/*
@@ -448,7 +442,7 @@ namespace SpaceProgramFunding.Source
 #endif
 
 				/*
-				 * Update current funds to reflect the funds diverted.
+				 * Update current funds to reflect the funds siphoned off.
 				 */
 				if (net_funds <= Funding.Instance.Funds) Funding.Instance.AddFunds(-(Funding.Instance.Funds - net_funds), TransactionReasons.None);
 
@@ -583,12 +577,12 @@ namespace SpaceProgramFunding.Source
 			GUILayout.EndHorizontal();
 
 
-			isPREnabled = GUILayout.Toggle(isPREnabled, "Divert budget to Public Relations?");
-			if (isPREnabled) {
+			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert budget to Public Relations?");
+			if (publicRelations.isPREnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
-				GUILayout.Label("Funds diverted : " + reputationDivertPercentage + "%", label_style,
+				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth));
-				reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) reputationDivertPercentage, 1, 50,
+				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int)publicRelations.reputationDivertPercentage, 1, 50,
 					GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
 			} else {

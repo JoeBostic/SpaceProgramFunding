@@ -67,6 +67,7 @@
     <Compile Include="Source\BudgetSettings.cs" />
     <Compile Include="Source\ContractInterceptor.cs" />
     <Compile Include="Source\DeadKerbalPenalizer.cs" />
+    <Compile Include="Source\PublicRelations.cs" />
     <Compile Include="Source\ResearchLab.cs" />
     <Compile Include="Source\SpaceProgramFunding.cs" />
     <Compile Include="Source\KACWrapper.cs" />
