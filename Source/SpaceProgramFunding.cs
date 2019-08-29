@@ -11,122 +11,119 @@ using UnityEngine;
 
 namespace SpaceProgramFunding.Source
 {
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// <summary> A space program funding.</summary>
 	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
 	public class SpaceProgramFunding : MonoBehaviour
 	{
-		private readonly float _budgetWidth = 350;
-		private readonly float _budgetHeight = 300;
-		private readonly float _settingsWidth = 500;
-		private readonly float _settingsHeight = 600;
+		private const float _budgetWidth = 350;
+		private const float _budgetHeight = 300;
+		private const float _settingsWidth = 500;
+		private const float _settingsHeight = 600;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Reference to the singleton of this object.</summary>
 		/// <value> The instance.</value>
-		/// ----------------------------------------------------------------------------------------
 		public static SpaceProgramFunding Instance { get; private set; }
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Has one-time initialization taken place? It uses this to enforce a singleton
-		///     character for this class.
+		///     Has one-time initialization taken place? It uses this to enforce a singleton character for this
+		///     class.
 		/// </summary>
-		/// ----------------------------------------------------------------------------------------
 		private static bool _initialized;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Builds an array of all the entries in the facilities enumeration so that iterating
-		///     through the facilities is possible.
+		///     Builds an array of all the entries in the facilities enumeration so that iterating through the
+		///     facilities is possible.
 		/// </summary>
-		/// ----------------------------------------------------------------------------------------
 		private SpaceCenterFacility[] _facilities;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The big project that the monthly budget manages.</summary>
-		public BigProjectStruct bigProject;
+		public BigProject bigProject;
 
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The research lab where funds are converted into science points.</summary>
+		public ResearchLab researchLab;
 
 		private Rect _budgetDialogPosition;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Length of the day expressed in hours. This might be different than stock Kerbin (6
-		///     hours).
-		/// </summary>
-		/// ----------------------------------------------------------------------------------------
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Length of the day expressed in hours. This might be different than stock Kerbin (6 hours).</summary>
 		public double dayLength;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     The home world which may be Kerbin, or not, according to what planet-pack has been
-		///     installed. Knowing the home world allows accurate calculation of days since the
-		///     number of hours per day might be different.
+		///     The home world which may be Kerbin, or not, according to what planet-pack has been installed.
+		///     Knowing the home world allows accurate calculation of days since the number of hours per day
+		///     might be different.
 		/// </summary>
-		/// ----------------------------------------------------------------------------------------
 		public CelestialBody homeWorld;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should some portion of the available funds be diverted to creating science points?</summary>
-		/// ----------------------------------------------------------------------------------------
-		public bool isRNDEnabled;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The percentage of available funds that should be diverted to creating science points.
-		///     This is a value from 1..100.
-		/// </summary>
-		/// ----------------------------------------------------------------------------------------
-		public float scienceDivertPercentage;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Should some portion of funds be diverted to Public Relations in an effort to increase
-		///     reputation?
-		/// </summary>
-		/// ----------------------------------------------------------------------------------------
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Should some portion of funds be diverted to Public Relations in an effort to increase reputation?</summary>
 		public bool isPREnabled;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     The percentage of available funds that should be diverted to public relations in
-		///     order to increase reputation. This is a value from 1..100.
+		///     The percentage of available funds that should be diverted to public relations in order to
+		///     increase reputation. This is a value from 1..100.
 		/// </summary>
-		/// ----------------------------------------------------------------------------------------
 		public float reputationDivertPercentage;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     The last time the budget process was run. This is the time of the start of the fiscal
-		///     budget period that the budget was last processed.
+		///     The last time the budget process was run. This is the time of the start of the fiscal budget
+		///     period that the budget was last processed.
 		/// </summary>
-		/// ----------------------------------------------------------------------------------------
 		public double lastUpdate;
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Records the total of all launch costs that have accumulated during this budget period.</summary>
-		/// ----------------------------------------------------------------------------------------
 		public int launchCostsAccumulator;
 
 
 		private Rect _settingsDialogPosition;
 		private Vector2 _settingsScrollViewPosition = new Vector2(0, 0);
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> True to show, false to hide the budget dialog.</summary>
 		public bool showBudgetDialog;
 
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> True to show, false to hide the settings dialog.</summary>
 		public bool showSettingsDialog;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary>
+		///     True if the GUI should be visible. This might be turned false if the game signals it wants to
+		///     hide all GUI such as for a screen shot.
+		/// </summary>
 		private bool _visibleGui = true;
 
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary>
+		///     A record of the maintenance costs for the Space Center. This has to be stored rather than
+		///     calculated on the fly since the Space Center is often unloaded and calculation of costs
+		///     cannot be performed.
+		/// </summary>
 		private int _buildingCostsArchive;
 
 
@@ -186,10 +183,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Watches carefully so that the budget process will be performed when the current budget period
-		///     ends. It will also update the Kerbal Alarm Clock mod as necessary.
-		/// </summary>
+		/// <summary> Updates this object.</summary>
 		[UsedImplicitly]
 		private void Update()
 		{
@@ -216,18 +210,17 @@ namespace SpaceProgramFunding.Source
 			if (!KACWrapper.AssemblyExists || !BudgetSettings.Instance.isAlarmClockPerBudget) return;
 			if (!KACWrapper.APIReady) return;
 			var alarms = KACWrapper.KAC.Alarms;
-			if (alarms.Count >= 0) {
+			if (alarms.Count >= 0)
 				foreach (var alarm in alarms)
 					if (alarm.Name == "Next Budget")
 						return;
-			}
 
 			KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.Raw, "Next Budget", lastUpdate + BudgetInterval());
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The the mod is removed, the callback hooks are also removed.</summary>
+		/// <summary> Executes the destroy action.</summary>
 		[UsedImplicitly]
 		private void OnDestroy()
 		{
@@ -238,38 +231,42 @@ namespace SpaceProgramFunding.Source
 		}
 
 
-		public void OnSave(ConfigNode savedNode)
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Executes the save action.</summary>
+		/// <param name="node"> The node.</param>
+		public void OnSave(ConfigNode node)
 		{
-			savedNode.SetValue("LastBudgetUpdate", lastUpdate, true);
-			savedNode.SetValue("LaunchCosts", launchCostsAccumulator, true);
-			savedNode.SetValue("RnD", Instance.scienceDivertPercentage, true);
-			savedNode.SetValue("RnDEnabled", Instance.isRNDEnabled, true);
-			savedNode.SetValue("PRPercent", Instance.reputationDivertPercentage, true);
-			savedNode.SetValue("PREnabled", Instance.isPREnabled, true);
+			node.SetValue("LastBudgetUpdate", lastUpdate, true);
+			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
+			node.SetValue("PRPercent", Instance.reputationDivertPercentage, true);
+			node.SetValue("PREnabled", Instance.isPREnabled, true);
 
-			bigProject.OnSave(savedNode);
+			researchLab.OnSave(node);
+			bigProject.OnSave(node);
 		}
 
 
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Executes the load action.</summary>
+		/// <param name="node"> The node.</param>
 		public void OnLoad(ConfigNode node)
 		{
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
-			node.TryGetValue("RnD", ref Instance.scienceDivertPercentage);
-			node.TryGetValue("RnDEnabled", ref Instance.isRNDEnabled);
 			node.TryGetValue("PRPercent", ref Instance.reputationDivertPercentage);
 			node.TryGetValue("PREnabled", ref Instance.isPREnabled);
 
+			researchLab.OnLoad(node);
 			bigProject.OnLoad(node);
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Makes it so that when the scene changes to some scene that the budget dialog should never appear
-		///     over, the budget dialog will disappear.
+		///     Called when the game scene is loaded. We want the mod's pop-up windows to close when a the scene
+		///     changes.
 		/// </summary>
-		/// <param name="scene"> The scene being loaded.</param>
+		/// <param name="scene"> The scene that is loaded.</param>
 		private void OnGameSceneLoad(GameScenes scene)
 		{
 			if (scene == GameScenes.FLIGHT || scene == GameScenes.TRACKSTATION || scene == GameScenes.EDITOR ||
@@ -280,7 +277,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Ensures that when the UI disappears, the budget dialog also disappears.</summary>
+		/// <summary> Called when the game wants the HI to be hidden -- temporarily.</summary>
 		private void OnHideUI()
 		{
 			_visibleGui = false;
@@ -288,7 +285,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Ensures that when the UI reappears, the budget dialog also reappears.</summary>
+		/// <summary> Called when the game wants to re-display the UI.</summary>
 		private void OnShowUI()
 		{
 			_visibleGui = true;
@@ -320,9 +317,9 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Budget process that should be called once every budget period. This will calculate net budget and
-		///     apply it to the areas the player has specified. If the budget remaining exceeds the player's
-		///     account balance, then the balance will be topped up to the budget amount.
+		///     Performs the main budget action. This is where funds are collected from the Kerbal government and
+		///     distributed to all the necessary recipients. The core function of this mod is handled by the
+		///     logic in this method.
 		/// </summary>
 		private void Budget()
 		{
@@ -402,8 +399,10 @@ namespace SpaceProgramFunding.Source
 				/*
 				 * Do R&D before funding big budget reserve. It typically costs 10,000 funds for 1 science point!
 				 */
-				if (net_funds > 0 && scienceDivertPercentage > 0 && isRNDEnabled) {
-					var percent_diverted_to_science = scienceDivertPercentage / 100;
+				net_funds = researchLab.SiphonFunds(net_funds);
+#if false
+				if (net_funds > 0 && researchLab.scienceDivertPercentage > 0 && researchLab.isRNDEnabled) {
+					var percent_diverted_to_science = researchLab.scienceDivertPercentage / 100;
 					var max_science_points = (float) (net_funds / BudgetSettings.Instance.sciencePointCost);
 					var desired_science_points = (float) Math.Round(max_science_points * percent_diverted_to_science, 1);
 
@@ -419,12 +418,18 @@ namespace SpaceProgramFunding.Source
 					ScreenMessages.PostScreenMessage("R&D Department generated " + Math.Round(desired_science_points, 1) +
 					                                 " science");
 				}
+#endif
 
+				/*
+				 * Divert some portion of available funds of the current net budget toward the emergency ("big project") reserve.
+				 */
+				net_funds = bigProject.SiphonFunds(net_funds);
+#if false
 				/*
 				 * Clamp big project bank account to maximum allowed. This might cause a funds loss if reputation has recently
 				 * been lost when there is a full big project bank balance.
 				 */
-				if (bigProject.fundsAccumulator > bigProject.MaximumBigBudget()) bigProject.fundsAccumulator = bigProject.MaximumBigBudget();
+				//if (bigProject.fundsAccumulator > bigProject.MaximumBigBudget()) bigProject.fundsAccumulator = bigProject.MaximumBigBudget();
 
 				/*
 				 * Divert some portion of available funds of the current net budget toward the emergency ("big project") reserve.
@@ -439,7 +444,8 @@ namespace SpaceProgramFunding.Source
 
 					bigProject.fundsAccumulator += actual_funds_to_divert - fee;
 					net_funds -= actual_funds_to_divert;
-				}
+			}
+#endif
 
 				/*
 				 * Update current funds to reflect the funds diverted.
@@ -473,11 +479,8 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Figures out the date of the next budget period and builds a string representation of it.</summary>
-		/// <returns>
-		///     A string that specifies the date of the next budget period. It is in the form of "Year ####, Day
-		///     ##".
-		/// </returns>
+		/// <summary> Creates a date string that represents the time that the next budget period will occur.</summary>
+		/// <returns> A string for the date of the next budget period.</returns>
 		private string NextBudgetDateString()
 		{
 			if (BudgetSettings.Instance == null) return "<error>";
@@ -498,7 +501,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Handles the pop-up UI for the main controls dialog.</summary>
+		/// <summary> Handles the layout of the main interface window for the mod.</summary>
 		/// <param name="windowID"> Identifier for the window.</param>
 		protected void WindowGUI(int windowID)
 		{
@@ -593,12 +596,12 @@ namespace SpaceProgramFunding.Source
 			}
 
 
-			isRNDEnabled = GUILayout.Toggle(isRNDEnabled, "Divert budget to science research?");
-			if (isRNDEnabled) {
+			researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert budget to science research?");
+			if (researchLab.isRNDEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
-				GUILayout.Label("Funds diverted : " + scienceDivertPercentage + "%", label_style,
+				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth));
-				scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) scienceDivertPercentage, 1, 50,
+				researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
 					GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
 			} else {
@@ -622,7 +625,7 @@ namespace SpaceProgramFunding.Source
 				GUILayout.Label(
 					"Big-Project: " + bigProject.fundsAccumulator.ToString("n0") + " / " + bigProject.MaximumBigBudget().ToString("n0"),
 					label_style, GUILayout.MaxWidth(labelWidth - 50));
-				if (GUILayout.Button("Extract all Funds")) WithdrawFunds();
+				if (GUILayout.Button("Extract all Funds")) bigProject.WithdrawFunds();
 
 				GUILayout.EndHorizontal();
 			} else {
@@ -648,10 +651,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Handles the pop-up UI for the settings. This is rather large dialog with lots of options. It only
-		///     appears when requested.
-		/// </summary>
+		/// <summary> Handles the layout of the settings window.</summary>
 		/// <param name="windowID"> Identifier for the window.</param>
 		protected void SettingsGUI(int windowID)
 		{
@@ -986,31 +986,12 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Handles the case when the player chooses to withdraw funds from the big-project fund. It will
-		///     move all stored funds to the current bank account and zero out the savings-account.
-		/// </summary>
-		/// <remarks>
-		///     If this is triggered while in the vessel editor, set the flag so that the big-project fund will
-		///     be fixed up properly when leaving the editor. This is a hack solution to address an otherwise
-		///     huge exploit.
-		/// </remarks>
-		private void WithdrawFunds()
-		{
-			Funding.Instance.AddFunds(bigProject.fundsAccumulator, TransactionReasons.Strategies);
-			if (HighLogic.LoadedScene == GameScenes.EDITOR) bigProject.isHack = true;
-
-			bigProject.fundsAccumulator = 0;
-		}
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
 		///     There is a quirk with the game such that modules get saved/loaded around the SPH or VAB but other
 		///     game settings do not. This means anything that adjusts the game funds will persist after
 		///     leaving the ship editor, but the mod modules will have their state restored. The result is
 		///     that unless this is handled in a special way, extracting funds from the big-project budget
-		///     will magically be restored when returning to the Space Center -- a HUG exploit.
-		///     This handles that quirk.
+		///     will magically be restored when returning to the Space Center -- a HUG exploit. This handles
+		///     that quirk.
 		/// </summary>
 		public void VABHack()
 		{
@@ -1022,12 +1003,12 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>
-		///     Performs launch cost calculations when the vessel moves to the launch-pad or runway. These are
-		///     added to the total launch costs for the current budget period. Note that launch facilities of
-		///     level 1 have no launch costs. It is presumed they are low tech dirt and need no cleanup after
-		///     launch.
+		///     When the vessel/plane rolls out of the VAB or SPH, the launch costs are calculated. These will
+		///     get rolled back naturally if the player reverts the launch. These launch costs represent
+		///     extraordinary wear and tear on the launch facilities and are a one-time cost. Typically, the
+		///     runway requires minimal cost as compared to the launch-pad.
 		/// </summary>
-		/// <param name="ship"> The ship that is rolling out to the launch facility.</param>
+		/// <param name="ship"> The ship that is being launched.</param>
 		private void OnVesselRollout(ShipConstruct ship)
 		{
 			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isLaunchCostsEnabled) return;
@@ -1061,10 +1042,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Kerbal astronauts that are inactive (sitting in the Astronaut complex) are paid at a different
-		///     rate than Kerbals that are on missions. Usually less.
-		/// </summary>
+		/// <summary> Kerbal astronauts that are inactive (sitting in the Astronaut complex) are paid at a different
+		/// 		  rate than Kerbals that are on missions. Usually less.</summary>
+		///
 		/// <returns> The total wages for all astronauts that are unassigned.</returns>
 		public int InactiveCostWages()
 		{
@@ -1174,9 +1154,11 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Calculates the level (1..3) of the facility specified.</summary>
-		/// <remarks> The game can sometimes return a level of zero when query occurs far from Space Center.</remarks>
-		/// <param name="facility"> The facility to check.</param>
-		/// <returns> The facility level (1..3) it is.</returns>
+		///
+		/// <param name="facility"> The facility to fetch the level for.</param>
+		///
+		/// <returns> The level of the facility. This will be 1..3 where 1 is the initial level on a new career game
+		/// 		  and 3 is fully upgraded.</returns>
 		private int FacilityLevel(SpaceCenterFacility facility)
 		{
 			var level = ScenarioUpgradeableFacilities.GetFacilityLevel(facility); // 0 .. 1
@@ -1196,7 +1178,13 @@ namespace SpaceProgramFunding.Source
 		}
 
 
-		private int ReturnBuildingCosts(SpaceCenterFacility facility)
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Calculates the base maintenance cost for the facility specified.</summary>
+		///
+		/// <param name="facility"> The facility to fetch the maintenance cost for.</param>
+		///
+		/// <returns> The building costs.</returns>
+		private int BaseStructureCost(SpaceCenterFacility facility)
 		{
 			if (BudgetSettings.Instance == null) return 0;
 
@@ -1221,6 +1209,9 @@ namespace SpaceProgramFunding.Source
 		}
 
 
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Calculates the building costs for the entire Kerbal Space Center. This takes into account
+		/// 		  structure upgrade state.</summary>
 		public void CalculateBuildingCosts()
 		{
 			var costs = 0;
@@ -1230,7 +1221,7 @@ namespace SpaceProgramFunding.Source
 				// Launch-pad and runway have no ongoing facility costs.
 				if (facility == SpaceCenterFacility.LaunchPad || facility == SpaceCenterFacility.Runway) continue;
 
-				costs += LevelCoefficient(FacilityLevel(facility)) * ReturnBuildingCosts(facility);
+				costs += LevelCoefficient(FacilityLevel(facility)) * BaseStructureCost(facility);
 			}
 
 			_buildingCostsArchive = costs;
@@ -1238,12 +1229,13 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Level coefficient to translate structure level into a multiplier of the base maintenance cost for
-		///     that structure. This coefficient also applies to launch costs from launch-pad and runway.
-		/// </summary>
-		/// <param name="level"> The level of the structure.</param>
-		/// <returns> A coefficient to apply to base cost.</returns>
+		/// <summary> Calculates the maintenance cost coefficient that is multiplied by the structure's base cost. The
+		/// 		  effect is that a level 3 structure is 4 times the cost of the level 1 structure.</summary>
+		///
+		/// <param name="level"> The level to calculate the coefficient for.</param>
+		///
+		/// <returns> The coefficient to multiply with the structure's base cost to arrive at the current maintenance
+		/// 		  cost.</returns>
 		private int LevelCoefficient(int level)
 		{
 			switch (level) {
@@ -1258,73 +1250,6 @@ namespace SpaceProgramFunding.Source
 
 				default:
 					return 1;
-			}
-		}
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The "big project" is like a savings account with constraints on withdrawal and depositing. It is
-		///     designed to allow accumulation of funds far in excess of normal monthly budget so that big
-		///     purchases can be made.
-		/// </summary>
-		public struct BigProjectStruct
-		{
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// <summary>
-			///     Should some money be siphoned off of the budget to store in the "savings account" for a big
-			///     project?
-			/// </summary>
-			public bool isEnabled;
-
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// <summary> The current amount of funds socked away in the Big Project savings-account.</summary>
-			public double fundsAccumulator;
-
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// <summary> The percentage of funds to siphon off of the discretionary budget.</summary>
-			public float divertPercentage;
-
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// <summary>
-			///     Hack to fix a quirk with extracting funds in VAB or SPH. The values of this class get
-			///     restored when leaving the vessel editor, but changes to the global funds balance does
-			///     not. This means that one could extract the big-budget funds in the VAB and then when
-			///     returning to the Space Center, the funds will have magically returned yet the global
-			///     funds balance would still reflect the withdrawal -- exploitable to get infinite funds. If
-			///     this flag is true, then the big-budget funds will be zeroed out as soon as we know we are
-			///     no longer inside the vessel editor.
-			/// </summary>
-			public bool isHack;
-
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// <summary>
-			///     Maximum emergency budget allowed. This is based on budget and multiplier specified in
-			///     settings.
-			/// </summary>
-			/// <returns> The maximum that the emergency budget can hold.</returns>
-			public float MaximumBigBudget()
-			{
-				if (BudgetSettings.Instance == null) return 0;
-				return Instance.GrossBudget() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
-			}
-
-			public void OnSave(ConfigNode savedNode)
-			{
-				savedNode.SetValue("EmergencyFundingEnabled", Instance.bigProject.isEnabled, true);
-				savedNode.SetValue("EmergencyFund", Instance.bigProject.fundsAccumulator, true);
-				savedNode.SetValue("EmergencyFundPercent", Instance.bigProject.divertPercentage, true);
-			}
-
-			public void OnLoad(ConfigNode node)
-			{
-				node.TryGetValue("EmergencyFund", ref Instance.bigProject.fundsAccumulator);
-				node.TryGetValue("EmergencyFundPercent", ref Instance.bigProject.divertPercentage);
-				node.TryGetValue("EmergencyFundingEnabled", ref Instance.bigProject.isEnabled);
 			}
 		}
 	}
