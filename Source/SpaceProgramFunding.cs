@@ -47,12 +47,12 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The big project that the monthly budget manages.</summary>
-		public BigProject bigProject;
+		public BigProject bigProject = new BigProject();
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The research lab where funds are converted into science points.</summary>
-		public ResearchLab researchLab;
+		public ResearchLab researchLab = new ResearchLab();
 
 		private Rect _budgetDialogPosition;
 
@@ -74,7 +74,7 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The public relations department. This department is in charge of spending funds to raise the
 		/// 		  reputation of the Space Agency.</summary>
-		public PublicRelations publicRelations;
+		public PublicRelations publicRelations = new PublicRelations();
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,8 +132,13 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void Awake()
 		{
+			if (Instance != null && Instance != this) {
+				Destroy(this);
+				//DestroyImmediate(this);
+				return;
+			}
+
 			DontDestroyOnLoad(this);
-			//if (!BudgetSettings.Instance.masterSwitch) Destroy(this);
 			Instance = this;
 		}
 
@@ -143,34 +148,30 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void Start()
 		{
-			DontDestroyOnLoad(this);
+			if (_initialized) return;
 
-			if (!_initialized) {
-				_budgetDialogPosition.width = _budgetWidth;
-				_budgetDialogPosition.height = _budgetHeight;
-				_budgetDialogPosition.x = (Screen.width - _budgetDialogPosition.width) / 2;
-				_budgetDialogPosition.y = (Screen.height - _budgetDialogPosition.height) / 2;
+			_budgetDialogPosition.width = _budgetWidth;
+			_budgetDialogPosition.height = _budgetHeight;
+			_budgetDialogPosition.x = (Screen.width - _budgetDialogPosition.width) / 2;
+			_budgetDialogPosition.y = (Screen.height - _budgetDialogPosition.height) / 2;
 
-				_settingsDialogPosition.height = _settingsHeight;
-				_settingsDialogPosition.height = _settingsWidth;
-				_settingsDialogPosition = _budgetDialogPosition;
-				_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
+			_settingsDialogPosition.height = _settingsHeight;
+			_settingsDialogPosition.height = _settingsWidth;
+			_settingsDialogPosition = _budgetDialogPosition;
+			_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
 
-				KACWrapper.InitKACWrapper();
-				PopulateHomeWorldData();
+			KACWrapper.InitKACWrapper();
+			PopulateHomeWorldData();
 
-				// Fetch Space Center structure enums into an array. This eases traversing through all Space Center structures.
-				_facilities = (SpaceCenterFacility[]) Enum.GetValues(typeof(SpaceCenterFacility));
-				GameEvents.OnVesselRollout.Add(OnVesselRollout);
-				//GameEvents.onGameSceneSwitchRequested.Add(OnSceneSwitch);
-				GameEvents.onHideUI.Add(OnHideUI);
-				GameEvents.onShowUI.Add(OnShowUI);
-				GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoad);
+			// Fetch Space Center structure enums into an array. This eases traversing through all Space Center structures.
+			_facilities = (SpaceCenterFacility[]) Enum.GetValues(typeof(SpaceCenterFacility));
+			GameEvents.OnVesselRollout.Add(OnVesselRollout);
+			//GameEvents.onGameSceneSwitchRequested.Add(OnSceneSwitch);
+			GameEvents.onHideUI.Add(OnHideUI);
+			GameEvents.onShowUI.Add(OnShowUI);
+			GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoad);
 
-				_initialized = true;
-			} else {
-				DestroyImmediate(this);
-			}
+			_initialized = true;
 		}
 
 
@@ -183,11 +184,6 @@ namespace SpaceProgramFunding.Source
 			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
 			if (BudgetSettings.Instance == null) return;
 
-			//if (lastUpdate == 99999) return;
-			//if (bigProjectPercentage < 1) bigProjectPercentage = 1;
-			//if (bigProjectPercentage > 50) bigProjectPercentage = 50;
-			//if (researchBudgetPercent > 100) researchBudgetPercent = 100;
-			//if (researchBudgetPercent < 0) researchBudgetPercent = 0;
 			var time = Planetarium.GetUniversalTime();
 
 			// Handle time travel paradox. This should never happen.
@@ -216,10 +212,12 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void OnDestroy()
 		{
-			GameEvents.OnVesselRollout.Remove(OnVesselRollout);
-			//GameEvents.onGameSceneSwitchRequested.Remove(OnSceneSwitch);
-			GameEvents.onHideUI.Remove(OnHideUI);
-			GameEvents.onShowUI.Remove(OnShowUI);
+			if (Instance == this) {
+				GameEvents.OnVesselRollout.Remove(OnVesselRollout);
+				//GameEvents.onGameSceneSwitchRequested.Remove(OnSceneSwitch);
+				GameEvents.onHideUI.Remove(OnHideUI);
+				GameEvents.onShowUI.Remove(OnShowUI);
+			}
 		}
 
 
@@ -228,8 +226,10 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The node.</param>
 		public void OnSave(ConfigNode node)
 		{
+
 			node.SetValue("LastBudgetUpdate", lastUpdate, true);
 			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
+
 
 			publicRelations.OnSave(node);
 			researchLab.OnSave(node);
@@ -242,8 +242,10 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The node.</param>
 		public void OnLoad(ConfigNode node)
 		{
+
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
+
 
 			publicRelations.OnLoad(node);
 			researchLab.OnLoad(node);
@@ -503,6 +505,7 @@ namespace SpaceProgramFunding.Source
 			const int ledgerWidth = 120;
 			const int labelWidth = 230;
 
+			Assert.IsTrue(BudgetSettings.Instance != null);
 			if (BudgetSettings.Instance == null) return;
 
 			var ledger_style = new GUIStyle(GUI.skin.label) {alignment = TextAnchor.UpperRight};
@@ -513,10 +516,6 @@ namespace SpaceProgramFunding.Source
 
 			GUILayout.BeginVertical(GUILayout.Width(_budgetWidth));
 
-
-			//GUILayout.Label("Budget Report");
-
-			//GUILayout.Label(UIController.instance.GetNextUpdate(), labelStyle);
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 			GUILayout.Label("Next Budget Due:", label_style, GUILayout.MaxWidth(labelWidth));

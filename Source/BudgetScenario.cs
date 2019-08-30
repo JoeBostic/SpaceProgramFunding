@@ -31,7 +31,7 @@ namespace SpaceProgramFunding.Source
 		public override void OnSave(ConfigNode node)
 		{
 			node.SetValue("saveGameVersion", _currentVersion, true);
-			SpaceProgramFunding.Instance.OnSave(node);
+			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnSave(node);
 			if (BudgetSettings.Instance != null) BudgetSettings.Instance.OnSave(node);
 		}
 
@@ -42,7 +42,9 @@ namespace SpaceProgramFunding.Source
 		public override void OnLoad(ConfigNode node)
 		{
 			node.TryGetValue("saveGameVersion", ref _saveGameVersion);
-			SpaceProgramFunding.Instance.OnLoad(node);
+			if (SpaceProgramFunding.Instance != null) {
+				SpaceProgramFunding.Instance.OnLoad(node);
+			}
 			if (BudgetSettings.Instance != null) {
 				BudgetSettings.Instance.OnLoad(node);
 

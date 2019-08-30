@@ -270,9 +270,15 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void Awake()
 		{
-			print("BudgetSettings.Awake");
-			Instance = this;
-			DontDestroyOnLoad(this);
+			//print("BudgetSettings.Awake");
+			if (Instance == null) {
+				Instance = this;
+				DontDestroyOnLoad(this);
+			} else {
+				Destroy(this);
+				return;
+			}
+
 			//_settingsDefaultFilename = KSPUtil.ApplicationRootPath + "/GameData/MonthlyBudgets/PluginData/MonthlyBudgetDefaults.cfg";
 		}
 
