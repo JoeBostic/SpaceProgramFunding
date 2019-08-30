@@ -662,7 +662,7 @@ namespace SpaceProgramFunding.Source
 
 #if true
 			GUILayout.Label("Budget Interval: ", label_style);
-			var day_string = GUILayout.TextField(BudgetSettings.Instance.budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(64));
+			var day_string = GUILayout.TextField(BudgetSettings.Instance.budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
 			if (int.TryParse(day_string, out var day_number)) {
 				day_number = Math.Max(day_number, 1);
 				BudgetSettings.Instance.budgetIntervalDays = day_number;
@@ -1039,23 +1039,24 @@ namespace SpaceProgramFunding.Source
 		/// <returns> The total wages for all astronauts that are unassigned.</returns>
 		public int InactiveCostWages()
 		{
-			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isKerbalWages) return 0;
+			if (BudgetSettings.Instance == null) return 0;
+
+			if (!BudgetSettings.Instance.isKerbalWages) return 0;
 
 			var crew = HighLogic.CurrentGame.CrewRoster.Crew;
-			var budget = 0;
+			var total_wages = 0;
 			foreach (var p in crew) {
 				if (p.type == ProtoCrewMember.KerbalType.Tourist) continue;
-				float level = p.experienceLevel + 1;
+				float kerbal_level = p.experienceLevel + 1;
 
-				float wages = 0;
+				float kerbal_wage = 0;
 				if (p.rosterStatus == ProtoCrewMember.RosterStatus.Available)
-					if (BudgetSettings.Instance != null)
-						wages = level * BudgetSettings.Instance.baseKerbalWage;
+					kerbal_wage = kerbal_level * BudgetSettings.Instance.baseKerbalWage;
 
-				budget += (int) wages;
+				total_wages += (int) kerbal_wage;
 			}
 
-			return budget;
+			return total_wages;
 		}
 
 
@@ -1066,23 +1067,24 @@ namespace SpaceProgramFunding.Source
 		/// <returns> The total wages for all astronauts that are on a mission. (aka, "active")</returns>
 		public int ActiveCostWages()
 		{
-			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isKerbalWages) return 0;
+			if (BudgetSettings.Instance == null) return 0;
 
-			var budget = 0;
+			if (!BudgetSettings.Instance.isKerbalWages) return 0;
+
+			var total_wages = 0;
 			var crew = HighLogic.CurrentGame.CrewRoster.Crew;
 			foreach (var p in crew) {
 				if (p.type == ProtoCrewMember.KerbalType.Tourist) continue;
-				float level = p.experienceLevel + 1;
+				float kerbal_level = p.experienceLevel + 1;
 
-				float wages = 0;
+				float kerbal_wage = 0;
 				if (p.rosterStatus == ProtoCrewMember.RosterStatus.Assigned)
-					if (BudgetSettings.Instance != null)
-						wages = level * BudgetSettings.Instance.assignedKerbalWage;
+					kerbal_wage = kerbal_level * BudgetSettings.Instance.assignedKerbalWage;
 
-				budget += (int) wages;
+				total_wages += (int) kerbal_wage;
 			}
 
-			return budget;
+			return total_wages;
 		}
 
 
@@ -1094,19 +1096,16 @@ namespace SpaceProgramFunding.Source
 		/// <returns> The sum cost of maintenance cost for all vessels.</returns>
 		public int CostVessels()
 		{
-			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isActiveVesselCost) return 0;
+			if (BudgetSettings.Instance == null) return 0;
 
-			var budget = 0;
+			if (!BudgetSettings.Instance.isActiveVesselCost) return 0;
+
 			var vessels = FlightGlobals.Vessels.Where(v =>
 				v.vesselType != VesselType.Debris && v.vesselType != VesselType.Flag &&
 				v.vesselType != VesselType.SpaceObject && v.vesselType != VesselType.Unknown &&
 				v.vesselType != VesselType.EVA);
 
-			foreach (var v in vessels)
-				if (BudgetSettings.Instance != null)
-					budget += (int) (v.GetTotalMass() / 100.0 * BudgetSettings.Instance.activeVesselCost);
-
-			return budget;
+			return vessels.Sum(v => (int) (v.GetTotalMass() / 100.0 * BudgetSettings.Instance.activeVesselCost));
 		}
 
 
@@ -1119,8 +1118,10 @@ namespace SpaceProgramFunding.Source
 		/// <returns> The total, so far, of launch costs.</returns>
 		public int CostLaunches()
 		{
+			if (BudgetSettings.Instance == null) return 0;
+
 			var costs = 0;
-			if (BudgetSettings.Instance != null && BudgetSettings.Instance.isLaunchCostsEnabled) costs = launchCostsAccumulator;
+			if (BudgetSettings.Instance.isLaunchCostsEnabled) costs = launchCostsAccumulator;
 
 			return costs;
 		}
@@ -1163,7 +1164,10 @@ namespace SpaceProgramFunding.Source
 		/// <returns> Returns with the funds cost for Space Center structure maintenance.</returns>
 		public int CostBuildings()
 		{
-			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isBuildingCostsEnabled) return 0;
+			if (BudgetSettings.Instance == null) return 0;
+
+			if (!BudgetSettings.Instance.isBuildingCostsEnabled) return 0;
+
 			return _buildingCostsArchive;
 		}
 
@@ -1193,6 +1197,9 @@ namespace SpaceProgramFunding.Source
 					return BudgetSettings.Instance.structureCostTrackingStation;
 				case SpaceCenterFacility.VehicleAssemblyBuilding:
 					return BudgetSettings.Instance.structureCostVab;
+				case SpaceCenterFacility.LaunchPad:
+				case SpaceCenterFacility.Runway:
+					return 0;
 				default:
 					return BudgetSettings.Instance.structureCostOtherFacility;
 			}
