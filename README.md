@@ -6,7 +6,7 @@ A mod for Kerbal Space Program that grants a funding allowance per month based o
 **[Documentation](https://github.com/JoeBostic/SpaceProgramFunding/wiki)**  <br/>
 **[Github issues](https://github.com/JoeBostic/SpaceProgramFunding/issues)**  <br/>
 **License** : MIT License  <br/>
-** For KSP Version** : 1.7.x  <br/>
+**For KSP Version** : 1.7.x  <br/>
 
 
 ## Inspiration
