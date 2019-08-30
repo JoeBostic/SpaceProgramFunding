@@ -910,16 +910,12 @@ namespace SpaceProgramFunding.Source
 				GUILayout.EndHorizontal();
 			}
 
-
 			GUILayout.EndScrollView();
 
 			GUILayout.BeginHorizontal();
 			if (GUILayout.Button("Easy")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Easy);
-
 			if (GUILayout.Button("Normal")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Normal);
-
 			if (GUILayout.Button("Hard")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Hard);
-
 			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
