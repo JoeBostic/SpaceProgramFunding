@@ -16,9 +16,10 @@ namespace SpaceProgramFunding.Source
 	public class DeadKerbalPenalizer : MonoBehaviour
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		/// <summary> Record of the singleton object. There needs to be only one of these since we don't
 		/// 		  want a dead Kerbal to be registered as dying more than once.</summary>
-		private DeadKerbalPenalizer _instance;
+		public DeadKerbalPenalizer Instance { get; private set; }
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,13 +28,13 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		public void Awake()
 		{
-			if (_instance != null && _instance != this) {
+			if (Instance != null && Instance != this) {
 				Destroy(this);
 				return;
 			}
 
 			DontDestroyOnLoad(this);
-			_instance = this;
+			Instance = this;
 
 			GameEvents.onKerbalStatusChange.Add(OnKerbalStatusChange);
 		}
@@ -52,10 +53,9 @@ namespace SpaceProgramFunding.Source
 
 			if (!BudgetSettings.Instance.isKerbalDeathPenalty) return;
 
-			if (statusTo != ProtoCrewMember.RosterStatus.Missing) return;
+			if (statusTo != ProtoCrewMember.RosterStatus.Dead && statusTo != ProtoCrewMember.RosterStatus.Missing) return;
 
 			var max_penalty = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
-
 			var actual_penalty = Math.Min(BudgetSettings.Instance.kerbalDeathPenalty * (p.experienceLevel + 1), max_penalty);
 			actual_penalty = Math.Max(actual_penalty, 0);
 			if (actual_penalty > 0) Reputation.Instance.AddReputation(-actual_penalty, TransactionReasons.VesselLoss);
