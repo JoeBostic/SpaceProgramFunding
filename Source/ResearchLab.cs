@@ -1,16 +1,16 @@
-﻿///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- ResearchLab.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 
 namespace SpaceProgramFunding.Source
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// <summary> The Research Lab is used to convert funds into science points. The cost is high and there is a
-	/// 		  reputation hit when doing so, but can be useful in some circumstances.</summary>
+	/// <summary> The Research Lab is used to convert funds into science points. The cost is high and
+	/// 		  there is a reputation hit when doing so, but can be useful in some circumstances.</summary>
 	public class ResearchLab
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,8 +19,8 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The percentage of available funds that should be diverted to creating science points. This is a
-		/// 		  value from 1..100.</summary>
+		/// <summary> The percentage of available funds that should be diverted to creating science points.
+		/// 		  This is a value from 1..100.</summary>
 		public float scienceDivertPercentage;
 
 

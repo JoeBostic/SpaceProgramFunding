@@ -1,35 +1,33 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- PublicRelations.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 
 namespace SpaceProgramFunding.Source
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// <summary>
-	///     The public relations department handles diverting funds toward improving the reputation of the Kerbal
-	///     Space Program.
-	/// </summary>
+	/// <summary> The public relations department handles diverting funds toward improving the
+	/// 		  reputation of the Kerbal Space Program.</summary>
 	public class PublicRelations
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should some portion of funds be diverted to Public Relations in an effort to increase reputation?</summary>
+		/// <summary> Should some portion of funds be diverted to Public Relations in an effort to increase
+		/// 		  reputation?</summary>
 		public bool isPREnabled;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The percentage of available funds that should be diverted to public relations in order to
-		///     increase reputation. This is a value from 1..100.
-		/// </summary>
+		/// <summary> The percentage of available funds that should be diverted to public relations in
+		/// 		  order to increase reputation. This is a value from 1..100.</summary>
 		public float reputationDivertPercentage;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Siphon funds off to public relations in order to raise the reputation of the Kerbal Space Program.</summary>
+		/// <summary> Siphon funds off to public relations in order to raise the reputation of the Kerbal
+		/// 		  Space Program.</summary>
 		///
 		/// <param name="funds"> The maximum funds available to the player.</param>
 		///
@@ -58,6 +56,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the save action.</summary>
+		///
 		/// <param name="node"> The node.</param>
 		public void OnSave(ConfigNode node)
 		{
@@ -68,6 +67,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the load action.</summary>
+		///
 		/// <param name="node"> The node.</param>
 		public void OnLoad(ConfigNode node)
 		{

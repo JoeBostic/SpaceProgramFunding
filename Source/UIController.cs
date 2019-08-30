@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- UIController.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using JetBrains.Annotations;
 using KSP.UI.Screens;
@@ -12,25 +12,22 @@ using UnityEngine.Assertions;
 namespace SpaceProgramFunding.Source
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// <summary>
-	///     Handles the button that appears in the button-bar. This is the only way the player can interact with
-	///     the mod.
-	/// </summary>
+	/// <summary> Handles the button that appears in the button-bar. This is the only way the player
+	/// 		  can bring up the Mod's UI.</summary>
 	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
 	internal class UIController : MonoBehaviour
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		/// <summary>
-		///     Reference to the singleton version of this object. There should be only one of these since it
-		///     manages the application button.
-		/// </summary>
-		public static UIController Instance { get; private set; }
+		/// <summary> The toolbar button object that is used to bring up (and dismiss) the mod UI window.</summary>
+		private ApplicationLauncherButton _toolbarButton;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The toolbar button object that is used to bring up (and dismiss) the mod UI window.</summary>
-		private ApplicationLauncherButton _toolbarButton;
+		/// <summary> Reference to the singleton version of this object. There should be only one of these
+		/// 		  since it manages the application button.</summary>
+		///
+		/// <value> The instance.</value>
+		public static UIController Instance { get; private set; }
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +50,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Executes the destroy action.</summary>
+		/// <summary> Executes the destroy action. </summary>
 		[UsedImplicitly]
 		private void OnDestroy()
 		{
@@ -63,10 +60,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Handles clicking on the application button. This will bring up the Mod's UI if hidden or hide it
-		///     if visible. It ensures that the settings window will also hide if the main UI becomes hidden.
-		/// </summary>
+		/// <summary> Handles clicking on the application button. This will bring up the Mod's UI if hidden
+		/// 		  or hide it if visible. It ensures that the settings window will also hide if the
+		/// 		  main UI becomes hidden.</summary>
 		private void ApplicationButtonClicked()
 		{
 			// In the space center, update the archived building costs since we know it is valid.
@@ -80,10 +76,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Executes the game scene switch requested action to make sure that the Mod's button does not
-		///     appear in scenes it should not appear in, such as the Main Menu.
-		/// </summary>
+		/// <summary> Executes the game scene switch requested action to make sure that the Mod's button
+		/// 		  does not appear in scenes it should not appear in, such as the Main Menu.</summary>
+		///
 		/// <param name="data"> Specification of the scene being switch from and to.</param>
 		private void OnGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> data)
 		{
@@ -104,11 +99,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Executes the graphical user interface application launcher ready action which lets the mod know
-		///     when it is ok to add the button to the toolbar. The button is added to the toolbar by this
-		///     method.
-		/// </summary>
+		/// <summary> Executes the graphical user interface application launcher ready action which lets
+		/// 		  the mod know when it is ok to add the button to the toolbar. The button is added
+		/// 		  to the toolbar by this method.</summary>
 		public void OnGUIApplicationLauncherReady()
 		{
 			// The button should appear in the toolbar only when not at the Main Menu and only for Career games.

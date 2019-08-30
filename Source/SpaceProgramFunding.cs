@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- SpaceProgramFunding.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -25,23 +25,20 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Reference to the singleton of this object.</summary>
+		///
 		/// <value> The instance.</value>
 		public static SpaceProgramFunding Instance { get; private set; }
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Has one-time initialization taken place? It uses this to enforce a singleton character for this
-		///     class.
-		/// </summary>
+		/// <summary> Has one-time initialization taken place? It uses this to enforce a singleton
+		/// 		  character for this class.</summary>
 		private static bool _initialized;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Builds an array of all the entries in the facilities enumeration so that iterating through the
-		///     facilities is possible.
-		/// </summary>
+		/// <summary> Builds an array of all the entries in the facilities enumeration so that iterating
+		/// 		  through the facilities is possible.</summary>
 		private SpaceCenterFacility[] _facilities;
 
 
@@ -58,28 +55,27 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Length of the day expressed in hours. This might be different than stock Kerbin (6 hours).</summary>
+		/// <summary> Length of the day expressed in hours. This might be different than stock Kerbin (6
+		/// 		  hours).</summary>
 		public double dayLength;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     The home world which may be Kerbin, or not, according to what planet-pack has been installed.
-		///     Knowing the home world allows accurate calculation of days since the number of hours per day
-		///     might be different.
-		/// </summary>
+		/// <summary> The home world which may be Kerbin, or not, according to what planet-pack has been
+		/// 		  installed. Knowing the home world allows accurate calculation of days since the
+		/// 		  number of hours per day might be different.</summary>
 		public CelestialBody homeWorld;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The public relations department. This department is in charge of spending funds to raise the
-		/// 		  reputation of the Space Agency.</summary>
+		/// <summary> The public relations department. This department is in charge of spending funds to
+		/// 		  raise the reputation of the Space Agency.</summary>
 		public PublicRelations publicRelations = new PublicRelations();
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The last time the budget process was run. This is the time of the start of the fiscal budget
-		/// 		  period that the budget was last processed.</summary>
+		/// <summary> The last time the budget process was run. This is the time of the start of the fiscal
+		/// 		  budget period that the budget was last processed.</summary>
 		public double lastUpdate;
 
 
@@ -103,32 +99,26 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     True if the GUI should be visible. This might be turned false if the game signals it wants to
-		///     hide all GUI such as for a screen shot.
-		/// </summary>
+		/// <summary> True if the GUI should be visible. This might be turned false if the game signals it
+		/// 		  wants to hide all GUI such as for a screen shot.</summary>
 		private bool _visibleGui = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     A record of the maintenance costs for the Space Center. This has to be stored rather than
-		///     calculated on the fly since the Space Center is often unloaded and calculation of costs
-		///     cannot be performed.
-		/// </summary>
+		/// <summary> A record of the maintenance costs for the Space Center. This has to be stored rather
+		/// 		  than calculated on the fly since the Space Center is often unloaded and
+		/// 		  calculation of costs cannot be performed.</summary>
 		private int _buildingCostsArchive;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Length of the year for the home system. This might be different than stock Kerbin as a result of
-		///     any planet-pack installed.
-		/// </summary>
+		/// <summary> Length of the year for the home system. This might be different than stock Kerbin as
+		/// 		  a result of any planet-pack installed.</summary>
 		public double yearLength;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Awakes this object.</summary>
+		/// <summary> Awakes this object. </summary>
 		[UsedImplicitly]
 		private void Awake()
 		{
@@ -144,7 +134,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Starts this object.</summary>
+		/// <summary> Starts this object. </summary>
 		[UsedImplicitly]
 		private void Start()
 		{
@@ -176,7 +166,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Updates this object.</summary>
+		/// <summary> Updates this object. </summary>
 		[UsedImplicitly]
 		private void Update()
 		{
@@ -208,7 +198,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Executes the destroy action.</summary>
+		/// <summary> Executes the destroy action. </summary>
 		[UsedImplicitly]
 		private void OnDestroy()
 		{
@@ -223,10 +213,10 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the save action.</summary>
+		///
 		/// <param name="node"> The node.</param>
 		public void OnSave(ConfigNode node)
 		{
-
 			node.SetValue("LastBudgetUpdate", lastUpdate, true);
 			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
 
@@ -239,10 +229,10 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the load action.</summary>
+		///
 		/// <param name="node"> The node.</param>
 		public void OnLoad(ConfigNode node)
 		{
-
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
 
@@ -254,10 +244,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Called when the game scene is loaded. We want the mod's pop-up windows to close when a the scene
-		///     changes.
-		/// </summary>
+		/// <summary> Called when the game scene is loaded. We want the mod's pop-up windows to close when
+		/// 		  a the scene changes.</summary>
+		///
 		/// <param name="scene"> The scene that is loaded.</param>
 		private void OnGameSceneLoad(GameScenes scene)
 		{
@@ -277,7 +266,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Called when the game wants to re-display the UI.</summary>
+		/// <summary> Called when the game wants to re-display the UI. </summary>
 		private void OnShowUI()
 		{
 			_visibleGui = true;
@@ -285,10 +274,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Calculates the gross budget. This is the budget just considering reputation and not counting any
-		///     costs.
-		/// </summary>
+		/// <summary> Calculates the gross budget. This is the budget just considering reputation and not
+		/// 		  counting any costs.</summary>
+		///
 		/// <returns> The gross budget.</returns>
 		public float GrossBudget()
 		{
@@ -299,6 +287,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Budget interval expressed in time units.</summary>
+		///
 		/// <returns> A double that is the time units of one budget period.</returns>
 		public double BudgetInterval()
 		{
@@ -308,11 +297,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Performs the main budget action. This is where funds are collected from the Kerbal government and
-		///     distributed to all the necessary recipients. The core function of this mod is handled by the
-		///     logic in this method.
-		/// </summary>
+		/// <summary> Performs the main budget action. This is where funds are collected from the Kerbal
+		/// 		  government and distributed to all the necessary recipients. The core function of
+		/// 		  this mod is handled by the logic in this method.</summary>
 		private void Budget()
 		{
 			if (BudgetSettings.Instance == null) return;
@@ -376,7 +363,6 @@ namespace SpaceProgramFunding.Source
 				net_funds = publicRelations.SiphonFunds(net_funds);
 
 #if false
-
 				if (net_funds > 0 && publicRelations.reputationDivertPercentage > 0 && publicRelations.isPREnabled) {
 					var percent_diverted_to_pr = publicRelations.reputationDivertPercentage / 100;
 					var max_reputation_points = (float) (net_funds / BudgetSettings.Instance.fundsPerRep);
@@ -477,6 +463,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Creates a date string that represents the time that the next budget period will occur.</summary>
+		///
 		/// <returns> A string for the date of the next budget period.</returns>
 		private string NextBudgetDateString()
 		{
@@ -499,6 +486,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Handles the layout of the main interface window for the mod.</summary>
+		///
 		/// <param name="windowID"> Identifier for the window.</param>
 		protected void WindowGUI(int windowID)
 		{
@@ -582,7 +570,7 @@ namespace SpaceProgramFunding.Source
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth));
-				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int)publicRelations.reputationDivertPercentage, 1, 50,
+				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
 					GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
 			} else {
@@ -646,6 +634,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Handles the layout of the settings window.</summary>
+		///
 		/// <param name="windowID"> Identifier for the window.</param>
 		protected void SettingsGUI(int windowID)
 		{
@@ -945,11 +934,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Fetch time data for the home-world. This is usually Kerbin, but can change with some planet-pack
-		///     mods. By fetching the data in this way the timing values for days remains true no matter if
-		///     the home-world has changed.
-		/// </summary>
+		/// <summary> Fetch time data for the home-world. This is usually Kerbin, but can change with some
+		/// 		  planet-pack mods. By fetching the data in this way the timing values for days
+		/// 		  remains true no matter if the home-world has changed.</summary>
 		public void PopulateHomeWorldData()
 		{
 			homeWorld = FlightGlobals.GetHomeBody();
@@ -980,14 +967,12 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     There is a quirk with the game such that modules get saved/loaded around the SPH or VAB but other
-		///     game settings do not. This means anything that adjusts the game funds will persist after
-		///     leaving the ship editor, but the mod modules will have their state restored. The result is
-		///     that unless this is handled in a special way, extracting funds from the big-project budget
-		///     will magically be restored when returning to the Space Center -- a HUG exploit. This handles
-		///     that quirk.
-		/// </summary>
+		/// <summary> There is a quirk with the game such that modules get saved/loaded around the SPH or
+		/// 		  VAB but other game settings do not. This means anything that adjusts the game
+		/// 		  funds will persist after leaving the ship editor, but the mod modules will have
+		/// 		  their state restored. The result is that unless this is handled in a special way,
+		/// 		  extracting funds from the big-project budget will magically be restored when
+		/// 		  returning to the Space Center -- a HUG exploit. This handles that quirk.</summary>
 		public void VABHack()
 		{
 			if (!bigProject.isHack) return;
@@ -997,12 +982,12 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     When the vessel/plane rolls out of the VAB or SPH, the launch costs are calculated. These will
-		///     get rolled back naturally if the player reverts the launch. These launch costs represent
-		///     extraordinary wear and tear on the launch facilities and are a one-time cost. Typically, the
-		///     runway requires minimal cost as compared to the launch-pad.
-		/// </summary>
+		/// <summary> When the vessel/plane rolls out of the VAB or SPH, the launch costs are calculated.
+		/// 		  These will get rolled back naturally if the player reverts the launch. These
+		/// 		  launch costs represent extraordinary wear and tear on the launch facilities and
+		/// 		  are a one-time cost. Typically, the runway requires minimal cost as compared to
+		/// 		  the launch-pad.</summary>
+		///
 		/// <param name="ship"> The ship that is being launched.</param>
 		private void OnVesselRollout(ShipConstruct ship)
 		{
@@ -1037,8 +1022,8 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Kerbal astronauts that are inactive (sitting in the Astronaut complex) are paid at a different
-		/// 		  rate than Kerbals that are on missions. Usually less.</summary>
+		/// <summary> Kerbal astronauts that are inactive (sitting in the Astronaut complex) are paid at a
+		/// 		  different rate than Kerbals that are on missions. Usually less.</summary>
 		///
 		/// <returns> The total wages for all astronauts that are unassigned.</returns>
 		public int InactiveCostWages()
@@ -1064,10 +1049,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Kerbal astronauts that are on missions (not in Astronaut complex) are paid at a different rate.
-		///     Usually higher to account for "hazard pay".
-		/// </summary>
+		/// <summary> Kerbal astronauts that are on missions (not in Astronaut complex) are paid at a
+		/// 		  different rate. Usually higher to account for "hazard pay".</summary>
+		///
 		/// <returns> The total wages for all astronauts that are on a mission. (aka, "active")</returns>
 		public int ActiveCostWages()
 		{
@@ -1092,11 +1076,10 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Figures out the monthly maintenance cost for all vessels. This is based on the mass of the
-		///     vessel. The presumption is that larger vessels need more Space Center support on an ongoing
-		///     basis.
-		/// </summary>
+		/// <summary> Figures out the monthly maintenance cost for all vessels. This is based on the mass
+		/// 		  of the vessel. The presumption is that larger vessels need more Space Center
+		/// 		  support on an ongoing basis.</summary>
+		///
 		/// <returns> The sum cost of maintenance cost for all vessels.</returns>
 		public int CostVessels()
 		{
@@ -1117,12 +1100,11 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Determines the total costs -- accumulated so far -- for launches during this budget period. These
-		///     costs cover janitorial maintenance and handy-man repair work necessary when the launch
-		///     facility is used for heavy vehicles. The heavier the launch vehicle, the more expensive it is
-		///     to clean up afterward.
-		/// </summary>
+		/// <summary> Determines the total costs -- accumulated so far -- for launches during this budget
+		/// 		  period. These costs cover janitorial maintenance and handy-man repair work
+		/// 		  necessary when the launch facility is used for heavy vehicles. The heavier the
+		/// 		  launch vehicle, the more expensive it is to clean up afterward.</summary>
+		///
 		/// <returns> The total, so far, of launch costs.</returns>
 		public int CostLaunches()
 		{
@@ -1135,6 +1117,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Calculates all the non-discretionary spending for the current budget period.</summary>
+		///
 		/// <returns> The non-discretionary bill for this budget period.</returns>
 		public int CostCalculate()
 		{
@@ -1152,8 +1135,8 @@ namespace SpaceProgramFunding.Source
 		///
 		/// <param name="facility"> The facility to fetch the level for.</param>
 		///
-		/// <returns> The level of the facility. This will be 1..3 where 1 is the initial level on a new career game
-		/// 		  and 3 is fully upgraded.</returns>
+		/// <returns> The level of the facility. This will be 1..3 where 1 is the initial level on a new
+		/// 		  career game and 3 is fully upgraded.</returns>
 		private int FacilityLevel(SpaceCenterFacility facility)
 		{
 			var level = ScenarioUpgradeableFacilities.GetFacilityLevel(facility); // 0 .. 1
@@ -1165,6 +1148,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Figures out the ongoing maintenance cost for all structures in the Space Center.</summary>
+		///
 		/// <returns> Returns with the funds cost for Space Center structure maintenance.</returns>
 		public int CostBuildings()
 		{
@@ -1205,8 +1189,8 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Calculates the building costs for the entire Kerbal Space Center. This takes into account
-		/// 		  structure upgrade state.</summary>
+		/// <summary> Calculates the building costs for the entire Kerbal Space Center. This takes into
+		/// 		  account structure upgrade state.</summary>
 		public void CalculateBuildingCosts()
 		{
 			var costs = 0;
@@ -1224,13 +1208,14 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Calculates the maintenance cost coefficient that is multiplied by the structure's base cost. The
-		/// 		  effect is that a level 3 structure is 4 times the cost of the level 1 structure.</summary>
+		/// <summary> Calculates the maintenance cost coefficient that is multiplied by the structure's
+		/// 		  base cost. The effect is that a level 3 structure is 4 times the cost of the
+		/// 		  level 1 structure.</summary>
 		///
 		/// <param name="level"> The level to calculate the coefficient for.</param>
 		///
-		/// <returns> The coefficient to multiply with the structure's base cost to arrive at the current maintenance
-		/// 		  cost.</returns>
+		/// <returns> The coefficient to multiply with the structure's base cost to arrive at the current
+		/// 		  maintenance cost.</returns>
 		private int LevelCoefficient(int level)
 		{
 			switch (level) {

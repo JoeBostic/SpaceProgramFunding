@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- ContractInterceptor.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System.IO;
 using System.Linq;
@@ -13,30 +13,25 @@ using UnityEngine;
 namespace SpaceProgramFunding.Source
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// <summary>
-	///     Handles converting funds rewards into reputation rewards for contracts. Doing so fits with the whole
-	///     concept of this mod.
-	/// </summary>
+	/// <summary> Handles converting funds rewards into reputation rewards for contracts. Doing so fits
+	/// 		  with the whole concept of this mod.</summary>
 	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
 	internal class ContractInterceptor : MonoBehaviour
 	{
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The blacklisted agencies for whose contracts will be left intact. Typically, these
+		/// 		  are agency contracts specifically designed to raise money rather than reputation.</summary>
+		private string[] _blacklistedAgencies;
+
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Reference to the single existing object of this type.</summary>
 		private ContractInterceptor _instance;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The blacklisted agencies for whose contracts will be left intact. Typically, these
-		/// 		  are agency contracts specifically designed to raise money rather than reputation.</summary>
-		///------------------------------------------------------------------------------------------------------------
-		private string[] _blacklistedAgencies;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Awakes this object and sets appropriate event callbacks so the contracts can be intercepted and
-		///     altered to reward reputation instead of funds.
-		/// </summary>
+		/// <summary> Awakes this object and sets appropriate event callbacks so the contracts can be
+		/// 		  intercepted and altered to reward reputation instead of funds.</summary>
 		[UsedImplicitly]
 		public void Awake()
 		{
@@ -58,7 +53,6 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the destroy action and removes the event callback registered in the Awake()
 		/// 		  method.</summary>
-		///------------------------------------------------------------------------------------------------------------
 		[UsedImplicitly]
 		public void OnDestroy()
 		{
@@ -69,8 +63,7 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Loads the blacklisted space agencies so it knows not to alter the contracts offered
 		/// 		  from them.</summary>
-		///------------------------------------------------------------------------------------------------------------
-		void LoadBlacklist()
+		private void LoadBlacklist()
 		{
 			const string filename = "/GameData/SpaceProgramFunding/Blacklist.cfg";
 			if (!File.Exists(filename)) return;
@@ -80,30 +73,29 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Query if 'agent' is agent blacklisted. A blacklisted agent will not have any contracts from it
-		///     altered. The intent is that contracts for passenger transportation will be unmodified so that
-		///     funds will be rewarded. This accounts for ticket prices which should not be converted into
-		///     reputation.
-		/// </summary>
+		/// <summary> Query if 'agent' is agent blacklisted. A blacklisted agent will not have any
+		/// 		  contracts from it altered. The intent is that contracts for passenger
+		/// 		  transportation will be unmodified so that funds will be rewarded. This accounts
+		/// 		  for ticket prices which should not be converted into reputation.</summary>
+		///
 		/// <param name="agent"> The agent to check if blacklisted.</param>
+		///
 		/// <returns> True if agent blacklisted, false if not.</returns>
 		private bool IsAgentBlacklisted(string agent)
 		{
-			foreach (var ss in _blacklistedAgencies) {
-				if (ss == agent) return true;
-			}
+			foreach (var ss in _blacklistedAgencies)
+				if (ss == agent)
+					return true;
 
 			return false;
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Handles when a contract has been offered. It will alter the contract rewards by converting funds
-		///     rewards into reputation rewards at the standard conversion rate. The same is true for funds
-		///     penalties for contract failure.
-		/// </summary>
+		/// <summary> Handles when a contract has been offered. It will alter the contract rewards by
+		/// 		  converting funds rewards into reputation rewards at the standard conversion rate.
+		/// 		  The same is true for funds penalties for contract failure.</summary>
+		///
 		/// <param name="contract"> The contract that is being offered.</param>
 		private void OnOffered(Contract contract)
 		{

@@ -25,11 +25,12 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/PLACE_SIMPLE_EMBEDDED_BLOCK_ON_SAME_LINE/@EntryValue">True</s:Boolean>
 	
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_LIMIT/@EntryValue">250</s:Int64>
-	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////&#xD;
-Project: $PROJECT$ -- $FILENAME$&#xD;
-&#xD;
-Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.&#xD;
--------------------------------------------------------------------------------------------------------------------------</s:String>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/XmlDocFormatter/SpacesInsideSinglelineTag/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////&#xD;
+Project: $PROJECT$ -- Transforms KSP funding model to play like a governmental space program.&#xD;
+Source:  https://github.com/JoeBostic/SpaceProgramFunding&#xD;
+License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License&#xD;
+--------------------------------------------------------------------------------------------------------------------</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/Naming/CSharpAutoNaming/IsNotificationDisabled/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=GUI/@EntryIndexedValue">GUI</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ID/@EntryIndexedValue">ID</s:String>

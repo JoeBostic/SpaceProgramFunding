@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- BudgetScenario.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using JetBrains.Annotations;
 
@@ -17,16 +17,17 @@ namespace SpaceProgramFunding.Source
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The current version of the mod.</summary>
-		private const string _currentVersion = "5.0";
+		private const string _currentVersion = "1.0";
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The mod version number as saved..</summary>
+		/// <summary> The mod version number as saved.</summary>
 		private string _saveGameVersion = "0.0";
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the save action which persists all dynamic data into the saved-game file.</summary>
+		///
 		/// <param name="node"> The handle to the saved game file node.</param>
 		public override void OnSave(ConfigNode node)
 		{
@@ -38,13 +39,12 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the load action which retrieves all dynamic data from the saved-game file.</summary>
+		///
 		/// <param name="node"> The handle to the saved game file node.</param>
 		public override void OnLoad(ConfigNode node)
 		{
 			node.TryGetValue("saveGameVersion", ref _saveGameVersion);
-			if (SpaceProgramFunding.Instance != null) {
-				SpaceProgramFunding.Instance.OnLoad(node);
-			}
+			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnLoad(node);
 			if (BudgetSettings.Instance != null) {
 				BudgetSettings.Instance.OnLoad(node);
 

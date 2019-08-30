@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- KACWrapper.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections;
@@ -22,9 +22,9 @@ namespace SpaceProgramFunding.Source
 	// BELOW HERE SHOULD NOT BE EDITED - this links to the loaded KAC module without requiring a Hard Dependancy
 	///////////////////////////////////////////////////////////////////////////////////////////
 
-	/// <summary>
-	///     The Wrapper class to access KAC from another plugin
-	/// </summary>
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// <summary> The Wrapper class to access KAC from another plugin.</summary>
 	public class KACWrapper
 	{
 		protected static Type KACType;
@@ -32,43 +32,47 @@ namespace SpaceProgramFunding.Source
 
 		protected static object actualKAC;
 
-		/// <summary>
-		///     This is the Kerbal Alarm Clock object
-		///     SET AFTER INIT
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> This is the Kerbal Alarm Clock object SET AFTER INIT.</summary>
 		public static KACAPI KAC;
 
-		/// <summary>
-		///     Whether we managed to wrap all the methods/functions from the instance.
-		///     SET AFTER INIT
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Whether we managed to wrap all the methods/functions from the instance. SET AFTER
+		/// 		  INIT.</summary>
 		private static bool _KACWrapped;
 
-		/// <summary>
-		///     Whether we found the KerbalAlarmClock assembly in the loadedassemblies.
-		///     SET AFTER INIT
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Whether we found the KerbalAlarmClock assembly in the loadedassemblies. SET AFTER
+		/// 		  INIT.</summary>
+		///
+		/// <value> True if assembly exists, false if not.</value>
 		public static bool AssemblyExists => KACType != null;
 
-		/// <summary>
-		///     Whether we managed to hook the running Instance from the assembly.
-		///     SET AFTER INIT
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Whether we managed to hook the running Instance from the assembly. SET AFTER INIT.</summary>
+		///
+		/// <value> True if instance exists, false if not.</value>
 		public static bool InstanceExists => KAC != null;
 
-		/// <summary>
-		///     Whether the object has been wrapped and the APIReady flag is set in the real KAC
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Whether the object has been wrapped and the APIReady flag is set in the real KAC.</summary>
+		///
+		/// <value> True if API ready, false if not.</value>
 		public static bool APIReady => _KACWrapped && KAC.APIReady && !NeedUpgrade;
 
 
 		public static bool NeedUpgrade { get; private set; }
 
-		/// <summary>
-		///     This method will set up the KAC object and wrap all the methods/functions
-		/// </summary>
-		/// <param name="Force">This option will force the Init function to rebind everything</param>
-		/// <returns></returns>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> This method will set up the KAC object and wrap all the methods/functions.</summary>
+		///
+		/// <returns> True if it succeeds, false if it fails.</returns>
 		public static bool InitKACWrapper()
 		{
 			//if (!_KACWrapped )
@@ -123,10 +127,10 @@ namespace SpaceProgramFunding.Source
 			return true;
 		}
 
-		/// <summary>
-		///     The Type that is an analogue of the real KAC. This lets you access all the API-able properties and Methods of the
-		///     KAC
-		/// </summary>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The Type that is an analogue of the real KAC. This lets you access all the API-able
+		/// 		  properties and Methods of the KAC.</summary>
 		public class KACAPI
 		{
 			public enum AlarmActionEnum
@@ -233,9 +237,11 @@ namespace SpaceProgramFunding.Source
 				//}
 			}
 
-			/// <summary>
-			///     Whether the APIReady flag is set in the real KAC
-			/// </summary>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Whether the APIReady flag is set in the real KAC.</summary>
+			///
+			/// <value> True if API ready, false if not.</value>
 			public bool APIReady {
 				get {
 					if (APIReadyField == null)
@@ -315,96 +321,122 @@ namespace SpaceProgramFunding.Source
 					//}
 				}
 
-				/// <summary>
-				///     Unique Identifier of the Vessel that the alarm is attached to
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Unique Identifier of the Vessel that the alarm is attached to.</summary>
+				///
+				/// <value> The identifier of the vessel.</value>
 				public string VesselID {
 					get => (string) VesselIDField.GetValue(actualAlarm);
 					set => VesselIDField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     Unique Identifier of this alarm
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Unique Identifier of this alarm.</summary>
+				///
+				/// <value> The identifier.</value>
 				public string ID => (string) IDField.GetValue(actualAlarm);
 
-				/// <summary>
-				///     Short Text Name for the Alarm
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Short Text Name for the Alarm.</summary>
+				///
+				/// <value> The name.</value>
 				public string Name {
 					get => (string) NameField.GetValue(actualAlarm);
 					set => NameField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     Longer Text Description for the Alarm
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Longer Text Description for the Alarm.</summary>
+				///
+				/// <value> The notes.</value>
 				public string Notes {
 					get => (string) NotesField.GetValue(actualAlarm);
 					set => NotesField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     Name of the origin body for a transfer
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Name of the origin body for a transfer.</summary>
+				///
+				/// <value> The name of the xfer origin body.</value>
 				public string XferOriginBodyName {
 					get => (string) XferOriginBodyNameField.GetValue(actualAlarm);
 					set => XferOriginBodyNameField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     Name of the destination body for a transfer
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Name of the destination body for a transfer.</summary>
+				///
+				/// <value> The name of the xfer target body.</value>
 				public string XferTargetBodyName {
 					get => (string) XferTargetBodyNameField.GetValue(actualAlarm);
 					set => XferTargetBodyNameField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     What type of Alarm is this - affects icon displayed and some calc options
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> What type of Alarm is this - affects icon displayed and some calc options.</summary>
+				///
+				/// <value> The type of the alarm.</value>
 				public AlarmTypeEnum AlarmType => (AlarmTypeEnum) AlarmTypeField.GetValue(actualAlarm);
 
-				/// <summary>
-				///     In game UT value of the alarm
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> In game UT value of the alarm.</summary>
+				///
+				/// <value> The alarm time.</value>
 				public double AlarmTime {
 					get => (double) AlarmTimeProperty.GetValue(actualAlarm, null);
 					set => AlarmTimeProperty.SetValue(actualAlarm, value, null);
 				}
 
-				/// <summary>
-				///     In game seconds the alarm will fire before the event it is for
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> In game seconds the alarm will fire before the event it is for.</summary>
+				///
+				/// <value> The alarm margin.</value>
 				public double AlarmMargin {
 					get => (double) AlarmMarginField.GetValue(actualAlarm);
 					set => AlarmMarginField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     What should the Alarm Clock do when the alarm fires
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> What should the Alarm Clock do when the alarm fires.</summary>
+				///
+				/// <value> The alarm action.</value>
 				public AlarmActionEnum AlarmAction {
 					get => (AlarmActionEnum) AlarmActionField.GetValue(actualAlarm);
 					set => AlarmActionField.SetValue(actualAlarm, (int) value);
 				}
 
-				/// <summary>
-				///     How much Game time is left before the alarm fires
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> How much Game time is left before the alarm fires.</summary>
+				///
+				/// <value> The remaining.</value>
 				public double Remaining => (double) RemainingField.GetValue(actualAlarm);
 
-				/// <summary>
-				///     Whether the alarm will be repeated after it fires
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Whether the alarm will be repeated after it fires.</summary>
+				///
+				/// <value> True if repeat alarm, false if not.</value>
 				public bool RepeatAlarm {
 					get => (bool) RepeatAlarmField.GetValue(actualAlarm);
 					set => RepeatAlarmField.SetValue(actualAlarm, value);
 				}
 
-				/// <summary>
-				///     Value in Seconds after which the alarm will repeat
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Value in Seconds after which the alarm will repeat.</summary>
+				///
+				/// <value> The repeat alarm period.</value>
 				public double RepeatAlarmPeriod {
 					get {
 						try {
@@ -426,16 +458,20 @@ namespace SpaceProgramFunding.Source
 			private readonly object actualAlarms;
 			private readonly FieldInfo AlarmsField;
 
-			/// <summary>
-			///     The list of Alarms that are currently active in game
-			/// </summary>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> The list of Alarms that are currently active in game.</summary>
+			///
+			/// <value> The alarms.</value>
 			internal KACAlarmList Alarms => ExtractAlarmList(actualAlarms);
 
-			/// <summary>
-			///     This converts the KACAlarmList actual object to a new List for consumption
-			/// </summary>
-			/// <param name="actualAlarmList"></param>
-			/// <returns></returns>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> This converts the KACAlarmList actual object to a new List for consumption.</summary>
+			///
+			/// <param name="actualAlarmList"> .</param>
+			///
+			/// <returns> The extracted alarm list.</returns>
 			private KACAlarmList ExtractAlarmList(object actualAlarmList)
 			{
 				var ListToReturn = new KACAlarmList();
@@ -459,12 +495,12 @@ namespace SpaceProgramFunding.Source
 
 			#region Events
 
-			/// <summary>
-			///     Takes an EventInfo and binds a method to the event firing
-			/// </summary>
-			/// <param name="Event">EventInfo of the event we want to attach to</param>
-			/// <param name="KACObject">actual object the eventinfo is gathered from</param>
-			/// <param name="Handler">Method that we are going to hook to the event</param>
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Takes an EventInfo and binds a method to the event firing.</summary>
+			///
+			/// <param name="Event">	 EventInfo of the event we want to attach to.</param>
+			/// <param name="KACObject"> actual object the eventinfo is gathered from.</param>
+			/// <param name="Handler">   Method that we are going to hook to the event.</param>
 			protected void AddHandler(EventInfo Event, object KACObject, Action<object> Handler)
 			{
 				//build a delegate
@@ -478,30 +514,30 @@ namespace SpaceProgramFunding.Source
 			//the info about the event;
 			private readonly EventInfo onAlarmStateChangedEvent;
 
-			/// <summary>
-			///     Event that fires when the State of an Alarm changes
-			/// </summary>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Event that fires when the State of an Alarm changes.</summary>
 			public event AlarmStateChangedHandler onAlarmStateChanged;
 
-			/// <summary>
-			///     Structure of the event delegeate
-			/// </summary>
-			/// <param name="e"></param>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Structure of the event delegeate.</summary>
+			///
+			/// <param name="e"> .</param>
 			public delegate void AlarmStateChangedHandler(AlarmStateChangedEventArgs e);
 
-			/// <summary>
-			///     This is the structure that holds the event arguments
-			/// </summary>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> This is the structure that holds the event arguments.</summary>
 			public class AlarmStateChangedEventArgs
 			{
-				/// <summary>
-				///     Alarm that has had the state change
-				/// </summary>
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> Alarm that has had the state change.</summary>
 				public KACAlarm alarm;
 
-				/// <summary>
-				///     What the state was before the event
-				/// </summary>
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// <summary> What the state was before the event.</summary>
 				public KACAlarm.AlarmStateEventsEnum eventType;
 
 				public AlarmStateChangedEventArgs(object actualEvent, KACAPI kac)
@@ -513,10 +549,10 @@ namespace SpaceProgramFunding.Source
 			}
 
 
-			/// <summary>
-			///     private function that grabs the actual event and fires our wrapped one
-			/// </summary>
-			/// <param name="actualEvent">actual event from the KAC</param>
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> private function that grabs the actual event and fires our wrapped one.</summary>
+			///
+			/// <param name="actualEvent"> actual event from the KAC.</param>
 			private void AlarmStateChanged(object actualEvent)
 			{
 				if (onAlarmStateChanged != null) onAlarmStateChanged(new AlarmStateChangedEventArgs(actualEvent, this));
@@ -529,13 +565,15 @@ namespace SpaceProgramFunding.Source
 
 			private readonly MethodInfo CreateAlarmMethod;
 
-			/// <summary>
-			///     Create a new Alarm
-			/// </summary>
-			/// <param name="AlarmType">What type of alarm are we creating</param>
-			/// <param name="Name">Name of the Alarm for the display</param>
-			/// <param name="UT">Universal Time for the alarm</param>
-			/// <returns>ID of the newly created alarm</returns>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Create a new Alarm.</summary>
+			///
+			/// <param name="AlarmType"> What type of alarm are we creating.</param>
+			/// <param name="Name">		 Name of the Alarm for the display.</param>
+			/// <param name="UT">		 Universal Time for the alarm.</param>
+			///
+			/// <returns> ID of the newly created alarm.</returns>
 			internal string CreateAlarm(AlarmTypeEnum AlarmType, string Name, double UT)
 			{
 				return (string) CreateAlarmMethod.Invoke(actualKAC, new object[] {(int) AlarmType, Name, UT});
@@ -547,8 +585,8 @@ namespace SpaceProgramFunding.Source
 			/// <summary>
 			///     Delete an Alarm
 			/// </summary>
-			/// <param name="AlarmID">Unique ID of the alarm</param>
-			/// <returns>Success of the deletion</returns>
+			/// <param name="AlarmID"> Unique ID of the alarm </param>
+			/// <returns> Success of the deletion </returns>
 			internal bool DeleteAlarm(string AlarmID)
 			{
 				return (bool) DeleteAlarmMethod.Invoke(actualKAC, new object[] {AlarmID});
@@ -557,11 +595,16 @@ namespace SpaceProgramFunding.Source
 
 			private readonly MethodInfo DrawAlarmActionChoiceMethod;
 
-			/// <summary>
-			///     Delete an Alarm
-			/// </summary>
-			/// <param name="AlarmID">Unique ID of the alarm</param>
-			/// <returns>Success of the deletion</returns>
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// <summary> Delete an Alarm.</summary>
+			///
+			/// <param name="Choice">	   [in,out] Unique ID of the alarm.</param>
+			/// <param name="LabelText">   The label text.</param>
+			/// <param name="LabelWidth">  Width of the label.</param>
+			/// <param name="ButtonWidth"> Width of the button.</param>
+			///
+			/// <returns> Success of the deletion.</returns>
 			internal bool DrawAlarmActionChoice(ref AlarmActionEnum Choice, string LabelText, int LabelWidth,
 				int ButtonWidth)
 			{
@@ -595,22 +638,23 @@ namespace SpaceProgramFunding.Source
 
 		#region Logging Stuff
 
-		/// <summary>
-		///     Some Structured logging to the debug file - ONLY RUNS WHEN DLL COMPILED IN DEBUG MODE
-		/// </summary>
-		/// <param name="Message">Text to be printed - can be formatted as per String.format</param>
-		/// <param name="strParams">Objects to feed into a String.format</param>
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Some Structured logging to the debug file - ONLY RUNS WHEN DLL COMPILED IN DEBUG MODE.</summary>
+		///
+		/// <param name="Message">   Text to be printed - can be formatted as per String.format.</param>
+		/// <param name="strParams"> Objects to feed into a String.format.</param>
 		[Conditional("DEBUG")]
 		internal static void LogFormatted_DebugOnly(string Message, params object[] strParams)
 		{
 			LogFormatted(Message, strParams);
 		}
 
-		/// <summary>
-		///     Some Structured logging to the debug file
-		/// </summary>
-		/// <param name="Message">Text to be printed - can be formatted as per String.format</param>
-		/// <param name="strParams">Objects to feed into a String.format</param>
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Some Structured logging to the debug file.</summary>
+		///
+		/// <param name="Message">   Text to be printed - can be formatted as per String.format.</param>
+		/// <param name="strParams"> Objects to feed into a String.format.</param>
 		internal static void LogFormatted(string Message, params object[] strParams)
 		{
 			Message = string.Format(Message, strParams);

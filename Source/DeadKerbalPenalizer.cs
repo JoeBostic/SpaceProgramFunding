@@ -1,8 +1,8 @@
-﻿// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Project: SpaceProgramFunding -- DeadKerbalPenalizer.cs
-// 
-// Summary: Transforms KSP funding model to play like a governmental space program rather than a commercial business.
-// -------------------------------------------------------------------------------------------------------------------------
+﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Project: SpaceProgramFunding -- Transforms KSP funding model to play like a governmental space program.
+// Source:  https://github.com/JoeBostic/SpaceProgramFunding
+// License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using JetBrains.Annotations;
@@ -16,18 +16,14 @@ namespace SpaceProgramFunding.Source
 	public class DeadKerbalPenalizer : MonoBehaviour
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Record of the singleton object. There needs to be only one of these since we don't want a dead
-		///     Kerbal to be registered as dying more than once.
-		/// </summary>
+		/// <summary> Record of the singleton object. There needs to be only one of these since we don't
+		/// 		  want a dead Kerbal to be registered as dying more than once.</summary>
 		private DeadKerbalPenalizer _instance;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Awakes this object and sets the event callback method for handling a dead Kerbal. This method
-		///     also ensures that only one of these objects exists at a time.
-		/// </summary>
+		/// <summary> Awakes this object and sets the event callback method for handling a dead Kerbal.
+		/// 		  This method also ensures that only one of these objects exists at a time.</summary>
 		[UsedImplicitly]
 		public void Awake()
 		{
@@ -44,10 +40,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		///     Executes the Kerbal status change action and if the Kerbal is found to be dead or MIA then apply
-		///     the reputation penalty.
-		/// </summary>
+		/// <summary> Executes the Kerbal status change action and if the Kerbal is found to be dead or MIA
+		/// 		  then apply the reputation penalty.</summary>
+		///
 		/// <param name="p">		  A ProtoCrewMember to process.</param>
 		/// <param name="statusFrom"> The status from.</param>
 		/// <param name="statusTo">   The status to.</param>
