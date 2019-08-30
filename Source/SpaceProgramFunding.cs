@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -173,6 +174,9 @@ namespace SpaceProgramFunding.Source
 			if (HighLogic.CurrentGame == null) return;
 			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
 			if (BudgetSettings.Instance == null) return;
+
+			// Don't process budget while settings dialog is open.
+			if (showSettingsDialog) return;
 
 			var time = Planetarium.GetUniversalTime();
 
@@ -655,10 +659,21 @@ namespace SpaceProgramFunding.Source
 				GUILayout.Width(_settingsWidth), GUILayout.Height(_settingsHeight));
 
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+
+#if true
+			GUILayout.Label("Budget Interval: ", label_style);
+			var day_string = GUILayout.TextField(BudgetSettings.Instance.budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(64));
+			if (int.TryParse(day_string, out var day_number)) {
+				day_number = Math.Max(day_number, 1);
+				BudgetSettings.Instance.budgetIntervalDays = day_number;
+			}
+			GUILayout.Label(" days", label_style);
+#else
 			GUILayout.Label("Budget Interval: " + BudgetSettings.Instance.budgetIntervalDays + " days", label_style,
 				GUILayout.MinWidth(labelWidth - 60));
-			BudgetSettings.Instance.budgetIntervalDays = (int) GUILayout.HorizontalSlider(
-				BudgetSettings.Instance.budgetIntervalDays, 0, 365, GUILayout.MinWidth(ledgerWidth + 60));
+			BudgetSettings.Instance.budgetIntervalDays = (int) GUILayout.HorizontalSlider(BudgetSettings.Instance.budgetIntervalDays, 0, 365, GUILayout.MinWidth(ledgerWidth + 60));
+#endif
+
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
