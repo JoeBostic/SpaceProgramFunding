@@ -76,21 +76,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="GameData\Changelog.cfg" />
-    <None Include="GameData\Blacklist.cfg" />
-    <None Include="GameData\NormalDefaults.cfg" />
-    <None Include="GameData\SpaceProgramFunding.version" />
+    <None Include="GameData\SpaceProgramFunding\Changelog.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Blacklist.cfg" />
+    <None Include="GameData\SpaceProgramFunding\NormalDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\SpaceProgramFunding.version" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GameData\License.txt" />
-    <Content Include="GameData\SpaceProgramFunding.png" />
+    <Content Include="GameData\SpaceProgramFunding\License.txt" />
+    <Content Include="GameData\SpaceProgramFunding\SpaceProgramFunding.png" />
     <Content Include="Support\SpaceProgramFunding.psd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(TargetPath)" "$(ProjectDir)GameData"
-copy /y "$(ProjectDir)GameData\*.*" "D:\Games\Steam\SteamApps\common\Kerbal Space Program\GameData\SpaceProgramFunding"
+    <PostBuildEvent>copy /y "$(TargetPath)" "$(ProjectDir)GameData\SpaceProgramFunding\"
+copy /y "$(ProjectDir)GameData\SpaceProgramFunding\*.*" "D:\Games\Steam\SteamApps\common\Kerbal Space Program\GameData\SpaceProgramFunding"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
