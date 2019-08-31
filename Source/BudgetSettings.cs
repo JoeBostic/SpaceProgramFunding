@@ -356,7 +356,7 @@ namespace SpaceProgramFunding.Source
 			string filename;
 			switch (diff) {
 				case DifficultyEnum.Easy:
-					filename = "EasyDefaults.cfg";
+					filename = "BalancedDefaults.cfg";
 					break;
 				case DifficultyEnum.Normal:
 					filename = "NormalDefaults.cfg";
@@ -699,7 +699,7 @@ namespace SpaceProgramFunding.Source
 			GUILayout.EndScrollView();
 
 			GUILayout.BeginHorizontal();
-			if (GUILayout.Button("Easy")) LoadSettings(BudgetSettings.DifficultyEnum.Easy);
+			if (GUILayout.Button("Balanced")) LoadSettings(BudgetSettings.DifficultyEnum.Easy);
 			if (GUILayout.Button("Normal")) LoadSettings(BudgetSettings.DifficultyEnum.Normal);
 			if (GUILayout.Button("Hard")) LoadSettings(BudgetSettings.DifficultyEnum.Hard);
 			GUILayout.EndHorizontal();
