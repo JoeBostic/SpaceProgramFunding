@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -203,12 +202,12 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void OnDestroy()
 		{
-			if (Instance == this) {
-				GameEvents.OnVesselRollout.Remove(OnVesselRollout);
-				//GameEvents.onGameSceneSwitchRequested.Remove(OnSceneSwitch);
-				GameEvents.onHideUI.Remove(OnHideUI);
-				GameEvents.onShowUI.Remove(OnShowUI);
-			}
+			if (Instance != this) return;
+
+			GameEvents.OnVesselRollout.Remove(OnVesselRollout);
+			//GameEvents.onGameSceneSwitchRequested.Remove(OnSceneSwitch);
+			GameEvents.onHideUI.Remove(OnHideUI);
+			GameEvents.onShowUI.Remove(OnShowUI);
 		}
 
 
@@ -355,81 +354,24 @@ namespace SpaceProgramFunding.Source
 				Funding.Instance.AddFunds(net_budget, TransactionReasons.None);
 				var net_funds = Funding.Instance.Funds;
 
-				//DoPopUp("netFunds=" + netFunds + "netBudget=" + netBudget + "currentFunds=" + currentFunds + "bigProjectHack=" + bigProjectHack);
-
 
 				/*
 				 * Divert some funds to Public Relations in order to keep reputation points up.
 				 */
 				net_funds = publicRelations.SiphonFunds(net_funds);
 
-#if false
-				if (net_funds > 0 && publicRelations.reputationDivertPercentage > 0 && publicRelations.isPREnabled) {
-					var percent_diverted_to_pr = publicRelations.reputationDivertPercentage / 100;
-					var max_reputation_points = (float) (net_funds / BudgetSettings.Instance.fundsPerRep);
-					var desired_reputation_points = (float) Math.Round(max_reputation_points * percent_diverted_to_pr, 1);
-
-					// Add the reputation.
-					Reputation.Instance.AddReputation(desired_reputation_points, TransactionReasons.None);
-					net_funds -= desired_reputation_points * BudgetSettings.Instance.fundsPerRep;
-
-					// Let the player know what happened.
-					ScreenMessages.PostScreenMessage("Public Relations generated " +
-					                                 Math.Round(desired_reputation_points, 1) + " reputation");
-				}
-#endif
-
 
 				/*
-				 * Do R&D before funding big budget reserve. It typically costs 10,000 funds for 1 science point!
+				 * Do R&D before funding big project reserve. It typically costs 10,000 funds for 1 science point!
 				 */
 				net_funds = researchLab.SiphonFunds(net_funds);
-#if false
-				if (net_funds > 0 && researchLab.scienceDivertPercentage > 0 && researchLab.isRNDEnabled) {
-					var percent_diverted_to_science = researchLab.scienceDivertPercentage / 100;
-					var max_science_points = (float) (net_funds / BudgetSettings.Instance.sciencePointCost);
-					var desired_science_points = (float) Math.Round(max_science_points * percent_diverted_to_science, 1);
 
-					// Add the science and apply costs and reputation penalty.
-					ResearchAndDevelopment.Instance.AddScience(desired_science_points, TransactionReasons.RnDs);
-					net_funds -= desired_science_points * BudgetSettings.Instance.sciencePointCost;
-
-					var max_decay = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
-					var amount_to_decay = Math.Min(desired_science_points, max_decay);
-					Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.RnDs);
-
-					// Let the player know what happened.
-					ScreenMessages.PostScreenMessage("R&D Department generated " + Math.Round(desired_science_points, 1) +
-					                                 " science");
-				}
-#endif
 
 				/*
 				 * Divert some portion of available funds of the current net budget toward the emergency ("big project") reserve.
 				 */
 				net_funds = bigProject.SiphonFunds(net_funds);
-#if false
-				/*
-				 * Clamp big project bank account to maximum allowed. This might cause a funds loss if reputation has recently
-				 * been lost when there is a full big project bank balance.
-				 */
-				//if (bigProject.fundsAccumulator > bigProject.MaximumBigBudget()) bigProject.fundsAccumulator = bigProject.MaximumBigBudget();
 
-				/*
-				 * Divert some portion of available funds of the current net budget toward the emergency ("big project") reserve.
-				 * Don't allow adding to emergency fund such that it exceeds the maximum allowed.
-				 */
-				if (net_funds > 0 && bigProject.isEnabled) {
-					var max_emergency_budget = bigProject.MaximumBigBudget();
-					var desired_funds_to_divert = (float) (net_funds * (bigProject.divertPercentage / 100));
-					var actual_funds_to_divert =
-						(float) Math.Min(desired_funds_to_divert, max_emergency_budget - bigProject.fundsAccumulator);
-					var fee = actual_funds_to_divert * (BudgetSettings.Instance.emergencyBudgetFee / 100.0f);
-
-					bigProject.fundsAccumulator += actual_funds_to_divert - fee;
-					net_funds -= actual_funds_to_divert;
-			}
-#endif
 
 				/*
 				 * Update current funds to reflect the funds siphoned off.
@@ -439,7 +381,7 @@ namespace SpaceProgramFunding.Source
 				/*
 				 * Record the time of the start of the next fiscal period.
 				 */
-				lastUpdate = lastUpdate + BudgetInterval();
+				lastUpdate += BudgetInterval();
 
 
 				/*
@@ -596,7 +538,7 @@ namespace SpaceProgramFunding.Source
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth - 50));
-				bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 100,
+				bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 50,
 					GUILayout.MaxWidth(ledgerWidth + 50));
 				GUILayout.EndHorizontal();
 			} else {
@@ -706,7 +648,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> When the vessel/plane rolls out of the VAB or SPH, the launch costs are calculated.
-		/// 		  These will get rolled back naturally if the player reverts the launch. These
+		/// 		  These will get rolled back naturally if the player reverts the editor. These
 		/// 		  launch costs represent extraordinary wear and tear on the launch facilities and
 		/// 		  are a one-time cost. Typically, the runway requires minimal cost as compared to
 		/// 		  the launch-pad.</summary>
@@ -714,7 +656,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="ship"> The ship that is being launched.</param>
 		private void OnVesselRollout(ShipConstruct ship)
 		{
-			if (BudgetSettings.Instance != null && !BudgetSettings.Instance.isLaunchCostsEnabled) return;
+			if (BudgetSettings.Instance == null) return;
+			if (!BudgetSettings.Instance.isLaunchCostsEnabled) return;
 
 			/*
 			 * Launch costs are based on the total-mass of the vehicle and the launch facility upgrade level. Runways
@@ -726,13 +669,13 @@ namespace SpaceProgramFunding.Source
 			/*
 			 * Determine the percentage to charge.
 			 */
-			float launch_cost = 0;
+			float launch_cost;
 			int facility_level;
 			if (ship.shipFacility == EditorFacility.VAB) {
-				if (BudgetSettings.Instance != null) launch_cost = BudgetSettings.Instance.launchCostsLaunchPad;
+				launch_cost = BudgetSettings.Instance.launchCostsLaunchPad;
 				facility_level = FacilityLevel(SpaceCenterFacility.LaunchPad);
 			} else {
-				if (BudgetSettings.Instance != null) launch_cost = BudgetSettings.Instance.launchCostsRunway;
+				launch_cost = BudgetSettings.Instance.launchCostsRunway;
 				facility_level = FacilityLevel(SpaceCenterFacility.Runway);
 			}
 
