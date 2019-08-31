@@ -55,10 +55,15 @@ namespace SpaceProgramFunding.Source
 
 			if (statusTo != ProtoCrewMember.RosterStatus.Dead && statusTo != ProtoCrewMember.RosterStatus.Missing) return;
 
-			var max_penalty = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
-			var actual_penalty = Math.Min(BudgetSettings.Instance.kerbalDeathPenalty * (p.experienceLevel + 1), max_penalty);
-			actual_penalty = Math.Max(actual_penalty, 0);
-			if (actual_penalty > 0) Reputation.Instance.AddReputation(-actual_penalty, TransactionReasons.VesselLoss);
+			if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) return;
+
+			var actual_penalty = BudgetSettings.Instance.kerbalDeathPenalty * (p.experienceLevel + 1);
+			if (actual_penalty > 0) Reputation.Instance.AddReputation(-actual_penalty, TransactionReasons.ContractPenalty);
+
+			// Don't lower reputation below minimum
+			if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
+				Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Cheating);
+			}
 		}
 	}
 }

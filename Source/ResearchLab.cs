@@ -70,7 +70,8 @@ namespace SpaceProgramFunding.Source
 			// Apply reputation penalty.
 			var max_decay = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
 			var amount_to_decay = Math.Min(desired_science_points, max_decay);
-			Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.RnDs);
+			Reputation.Instance.addReputation_discrete(-amount_to_decay, TransactionReasons.RnDs);
+			//Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.RnDs);
 
 			// Let the player know what happened.
 			ScreenMessages.PostScreenMessage("R&D Department generated " + Math.Round(desired_science_points, 1) +

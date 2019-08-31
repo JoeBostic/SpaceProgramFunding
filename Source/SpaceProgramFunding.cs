@@ -281,7 +281,8 @@ namespace SpaceProgramFunding.Source
 		public float GrossBudget()
 		{
 			if (BudgetSettings.Instance == null) return 0;
-			return Math.Max(Reputation.CurrentRep, BudgetSettings.Instance.minimumRep) * BudgetSettings.Instance.budgetRepMultiplier;
+			return Reputation.CurrentRep * BudgetSettings.Instance.budgetRepMultiplier;
+			//return Math.Max(Reputation.CurrentRep, BudgetSettings.Instance.minimumRep) * BudgetSettings.Instance.budgetRepMultiplier;
 		}
 
 
