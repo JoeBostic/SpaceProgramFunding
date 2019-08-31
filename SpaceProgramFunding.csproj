@@ -81,6 +81,7 @@
     <None Include="GameData\SpaceProgramFunding\NormalDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\SpaceProgramFunding.version" />
     <None Include="README.md" />
+    <None Include="Support\SpaceProgramFunding.netkan" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameData\SpaceProgramFunding\License.txt" />
