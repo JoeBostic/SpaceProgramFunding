@@ -19,7 +19,6 @@ Space Program Funding mod replaces the normal way of acquiring funds -- through 
 ## Why use this mod?
 The stock game plays out like a private commercial space program. This mod allows it to play out like a government agency. Think of it like Kerbal Aeronautics and Space Administration (KASA). You never really run out of money, but you also never have too much either. Saving for a big project is part of your strategic planning, but also you are encouraged to try experimental missions on a whim since there is a "use it or lose it" mentality with funds as the month end approaches. Funding stays a relevant part of gameplay even through the end-game. As a bonus, there is less need to run boring passenger contracts just to fund the more fun missions.
 ## How to install this mod?
-[[images/SpaceProgramFunding.png]]
 Copy the `SpaceProgramFunding` folder into the `GameData` folder. An icon will appear in the button bar. Clicking this button brings up the mod's in-game control dialog, but the default behavior should be just fine for the early game. You will notice a chunk of cash deposited into your account every 30 days. Enjoy.
 ## How do I use this mod?
 Play the career game normally. As your reputation rises, so will your bank account at the end of each month. Check out the detailed instructions on what all the basic controls mean, how they function, and why you would change these to suit your changing goals.

@@ -5,9 +5,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.IO;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SpaceProgramFunding.Source
 {
@@ -30,6 +32,10 @@ namespace SpaceProgramFunding.Source
 			/// <summary> Hard game-play... necessary to keep reputation up. </summary>
 			Hard
 		}
+
+		public const float _settingsWidth = 500;
+		public const float _settingsHeight = 600;
+		private Vector2 _settingsScrollViewPosition = new Vector2(0, 0);
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -392,36 +398,313 @@ namespace SpaceProgramFunding.Source
 			var settings = ConfigNode.Load(filename);
 
 
-			bool.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
-			int.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
-			bool.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
-			bool.TryParse(settings.GetValue("stopTimewarp"), out isAlarmClockPerBudget);
-			bool.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
-			float.TryParse(settings.GetValue("friendlyInterval"), out budgetIntervalDays);
-			int.TryParse(settings.GetValue("repDecay"), out repDecayRate);
-			int.TryParse(settings.GetValue("minimumRep"), out minimumRep);
-			int.TryParse(settings.GetValue("multiplier"), out budgetRepMultiplier);
-			int.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
-			int.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
-			float.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
-			bool.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
-			bool.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
-			bool.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
-			int.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
-			int.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
-			int.TryParse(settings.GetValue("sphCost"), out structureCostSph);
-			int.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
-			int.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
-			int.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
-			int.TryParse(settings.GetValue("vabCost"), out structureCostVab);
-			int.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
-			int.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
-			int.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
-			bool.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
-			int.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
-			int.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
-			int.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
-			int.TryParse(settings.GetValue("emergencyBudgetFee"), out emergencyBudgetFee);
+			Boolean.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
+			Int32.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
+			Boolean.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
+			Boolean.TryParse(settings.GetValue("stopTimewarp"), out isAlarmClockPerBudget);
+			Boolean.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
+			Single.TryParse(settings.GetValue("friendlyInterval"), out budgetIntervalDays);
+			Int32.TryParse(settings.GetValue("repDecay"), out repDecayRate);
+			Int32.TryParse(settings.GetValue("minimumRep"), out minimumRep);
+			Int32.TryParse(settings.GetValue("multiplier"), out budgetRepMultiplier);
+			Int32.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
+			Int32.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
+			Single.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
+			Boolean.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
+			Boolean.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
+			Boolean.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
+			Int32.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
+			Int32.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
+			Int32.TryParse(settings.GetValue("sphCost"), out structureCostSph);
+			Int32.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
+			Int32.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
+			Int32.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
+			Int32.TryParse(settings.GetValue("vabCost"), out structureCostVab);
+			Int32.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
+			Int32.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
+			Int32.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
+			Boolean.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
+			Int32.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
+			Int32.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
+			Int32.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
+			Int32.TryParse(settings.GetValue("emergencyBudgetFee"), out emergencyBudgetFee);
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Handles the layout of the settings window.</summary>
+		///
+		/// <param name="windowID"> Identifier for the window.</param>
+		public void SettingsGUI(int windowID)
+		{
+			const int ledgerWidth = 185;
+			const int labelWidth = 270;
+			const int indentWidth = 35;
+			const int modWidth = ledgerWidth + labelWidth;
+
+			Assert.IsTrue(BudgetSettings.Instance != null);
+			if (BudgetSettings.Instance == null) return;
+
+			var label_style = new GUIStyle(GUI.skin.label);
+			label_style.normal.textColor = label_style.normal.textColor = Color.white;
+
+			GUILayout.BeginVertical(GUILayout.Width(_settingsWidth));
+
+			_settingsScrollViewPosition = GUILayout.BeginScrollView(_settingsScrollViewPosition,
+				GUILayout.Width(_settingsWidth), GUILayout.Height(_settingsHeight));
+
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label("Funding Interval: ", label_style);
+			var day_string = GUILayout.TextField(budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
+			if (Int32.TryParse(day_string, out var day_number)) {
+				day_number = Math.Max(day_number, 1);
+				budgetIntervalDays = day_number;
+			}
+			GUILayout.Label(" days", label_style);
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label(
+				"Funding Multiplier times Rep: " + budgetRepMultiplier.ToString("n0"),
+				label_style, GUILayout.MinWidth(labelWidth));
+			budgetRepMultiplier =
+				(int)GUILayout.HorizontalSlider(budgetRepMultiplier / 100.0f, 0, 50,
+					GUILayout.MinWidth(ledgerWidth)) * 100;
+			GUILayout.EndHorizontal();
+
+
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label("Minimum Reputation: " + minimumRep, label_style,
+				GUILayout.MinWidth(labelWidth));
+			minimumRep = (int)GUILayout.HorizontalSlider(minimumRep, 0,
+				100, GUILayout.MinWidth(ledgerWidth));
+			GUILayout.EndHorizontal();
+
+
+			isContractInterceptor = GUILayout.Toggle(
+				isContractInterceptor, "Contracts pay rep instead of funds?",
+				GUILayout.MaxWidth(modWidth));
+			if (isContractInterceptor) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Funds per Reputation Point: " + fundsPerRep.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				fundsPerRep =
+					(int)GUILayout.HorizontalSlider(fundsPerRep / 1000.0f, 0, 50,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+			}
+
+			isCostsCovered = GUILayout.Toggle(isCostsCovered,
+				"Fixed costs above funding level are forgiven?", GUILayout.MaxWidth(modWidth));
+
+			isAlarmClockPerBudget = GUILayout.Toggle(
+				isAlarmClockPerBudget, "Stop Time-warp / Set KAC Alarm on funding period?",
+				GUILayout.MaxWidth(modWidth));
+
+			isRepDecayEnabled = GUILayout.Toggle(isRepDecayEnabled,
+				"Decay Reputation each funding period?", GUILayout.MaxWidth(modWidth));
+			if (isRepDecayEnabled) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Reputation Decay per period: " + repDecayRate, label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				repDecayRate =
+					(int)GUILayout.HorizontalSlider(repDecayRate, 0, 50,
+						GUILayout.MinWidth(ledgerWidth));
+				GUILayout.EndHorizontal();
+			}
+
+
+			isKerbalWages = GUILayout.Toggle(isKerbalWages,
+				"Enable Kerbal wages (per Kerbal per XP level)?", GUILayout.MaxWidth(modWidth));
+			if (isKerbalWages) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Assigned Kerbal Wage: " + assignedKerbalWage.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				assignedKerbalWage =
+					(int)GUILayout.HorizontalSlider(assignedKerbalWage / 100.0f, 0, 100,
+						GUILayout.MinWidth(ledgerWidth)) * 100;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Unassigned Kerbal Wage: " + baseKerbalWage.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				baseKerbalWage =
+					(int)GUILayout.HorizontalSlider(baseKerbalWage / 100.0f, 0, 100,
+						GUILayout.MinWidth(ledgerWidth)) * 100;
+				GUILayout.EndHorizontal();
+			}
+
+			isKerbalDeathPenalty =
+				GUILayout.Toggle(isKerbalDeathPenalty,
+					"Enable Kerbal death penalty (Rep per XP level)?", GUILayout.MaxWidth(modWidth));
+			if (isKerbalDeathPenalty) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Reputation penalty: " + kerbalDeathPenalty, label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				kerbalDeathPenalty =
+					(int)GUILayout.HorizontalSlider(kerbalDeathPenalty, 0, 100,
+						GUILayout.MinWidth(ledgerWidth));
+				GUILayout.EndHorizontal();
+			}
+
+			// Big-Project multiple
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label("Big-Project multiple: " + bigProjectMultiple, label_style,
+				GUILayout.MinWidth(labelWidth));
+			bigProjectMultiple =
+				(int)GUILayout.HorizontalSlider(bigProjectMultiple / 10.0f, 0, 25,
+					GUILayout.MinWidth(ledgerWidth)) * 10;
+			GUILayout.EndHorizontal();
+
+			// Big-Project penalty
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label("Big-Project Fund Transfer Fee: " + emergencyBudgetFee + "%",
+				label_style, GUILayout.MinWidth(labelWidth));
+			emergencyBudgetFee =
+				(int)GUILayout.HorizontalSlider(emergencyBudgetFee, 0, 50,
+					GUILayout.MinWidth(ledgerWidth));
+			GUILayout.EndHorizontal();
+
+			// Cost per science point
+			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.Label("R&D cost per science point : " + sciencePointCost.ToString("n0"),
+				label_style, GUILayout.MinWidth(labelWidth));
+			sciencePointCost =
+				(int)GUILayout.HorizontalSlider(sciencePointCost / 1000.0f, 0, 50,
+					GUILayout.MinWidth(ledgerWidth)) * 1000;
+			GUILayout.EndHorizontal();
+
+
+			isBuildingCostsEnabled =
+				GUILayout.Toggle(isBuildingCostsEnabled,
+					"Structure maintenance costs (per Structure per level)", GUILayout.MaxWidth(modWidth));
+			if (isBuildingCostsEnabled) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Space-Plane Hangar: " + structureCostSph.ToString("n0"), label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostSph =
+					(int)GUILayout.HorizontalSlider(structureCostSph / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Mission Control: " + structureCostMissionControl.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostMissionControl =
+					(int)GUILayout.HorizontalSlider(structureCostMissionControl / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Astronaut Complex: " + structureCostAstronautComplex.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostAstronautComplex =
+					(int)GUILayout.HorizontalSlider(structureCostAstronautComplex / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Administration: " + structureCostAdministration.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostAdministration =
+					(int)GUILayout.HorizontalSlider(structureCostAdministration / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Vehicle Assembly Building: " + structureCostVab.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostVab =
+					(int)GUILayout.HorizontalSlider(structureCostVab / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Tracking Station: " + structureCostTrackingStation.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostTrackingStation =
+					(int)GUILayout.HorizontalSlider(structureCostTrackingStation / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("R&D Facility: " + structureCostRnD.ToString("n0"), label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostRnD =
+					(int)GUILayout.HorizontalSlider(structureCostRnD / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label(
+					"Other Facilities (non-stock): " + structureCostOtherFacility.ToString("n0"),
+					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+				structureCostOtherFacility =
+					(int)GUILayout.HorizontalSlider(structureCostOtherFacility / 1000.0f, 0, 10,
+						GUILayout.MinWidth(ledgerWidth)) * 1000;
+				GUILayout.EndHorizontal();
+			}
+
+			isLaunchCostsEnabled =
+				GUILayout.Toggle(isLaunchCostsEnabled,
+					"Launch costs (per launch per level per 100t)?", GUILayout.MaxWidth(modWidth));
+			if (isLaunchCostsEnabled) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Runway launch cost: " + launchCostsRunway, label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				launchCostsRunway =
+					(int)GUILayout.HorizontalSlider(launchCostsRunway / 10.0f, 0, 100,
+						GUILayout.MinWidth(ledgerWidth)) * 10;
+				GUILayout.EndHorizontal();
+
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Launch-pad launch cost: " + launchCostsLaunchPad, label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				launchCostsLaunchPad =
+					(int)GUILayout.HorizontalSlider(launchCostsLaunchPad / 100.0f, 0, 50,
+						GUILayout.MinWidth(ledgerWidth)) * 100;
+				GUILayout.EndHorizontal();
+			}
+
+
+			// Ship maintenance cost
+			isActiveVesselCost =
+				GUILayout.Toggle(isActiveVesselCost,
+					"Enable monthly maintenance costs for vessels (per 100t)?", GUILayout.MaxWidth(modWidth));
+			if (isActiveVesselCost) {
+				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+				GUILayout.Space(indentWidth);
+				GUILayout.Label("Maintenance cost: " + activeVesselCost, label_style,
+					GUILayout.MinWidth(labelWidth - indentWidth));
+				activeVesselCost =
+					(int)GUILayout.HorizontalSlider(activeVesselCost / 100.0f, 0, 50,
+						GUILayout.MinWidth(ledgerWidth)) * 100;
+				GUILayout.EndHorizontal();
+			}
+
+			GUILayout.EndScrollView();
+
+			GUILayout.BeginHorizontal();
+			if (GUILayout.Button("Easy")) LoadSettings(BudgetSettings.DifficultyEnum.Easy);
+			if (GUILayout.Button("Normal")) LoadSettings(BudgetSettings.DifficultyEnum.Normal);
+			if (GUILayout.Button("Hard")) LoadSettings(BudgetSettings.DifficultyEnum.Hard);
+			GUILayout.EndHorizontal();
+
+			GUILayout.EndVertical();
 		}
 	}
 }

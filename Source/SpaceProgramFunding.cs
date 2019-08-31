@@ -20,8 +20,6 @@ namespace SpaceProgramFunding.Source
 	{
 		private const float _budgetWidth = 350;
 		private const float _budgetHeight = 300;
-		private const float _settingsWidth = 500;
-		private const float _settingsHeight = 600;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +84,6 @@ namespace SpaceProgramFunding.Source
 
 
 		private Rect _settingsDialogPosition;
-		private Vector2 _settingsScrollViewPosition = new Vector2(0, 0);
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,8 +143,8 @@ namespace SpaceProgramFunding.Source
 			_budgetDialogPosition.x = (Screen.width - _budgetDialogPosition.width) / 2;
 			_budgetDialogPosition.y = (Screen.height - _budgetDialogPosition.height) / 2;
 
-			_settingsDialogPosition.height = _settingsHeight;
-			_settingsDialogPosition.height = _settingsWidth;
+			_settingsDialogPosition.height = BudgetSettings._settingsHeight;
+			_settingsDialogPosition.height = BudgetSettings._settingsWidth;
 			_settingsDialogPosition = _budgetDialogPosition;
 			_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
 
@@ -510,7 +507,7 @@ namespace SpaceProgramFunding.Source
 
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
-			GUILayout.Label("Next Budget Due:", label_style, GUILayout.MaxWidth(labelWidth));
+			GUILayout.Label("Next Funding Period:", label_style, GUILayout.MaxWidth(labelWidth));
 			GUILayout.Label(NextBudgetDateString(), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
@@ -521,7 +518,7 @@ namespace SpaceProgramFunding.Source
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
-			GUILayout.Label("Estimated Gross Budget:", label_style, GUILayout.MaxWidth(labelWidth));
+			GUILayout.Label("Estimated Gross Funding:", label_style, GUILayout.MaxWidth(labelWidth));
 			GUILayout.Label(GrossBudget().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
@@ -563,13 +560,13 @@ namespace SpaceProgramFunding.Source
 			}
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
-			GUILayout.Label("Estimated Net Budget:", label_style, GUILayout.MaxWidth(labelWidth));
+			GUILayout.Label("Estimated Net Funding:", label_style, GUILayout.MaxWidth(labelWidth));
 			GUILayout.Label((GrossBudget() - CostCalculate()).ToString("n0"), ledger_style,
 				GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
 
-			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert budget to Public Relations?");
+			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert funding to Public Relations?");
 			if (publicRelations.isPREnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
@@ -582,7 +579,7 @@ namespace SpaceProgramFunding.Source
 			}
 
 
-			researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert budget to science research?");
+			researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert funding to science research?");
 			if (researchLab.isRNDEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
@@ -594,7 +591,7 @@ namespace SpaceProgramFunding.Source
 				GUILayout.Label("No funds diverted to create science points.");
 			}
 
-			bigProject.isEnabled = GUILayout.Toggle(bigProject.isEnabled, "Divert budget to Big-Project reserve?");
+			bigProject.isEnabled = GUILayout.Toggle(bigProject.isEnabled, "Divert funding to Big-Project reserve?");
 			if (bigProject.isEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
@@ -636,291 +633,6 @@ namespace SpaceProgramFunding.Source
 		}
 
 
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Handles the layout of the settings window.</summary>
-		///
-		/// <param name="windowID"> Identifier for the window.</param>
-		protected void SettingsGUI(int windowID)
-		{
-			const int ledgerWidth = 185;
-			const int labelWidth = 270;
-			const int indentWidth = 35;
-			const int modWidth = ledgerWidth + labelWidth;
-
-			Assert.IsTrue(BudgetSettings.Instance != null);
-			if (BudgetSettings.Instance == null) return;
-
-			var label_style = new GUIStyle(GUI.skin.label);
-			label_style.normal.textColor = label_style.normal.textColor = Color.white;
-
-			GUILayout.BeginVertical(GUILayout.Width(_settingsWidth));
-
-			_settingsScrollViewPosition = GUILayout.BeginScrollView(_settingsScrollViewPosition,
-				GUILayout.Width(_settingsWidth), GUILayout.Height(_settingsHeight));
-
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-
-#if true
-			GUILayout.Label("Budget Interval: ", label_style);
-			var day_string = GUILayout.TextField(BudgetSettings.Instance.budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
-			if (int.TryParse(day_string, out var day_number)) {
-				day_number = Math.Max(day_number, 1);
-				BudgetSettings.Instance.budgetIntervalDays = day_number;
-			}
-			GUILayout.Label(" days", label_style);
-#else
-			GUILayout.Label("Budget Interval: " + BudgetSettings.Instance.budgetIntervalDays + " days", label_style,
-				GUILayout.MinWidth(labelWidth - 60));
-			BudgetSettings.Instance.budgetIntervalDays = (int) GUILayout.HorizontalSlider(BudgetSettings.Instance.budgetIntervalDays, 0, 365, GUILayout.MinWidth(ledgerWidth + 60));
-#endif
-
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label(
-				"Budget Multiplier times Rep: " + BudgetSettings.Instance.budgetRepMultiplier.ToString("n0"),
-				label_style, GUILayout.MinWidth(labelWidth));
-			BudgetSettings.Instance.budgetRepMultiplier =
-				(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.budgetRepMultiplier / 100.0f, 0, 50,
-					GUILayout.MinWidth(ledgerWidth)) * 100;
-			GUILayout.EndHorizontal();
-
-
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label("Minimum Reputation: " + BudgetSettings.Instance.minimumRep, label_style,
-				GUILayout.MinWidth(labelWidth));
-			BudgetSettings.Instance.minimumRep = (int) GUILayout.HorizontalSlider(BudgetSettings.Instance.minimumRep, 0,
-				100, GUILayout.MinWidth(ledgerWidth));
-			GUILayout.EndHorizontal();
-
-
-			BudgetSettings.Instance.isContractInterceptor = GUILayout.Toggle(
-				BudgetSettings.Instance.isContractInterceptor, "Contracts pay rep instead of funds?",
-				GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isContractInterceptor) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Funds per Reputation Point: " + BudgetSettings.Instance.fundsPerRep.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.fundsPerRep =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.fundsPerRep / 1000.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-			}
-
-			BudgetSettings.Instance.isCostsCovered = GUILayout.Toggle(BudgetSettings.Instance.isCostsCovered,
-				"Fixed costs above budget are forgiven?", GUILayout.MaxWidth(modWidth));
-
-			BudgetSettings.Instance.isAlarmClockPerBudget = GUILayout.Toggle(
-				BudgetSettings.Instance.isAlarmClockPerBudget, "Stop Time-warp / Set KAC Alarm on budget?",
-				GUILayout.MaxWidth(modWidth));
-
-			BudgetSettings.Instance.isRepDecayEnabled = GUILayout.Toggle(BudgetSettings.Instance.isRepDecayEnabled,
-				"Decay Reputation each budget period?", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isRepDecayEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Reputation Decay per budget: " + BudgetSettings.Instance.repDecayRate, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.repDecayRate =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.repDecayRate, 0, 50,
-						GUILayout.MinWidth(ledgerWidth));
-				GUILayout.EndHorizontal();
-			}
-
-
-			BudgetSettings.Instance.isKerbalWages = GUILayout.Toggle(BudgetSettings.Instance.isKerbalWages,
-				"Enable Kerbal wages (per Kerbal per XP level)?", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isKerbalWages) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Assigned Kerbal Wage: " + BudgetSettings.Instance.assignedKerbalWage.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.assignedKerbalWage =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.assignedKerbalWage / 100.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Unassigned Kerbal Wage: " + BudgetSettings.Instance.baseKerbalWage.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.baseKerbalWage =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.baseKerbalWage / 100.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
-				GUILayout.EndHorizontal();
-			}
-
-			BudgetSettings.Instance.isKerbalDeathPenalty =
-				GUILayout.Toggle(BudgetSettings.Instance.isKerbalDeathPenalty,
-					"Enable Kerbal death penalty (Rep per XP level)?", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isKerbalDeathPenalty) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Reputation penalty: " + BudgetSettings.Instance.kerbalDeathPenalty, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.kerbalDeathPenalty =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.kerbalDeathPenalty, 0, 100,
-						GUILayout.MinWidth(ledgerWidth));
-				GUILayout.EndHorizontal();
-			}
-
-			// Big-Project multiple
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label("Big-Project multiple: " + BudgetSettings.Instance.bigProjectMultiple, label_style,
-				GUILayout.MinWidth(labelWidth));
-			BudgetSettings.Instance.bigProjectMultiple =
-				(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.bigProjectMultiple / 10.0f, 0, 25,
-					GUILayout.MinWidth(ledgerWidth)) * 10;
-			GUILayout.EndHorizontal();
-
-			// Big-Project penalty
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label("Big-Project Fund Transfer Fee: " + BudgetSettings.Instance.emergencyBudgetFee + "%",
-				label_style, GUILayout.MinWidth(labelWidth));
-			BudgetSettings.Instance.emergencyBudgetFee =
-				(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.emergencyBudgetFee, 0, 50,
-					GUILayout.MinWidth(ledgerWidth));
-			GUILayout.EndHorizontal();
-
-			// Cost per science point
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label("R&D cost per science point : " + BudgetSettings.Instance.sciencePointCost.ToString("n0"),
-				label_style, GUILayout.MinWidth(labelWidth));
-			BudgetSettings.Instance.sciencePointCost =
-				(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.sciencePointCost / 1000.0f, 0, 50,
-					GUILayout.MinWidth(ledgerWidth)) * 1000;
-			GUILayout.EndHorizontal();
-
-
-			BudgetSettings.Instance.isBuildingCostsEnabled =
-				GUILayout.Toggle(BudgetSettings.Instance.isBuildingCostsEnabled,
-					"Structure maintenance costs (per Structure per level)", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isBuildingCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Space-Plane Hangar: " + BudgetSettings.Instance.structureCostSph.ToString("n0"), label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostSph =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostSph / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Mission Control: " + BudgetSettings.Instance.structureCostMissionControl.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostMissionControl =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostMissionControl / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Astronaut Complex: " + BudgetSettings.Instance.structureCostAstronautComplex.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostAstronautComplex =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostAstronautComplex / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Administration: " + BudgetSettings.Instance.structureCostAdministration.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostAdministration =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostAdministration / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Vehicle Assembly Building: " + BudgetSettings.Instance.structureCostVab.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostVab =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostVab / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Tracking Station: " + BudgetSettings.Instance.structureCostTrackingStation.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostTrackingStation =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostTrackingStation / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("R&D Facility: " + BudgetSettings.Instance.structureCostRnD.ToString("n0"), label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostRnD =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostRnD / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label(
-					"Other Facilities (non-stock): " + BudgetSettings.Instance.structureCostOtherFacility.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.structureCostOtherFacility =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.structureCostOtherFacility / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
-				GUILayout.EndHorizontal();
-			}
-
-			BudgetSettings.Instance.isLaunchCostsEnabled =
-				GUILayout.Toggle(BudgetSettings.Instance.isLaunchCostsEnabled,
-					"Launch costs (per launch per level per 100t)?", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isLaunchCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Runway launch cost: " + BudgetSettings.Instance.launchCostsRunway, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.launchCostsRunway =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.launchCostsRunway / 10.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 10;
-				GUILayout.EndHorizontal();
-
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Launch-pad launch cost: " + BudgetSettings.Instance.launchCostsLaunchPad, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.launchCostsLaunchPad =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.launchCostsLaunchPad / 100.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
-				GUILayout.EndHorizontal();
-			}
-
-
-			// Ship maintenance cost
-			BudgetSettings.Instance.isActiveVesselCost =
-				GUILayout.Toggle(BudgetSettings.Instance.isActiveVesselCost,
-					"Enable monthly maintenance costs for vessels (per 100t)?", GUILayout.MaxWidth(modWidth));
-			if (BudgetSettings.Instance.isActiveVesselCost) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
-				GUILayout.Label("Maintenance cost: " + BudgetSettings.Instance.activeVesselCost, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
-				BudgetSettings.Instance.activeVesselCost =
-					(int) GUILayout.HorizontalSlider(BudgetSettings.Instance.activeVesselCost / 100.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
-				GUILayout.EndHorizontal();
-			}
-
-			GUILayout.EndScrollView();
-
-			GUILayout.BeginHorizontal();
-			if (GUILayout.Button("Easy")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Easy);
-			if (GUILayout.Button("Normal")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Normal);
-			if (GUILayout.Button("Hard")) BudgetSettings.Instance.LoadSettings(BudgetSettings.DifficultyEnum.Hard);
-			GUILayout.EndHorizontal();
-
-			GUILayout.EndVertical();
-		}
-
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the graphical user interface action.</summary>
@@ -934,12 +646,12 @@ namespace SpaceProgramFunding.Source
 					GUILayout.Width(_budgetWidth));
 			}
 
-			if (_visibleGui && showSettingsDialog) {
+			if (_visibleGui && showSettingsDialog && BudgetSettings.Instance != null) {
 				_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
 				_settingsDialogPosition.y = _budgetDialogPosition.y;
 				GUI.skin = HighLogic.Skin;
-				_settingsDialogPosition = GUILayout.Window(1, _settingsDialogPosition, SettingsGUI,
-					"Space Program Funding Settings", GUILayout.MaxHeight(_settingsHeight));
+				_settingsDialogPosition = GUILayout.Window(1, _settingsDialogPosition, BudgetSettings.Instance.SettingsGUI,
+					"Space Program Funding Settings", GUILayout.MaxHeight(BudgetSettings._settingsHeight));
 			}
 		}
 
@@ -1238,7 +950,7 @@ namespace SpaceProgramFunding.Source
 		{
 			switch (level) {
 				case 1:
-					return 1;
+					return 0;
 
 				case 2:
 					return 2;
