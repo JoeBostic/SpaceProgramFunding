@@ -1,6 +1,6 @@
 {
   "NAME": "Space Program Funding",
-  "URL": "https://github.com/JoeBostic/SpaceProgramFunding/wiki",
+  "URL": "https://raw.githubusercontent.com/JoeBostic/SpaceProgramFunding/master/GameData/SpaceProgramFunding/SpaceProgramFunding.version",
   "DOWNLOAD": "https://github.com/JoeBostic/SpaceProgramFunding/releases",
   "GITHUB": {
     "USERNAME": "JoeBostic",
@@ -9,8 +9,7 @@
   "VERSION": {
     "MAJOR": 1,
     "MINOR": 0,
-    "PATCH": 0,
-    "BUILD": 2
+    "PATCH": 2
   },
   "KSP_VERSION": {
     "MAJOR": 1,
