@@ -5,8 +5,14 @@
 	"version"      : "1.0.2",
     "ksp_version"  : "1.7.3",
     "license"      : "MIT",
-	"name"         : "Joebwan",
     "resources": {
         "homepage": "https://github.com/JoeBostic/SpaceProgramFunding/wiki"
-    }
+    },
+	"tags" : [
+		"plugin",
+		"career"
+	],
+	"conflicts": [
+	{ "name": "MonthlyBudgets" }
+    ]
 }
