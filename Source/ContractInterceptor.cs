@@ -4,6 +4,7 @@
 // License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Contracts;
@@ -21,12 +22,12 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The blacklisted agencies for whose contracts will be left intact. Typically, these
 		/// 		  are agency contracts specifically designed to raise money rather than reputation.</summary>
-		private string[] _blacklistedAgencies;
+		private List<string> _blacklistedAgencies = new List<string>();
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Reference to the single existing object of this type.</summary>
-		private ContractInterceptor _instance;
+		private static ContractInterceptor _instance;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,9 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		public void OnDestroy()
 		{
-			GameEvents.Contract.onOffered.Remove(OnOffered);
+			if (_instance == this) {
+				GameEvents.Contract.onOffered.Remove(OnOffered);
+			}
 		}
 
 
@@ -65,10 +68,16 @@ namespace SpaceProgramFunding.Source
 		/// 		  from them.</summary>
 		private void LoadBlacklist()
 		{
-			const string filename = "/GameData/SpaceProgramFunding/Blacklist.cfg";
-			if (!File.Exists(filename)) return;
+			string filename = KSPUtil.ApplicationRootPath + "/GameData/SpaceProgramFunding/Blacklist.cfg";
+			if (!File.Exists(filename)) {
+				return;
+			}
 
-			_blacklistedAgencies = File.ReadAllLines(filename);
+			var agencies = File.ReadAllLines(filename);
+			foreach(string s in agencies) {
+				var a = s.Trim();
+				if (a != "") _blacklistedAgencies.Add(a);
+			}
 		}
 
 
@@ -83,6 +92,9 @@ namespace SpaceProgramFunding.Source
 		/// <returns> True if agent blacklisted, false if not.</returns>
 		private bool IsAgentBlacklisted(string agent)
 		{
+			if (agent == null) {
+				return false;
+			}
 			foreach (var ss in _blacklistedAgencies)
 				if (ss == agent)
 					return true;
@@ -99,19 +111,26 @@ namespace SpaceProgramFunding.Source
 		/// <param name="contract"> The contract that is being offered.</param>
 		private void OnOffered(Contract contract)
 		{
-			if (BudgetSettings.Instance == null) return;
+			if (BudgetSettings.Instance == null) {
+				return;
+			}
 
 			// If the game is not career mode or contract modification has been specifically turned off, bail.
-			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !BudgetSettings.Instance.isContractInterceptor) return;
+			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !BudgetSettings.Instance.isContractInterceptor) {
+				return;
+			}
 
 			// If the contract doesn't reward any funds, then nothing can be done. Bail.
-			if (contract.FundsCompletion <= 0) return;
+			if (contract.FundsCompletion <= 0) {
+				return;
+			}
 
 			// A blacklisted agent will not have any of its contracts modified. Bail.
-			if (IsAgentBlacklisted(contract.Agent.Name)) return;
+			if (IsAgentBlacklisted(contract.Agent.Name)) {
+				return;
+			}
 
 			var funds_per_rep = BudgetSettings.Instance.fundsPerRep;
-
 
 			/*
 			 * Take the funds advance and funds on failure and combine them to get the net-cost-of-failure. Just convert

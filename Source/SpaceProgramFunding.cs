@@ -389,9 +389,15 @@ namespace SpaceProgramFunding.Source
 				 * Decay reputation if the game settings indicate. Never reduce to below minimum reputation allowed.
 				 */
 				if (BudgetSettings.Instance.isRepDecayEnabled) {
-					var max_decay = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
-					var amount_to_decay = Math.Min(BudgetSettings.Instance.repDecayRate, max_decay);
-					if (amount_to_decay > 0) Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.None);
+					if (Reputation.CurrentRep > BudgetSettings.Instance.minimumRep) {
+						var amount_to_decay = BudgetSettings.Instance.repDecayRate;
+						if (amount_to_decay > 0) {
+							Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.Strategies);
+							if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
+								Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Strategies);
+							}
+						}
+					}
 				}
 
 				/*
@@ -513,9 +519,9 @@ namespace SpaceProgramFunding.Source
 			if (publicRelations.isPREnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(labelWidth));
+					GUILayout.MaxWidth(labelWidth - 50));
 				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledgerWidth));
+					GUILayout.MaxWidth(ledgerWidth + 50));
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds diverted to Public Relations.");
@@ -526,9 +532,9 @@ namespace SpaceProgramFunding.Source
 			if (researchLab.isRNDEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
 				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(labelWidth));
+					GUILayout.MaxWidth(labelWidth - 50));
 				researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledgerWidth));
+					GUILayout.MaxWidth(ledgerWidth + 50));
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds diverted to create science points.");

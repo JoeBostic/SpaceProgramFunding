@@ -475,8 +475,7 @@ namespace SpaceProgramFunding.Source
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
 			GUILayout.Label("Minimum Reputation: " + minimumRep, label_style,
 				GUILayout.MinWidth(labelWidth));
-			minimumRep = (int)GUILayout.HorizontalSlider(minimumRep, 0,
-				100, GUILayout.MinWidth(ledgerWidth));
+			minimumRep = (int)GUILayout.HorizontalSlider(minimumRep * 10, 0, 100, GUILayout.MinWidth(ledgerWidth)) / 10;
 			GUILayout.EndHorizontal();
 
 
