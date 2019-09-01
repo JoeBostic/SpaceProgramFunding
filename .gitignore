@@ -48,7 +48,7 @@ bin/
 Network Trash Folder
 Temporary Items
 .apdisk
-#*.dll
+*.dll
 *.xml
 *.cache
 *.pdb
