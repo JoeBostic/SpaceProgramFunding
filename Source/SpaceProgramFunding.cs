@@ -17,10 +17,7 @@ namespace SpaceProgramFunding.Source
 	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
 	public class SpaceProgramFunding : MonoBehaviour
 	{
-		private const float _budgetWidth = 350;
-		private const float _budgetHeight = 300;
-
-
+		#region Public Properties
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Reference to the singleton of this object.</summary>
 		///
@@ -29,19 +26,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Has one-time initialization taken place? It uses this to enforce a singleton
-		/// 		  character for this class.</summary>
-		private static bool _initialized;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Builds an array of all the entries in the facilities enumeration so that iterating
-		/// 		  through the facilities is possible.</summary>
-		private SpaceCenterFacility[] _facilities;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The big project that the monthly budget manages.</summary>
+		/// <summary> The big project that the monthly funding manages.</summary>
 		public BigProject bigProject = new BigProject();
 
 
@@ -49,13 +34,11 @@ namespace SpaceProgramFunding.Source
 		/// <summary> The research lab where funds are converted into science points.</summary>
 		public ResearchLab researchLab = new ResearchLab();
 
-		private Rect _budgetDialogPosition;
-
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should the budget period be logged in Kerbal Alarm Clock? If true, the player will be
-		/// 		  aware when the budget period will end.</summary>
-		public bool isAlarmClockPerBudget = true;
+		/// <summary> Should the funding period be logged in Kerbal Alarm Clock? If true, the player will be
+		/// 		  aware when the funding period will end.</summary>
+		public bool isAlarmClockOn = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,29 +61,70 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The last time the budget process was run. This is the time of the start of the fiscal
-		/// 		  budget period that the budget was last processed.</summary>
+		/// <summary> The last time the funding process was run. This is the time of the start of the fiscal
+		/// 		  period that the funding was last processed.</summary>
 		public double lastUpdate;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Records the total of all launch costs that have accumulated during this budget period.</summary>
+		/// <summary> Records the total of all launch costs that have accumulated during this funding period.</summary>
 		public int launchCostsAccumulator;
-
-		public int cachedVesselMaintenance;
-
-
-		private Rect _settingsDialogPosition;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> True to show, false to hide the budget dialog.</summary>
-		public bool showBudgetDialog;
+		/// <summary> The cached vessel maintenance value. This value can't be calculated in the Editor, so the caching
+		/// 		  the value outside of the Editor allows normal funding operation to occur in editor.</summary>
+		public int cachedVesselMaintenance;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> True to show, false to hide the funding dialog.</summary>
+		public bool showFundingDialog;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> True to show, false to hide the settings dialog.</summary>
 		public bool showSettingsDialog;
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Length of the year for the home system. This might be different than stock Kerbin as
+		/// 		  a result of any planet-pack installed.</summary>
+		public double yearLength;
+		#endregion
+
+
+		#region Private Properties
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Width of the funding pop-up dialog (in dialog units).</summary>
+		private const float _fundingWidth = 350;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Height of the funding pop-up dialog (in dialog units).</summary>
+		private const float _fundingHeight = 300;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Has one-time initialization taken place? It uses this to enforce a singleton character for this
+		/// 		  class.</summary>
+		private static bool _initialized;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Builds an array of all the entries in the facilities enumeration so that iterating
+		/// 		  through the facilities is possible.</summary>
+		private SpaceCenterFacility[] _facilities;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The funding dialog position memory.</summary>
+		private Rect _fundingDialogPosition;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The settings dialog position memory.</summary>
+		private Rect _settingsDialogPosition;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,11 +139,8 @@ namespace SpaceProgramFunding.Source
 		/// 		  calculation of costs cannot be performed.</summary>
 		private int _buildingCostsArchive;
 
+		#endregion
 
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Length of the year for the home system. This might be different than stock Kerbin as
-		/// 		  a result of any planet-pack installed.</summary>
-		public double yearLength;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,15 +166,15 @@ namespace SpaceProgramFunding.Source
 		{
 			if (_initialized) return;
 
-			_budgetDialogPosition.width = _budgetWidth;
-			_budgetDialogPosition.height = _budgetHeight;
-			_budgetDialogPosition.x = (Screen.width - _budgetDialogPosition.width) / 2;
-			_budgetDialogPosition.y = (Screen.height - _budgetDialogPosition.height) / 2;
+			_fundingDialogPosition.width = _fundingWidth;
+			_fundingDialogPosition.height = _fundingHeight;
+			_fundingDialogPosition.x = (Screen.width - _fundingDialogPosition.width) / 2;
+			_fundingDialogPosition.y = (Screen.height - _fundingDialogPosition.height) / 2;
 
 			_settingsDialogPosition.height = BudgetSettings._settingsHeight;
 			_settingsDialogPosition.height = BudgetSettings._settingsWidth;
-			_settingsDialogPosition = _budgetDialogPosition;
-			_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
+			_settingsDialogPosition = _fundingDialogPosition;
+			_settingsDialogPosition.x = _fundingDialogPosition.x + _fundingDialogPosition.width;
 
 			KACWrapper.InitKACWrapper();
 			PopulateHomeWorldData();
@@ -179,29 +200,29 @@ namespace SpaceProgramFunding.Source
 			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
 			if (BudgetSettings.Instance == null) return;
 
-			// Don't process budget while settings dialog is open.
+			// Don't process funding while settings dialog is open.
 			if (showSettingsDialog) return;
 
 			var time = Planetarium.GetUniversalTime();
 
 			// Handle time travel paradox. This should never happen.
-			while (lastUpdate > time) lastUpdate = lastUpdate - BudgetInterval();
+			while (lastUpdate > time) lastUpdate = lastUpdate - FundingInterval();
 
 
 			// Perform the budget process if it is time to do so.
 			var time_since_last_update = time - lastUpdate;
-			if (time_since_last_update >= BudgetInterval()) Budget();
+			if (time_since_last_update >= FundingInterval()) FundingOperation();
 
-			// Always try to keep KAC populated with the budget alarm.
-			if (!KACWrapper.AssemblyExists || !isAlarmClockPerBudget) return;
+			// Always try to keep KAC populated with the funding alarm.
+			if (!KACWrapper.AssemblyExists || !isAlarmClockOn) return;
 			if (!KACWrapper.APIReady) return;
 			var alarms = KACWrapper.KAC.Alarms;
 			if (alarms.Count >= 0)
 				foreach (var alarm in alarms)
-					if (alarm.Name == "Next Budget")
+					if (alarm.Name == "Next Funding")
 						return;
 
-			KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.Raw, "Next Budget", lastUpdate + BudgetInterval());
+			KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.Raw, "Next Funding", lastUpdate + FundingInterval());
 		}
 
 
@@ -227,7 +248,7 @@ namespace SpaceProgramFunding.Source
 		{
 			node.SetValue("LastBudgetUpdate", lastUpdate, true);
 			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
-			node.SetValue("StopTimeWarp", isAlarmClockPerBudget, true);
+			node.SetValue("StopTimeWarp", isAlarmClockOn, true);
 
 
 			publicRelations.OnSave(node);
@@ -244,7 +265,7 @@ namespace SpaceProgramFunding.Source
 		{
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
-			node.TryGetValue("StopTimeWarp", ref isAlarmClockPerBudget);
+			node.TryGetValue("StopTimeWarp", ref isAlarmClockOn);
 
 
 			publicRelations.OnLoad(node);
@@ -262,7 +283,7 @@ namespace SpaceProgramFunding.Source
 		{
 			if (scene == GameScenes.FLIGHT || scene == GameScenes.TRACKSTATION || scene == GameScenes.EDITOR ||
 			    scene == GameScenes.SPACECENTER) return;
-			showBudgetDialog = false;
+			showFundingDialog = false;
 			showSettingsDialog = false;
 		}
 
@@ -284,26 +305,25 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Calculates the gross budget. This is the budget just considering reputation and not
+		/// <summary> Calculates the gross funding. This is the funding level just considering reputation and not
 		/// 		  counting any costs.</summary>
 		///
-		/// <returns> The gross budget.</returns>
-		public float GrossBudget()
+		/// <returns> The gross funding.</returns>
+		public float GrossFunding()
 		{
 			if (BudgetSettings.Instance == null) return 0;
-			return Reputation.CurrentRep * BudgetSettings.Instance.budgetRepMultiplier;
-			//return Math.Max(Reputation.CurrentRep, BudgetSettings.Instance.minimumRep) * BudgetSettings.Instance.budgetRepMultiplier;
+			return Reputation.CurrentRep * BudgetSettings.Instance.fundingRepMultiplier;
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Budget interval expressed in time units.</summary>
+		/// <summary> Funding interval expressed in time units.</summary>
 		///
-		/// <returns> A double that is the time units of one budget period.</returns>
-		public double BudgetInterval()
+		/// <returns> A double that is the time units of one funding period.</returns>
+		public double FundingInterval()
 		{
 			if (BudgetSettings.Instance == null) return 0;
-			return BudgetSettings.Instance.budgetIntervalDays * dayLength;
+			return BudgetSettings.Instance.fundingIntervalDays * dayLength;
 		}
 
 
@@ -311,154 +331,126 @@ namespace SpaceProgramFunding.Source
 		/// <summary> Performs the main funding action. This is where funds are collected from the Kerbal
 		/// 		  government and distributed to all the necessary recipients. The core function of
 		/// 		  this mod is handled by the logic in this method.</summary>
-		private void Budget()
+		private void FundingOperation()
 		{
 			if (BudgetSettings.Instance == null) return;
 
-			try {
-				VABHack();
+			VABHack();
 
-				var current_funds = Funding.Instance.Funds;
+			var current_funds = Funding.Instance.Funds;
 
-				var gross_budget = GrossBudget();
+			var gross_funding = GrossFunding();
 
-				/*
-				 * Calculate the hard costs such as crew salaries and launch costs. 
-				 */
-				float costs = CostCalculate();
-				launchCostsAccumulator = 0;
+			/*
+			 * Calculate the hard costs such as crew salaries and launch costs. 
+			 */
+			float costs = CostCalculate();
+			launchCostsAccumulator = 0;
 
-				/*
-				 * Calculate the adjusted net budget. This the gross budget less hard costs.
-				 */
-				var net_budget = gross_budget - costs;
+			/*
+			 * Calculate the adjusted net funding. This the gross budget less hard costs.
+			 */
+			var net_funding = gross_funding - costs;
 
-				/*
-				 * If the net budget is less than zero, then costs exceed budget. Don't ever remove funds from player if cost
-				 * covering is enabled.
-				 */
-				if (BudgetSettings.Instance.isCostsCovered)
-					if (net_budget < 0)
-						net_budget = 0;
-
-
-				/*
-				 * If the net budget is negative (due to hard costs exceeding gross budget), then forgive the debt if
-				 * that setting is true. Think of it as the Kerbal central government covering those costs out of the
-				 * general fund. If not forgiven, then the player has to pony-up the debt.
-				 */
-				if (net_budget < 0 && BudgetSettings.Instance.isCostsCovered) net_budget = 0;
-
-				/*
-				 * netBudget now becomes the amount of funds to add to the player's bank account.
-				 */
-				if (current_funds < net_budget) {
-					net_budget = (float) (net_budget - current_funds);
-				} else {
-					net_budget = 0;
-				}
+			/*
+			 * If the net funding is less than zero, then costs exceed budget. Don't ever remove funds from player if cost
+			 * covering is enabled.
+			 */
+			if (BudgetSettings.Instance.isCostsCovered)
+				if (net_funding < 0)
+					net_funding = 0;
 
 
-				/*
-				 * Actually update the player's current fund total by raising the player's current funds to match
-				 * the budget or charging the player if the net budget is negative.
-				 */
-				Funding.Instance.AddFunds(net_budget, TransactionReasons.None);
-				var net_funds = Funding.Instance.Funds;
+			/*
+			 * If the net funding is negative (due to hard costs exceeding gross funding), then forgive the debt if
+			 * that setting is true. Think of it as the Kerbal central government covering those costs out of the
+			 * general fund. If not forgiven, then the player has to pony-up the debt.
+			 */
+			if (net_funding < 0 && BudgetSettings.Instance.isCostsCovered) net_funding = 0;
 
-				/*
-				 * Decay reputation if the game settings indicate. Never reduce to below minimum reputation allowed.
-				 */
-				if (BudgetSettings.Instance.isRepDecayEnabled) {
-					if (Reputation.CurrentRep > BudgetSettings.Instance.minimumRep) {
-						var amount_to_decay = BudgetSettings.Instance.repDecayRate;
-						if (amount_to_decay > 0) {
-							Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.Strategies);
-							if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
-								Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Strategies);
-							}
+			/*
+			 * net_funding now becomes the amount of funds to add to the player's bank account.
+			 */
+			if (current_funds < net_funding) {
+				net_funding = (float) (net_funding - current_funds);
+			} else {
+				net_funding = 0;
+			}
+
+
+			/*
+			 * Actually update the player's current fund total by raising the player's current funds to match
+			 * the funding or charging the player if the net funds are negative.
+			 */
+			Funding.Instance.AddFunds(net_funding, TransactionReasons.None);
+			var net_funds = Funding.Instance.Funds;
+
+			/*
+			 * Decay reputation if the game settings indicate. Never reduce to below minimum reputation allowed.
+			 */
+			if (BudgetSettings.Instance.isRepDecayEnabled) {
+				if (Reputation.CurrentRep > BudgetSettings.Instance.minimumRep) {
+					var amount_to_decay = BudgetSettings.Instance.repDecayRate;
+					if (amount_to_decay > 0) {
+						Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.Strategies);
+						if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
+							Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Strategies);
 						}
 					}
 				}
-
-				/*
-				 * Divert some funds to Public Relations in order to keep reputation points up.
-				 */
-				net_funds = publicRelations.SiphonFunds(net_funds);
-
-
-				/*
-				 * Do R&D before funding big project reserve. It typically costs 10,000 funds for 1 science point!
-				 */
-				net_funds = researchLab.SiphonFunds(net_funds);
-
-
-				/*
-				 * Divert some portion of available funds of the current net budget toward the emergency ("big project") reserve.
-				 */
-				net_funds = bigProject.SiphonFunds(net_funds);
-
-
-				/*
-				 * Update current funds to reflect the funds siphoned off.
-				 */
-				if (net_funds <= Funding.Instance.Funds) Funding.Instance.AddFunds(-(Funding.Instance.Funds - net_funds), TransactionReasons.None);
-
-				/*
-				 * Record the time of the start of the next fiscal period.
-				 */
-				lastUpdate += BudgetInterval();
-
-				/*
-				 * Add Alarm Clock reminder.
-				 */
-				if (!KACWrapper.AssemblyExists && isAlarmClockPerBudget) TimeWarp.SetRate(0, true);
-			} catch {
-				if (HighLogic.LoadedScene != GameScenes.MAINMENU)
-					Debug.Log("[MonthlyBudgets]: Problem calculating the budget");
 			}
+
+			/*
+			 * Divert some funds to Public Relations in order to keep reputation points up.
+			 */
+			net_funds = publicRelations.SiphonFunds(net_funds);
+
+
+			/*
+			 * Do R&D before funding big project reserve. It typically costs 10,000 funds for 1 science point!
+			 */
+			net_funds = researchLab.SiphonFunds(net_funds);
+
+
+			/*
+			 * Divert some portion of available funds of the current net funding toward the big-project reserve.
+			 */
+			net_funds = bigProject.SiphonFunds(net_funds);
+
+
+			/*
+			 * Update current funds to reflect the funds siphoned off.
+			 */
+			if (net_funds <= Funding.Instance.Funds) Funding.Instance.AddFunds(-(Funding.Instance.Funds - net_funds), TransactionReasons.None);
+
+			/*
+			 * Record the time of the start of the next fiscal period.
+			 */
+			lastUpdate += FundingInterval();
+
+			/*
+			 * Add Alarm Clock reminder.
+			 */
+			if (!KACWrapper.AssemblyExists && isAlarmClockOn) TimeWarp.SetRate(0, true);
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Creates a date string that represents the time that the next budget period will occur.</summary>
+		/// <summary> Creates a date string that represents the time that the next funding period will occur.</summary>
 		///
-		/// <returns> A string for the date of the next budget period.</returns>
-		private string NextBudgetDateString()
+		/// <returns> A string for the date of the next funding period.</returns>
+		private string NextFundingDateString()
 		{
 			if (BudgetSettings.Instance == null) return "<error>";
 
 			if (homeWorld == null) PopulateHomeWorldData();
 
-#if true
-			var next_update_raw = lastUpdate + BudgetSettings.Instance.budgetIntervalDays * dayLength;
+			var next_update_raw = lastUpdate + BudgetSettings.Instance.fundingIntervalDays * dayLength;
 			var next_update_delta = next_update_raw - Planetarium.GetUniversalTime();
 
 			var f = new KSPUtil.DefaultDateTimeFormatter();
 			string date_string = "T- " + f.PrintDateDeltaCompact(next_update_delta, true, false, true);
-#if false
-			string dstring = f.PrintTimeCompact(next_update_delta, false) + " \r" + 
-			                 f.PrintDate(next_update_delta, true) + " \r" + 
-			                 f.PrintDateDelta(next_update_delta, true, false, false) + " \r" +
-			                 f.PrintDateDeltaCompact(next_update_delta, true, false, false);
-#endif
 			return date_string;
-
-#else
-
-
-			var next_update_raw = lastUpdate + BudgetSettings.Instance.budgetIntervalDays * dayLength;
-			var next_update_refine = next_update_raw / dayLength;
-			var year = 1;
-			var day = 1;
-			while (next_update_refine > yearLength / dayLength) {
-				year += 1;
-				next_update_refine = next_update_refine - yearLength / dayLength;
-			}
-
-			day += (int) next_update_refine;
-			return "Year " + year + ", Day " + day;
-#endif
 		}
 
 
@@ -480,28 +472,28 @@ namespace SpaceProgramFunding.Source
 			var label_style = new GUIStyle(GUI.skin.label);
 			label_style.normal.textColor = label_style.normal.textColor = Color.white;
 
-			GUILayout.BeginVertical(GUILayout.Width(_budgetWidth));
+			GUILayout.BeginVertical(GUILayout.Width(_fundingWidth));
 
 
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Next Funding Period:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label(NextBudgetDateString(), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+			GUILayout.Label(NextFundingDateString(), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Current Reputation:", label_style, GUILayout.MaxWidth(labelWidth));
 			GUILayout.Label(Math.Max(Reputation.CurrentRep, BudgetSettings.Instance.minimumRep).ToString("n0"),
 				ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Estimated Gross Funding:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label(GrossBudget().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+			GUILayout.Label(GrossFunding().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
 
 			if (BudgetSettings.Instance.isBuildingCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Space Center Costs:", label_style, GUILayout.MaxWidth(labelWidth));
 				GUILayout.Label(CostBuildings() == 0 ? "???" : CostBuildings().ToString("n0"), ledger_style,
 					GUILayout.MaxWidth(ledgerWidth));
@@ -509,12 +501,12 @@ namespace SpaceProgramFunding.Source
 			}
 
 			if (BudgetSettings.Instance.isKerbalWages) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Assigned Kerbal Wages:", label_style, GUILayout.MaxWidth(labelWidth));
 				GUILayout.Label(ActiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Unassigned Kerbal Wages:", label_style, GUILayout.MaxWidth(labelWidth));
 				GUILayout.Label(InactiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
@@ -522,7 +514,7 @@ namespace SpaceProgramFunding.Source
 
 
 			if (BudgetSettings.Instance.isActiveVesselCost) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Vessel Maintenance:", label_style, GUILayout.MaxWidth(labelWidth));
 				GUILayout.Label(CostVessels().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
@@ -530,23 +522,23 @@ namespace SpaceProgramFunding.Source
 
 
 			if (BudgetSettings.Instance.isLaunchCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Launch Costs:", label_style, GUILayout.MaxWidth(labelWidth));
 				GUILayout.Label(CostLaunches().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
 				GUILayout.EndHorizontal();
 			}
 
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Estimated Net Funding:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label((GrossBudget() - CostCalculate()).ToString("n0"), ledger_style,
+			GUILayout.Label((GrossFunding() - CostCalculate()).ToString("n0"), ledger_style,
 				GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
-			isAlarmClockPerBudget = GUILayout.Toggle(isAlarmClockPerBudget, "Set Alarm-Clock on funding period?");
+			isAlarmClockOn = GUILayout.Toggle(isAlarmClockOn, "Set Alarm-Clock on funding period?");
 
 			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert funding to Public Relations?");
 			if (publicRelations.isPREnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth - 50));
 				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
@@ -559,7 +551,7 @@ namespace SpaceProgramFunding.Source
 
 			researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert funding to science research?");
 			if (researchLab.isRNDEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth - 50));
 				researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
@@ -571,7 +563,7 @@ namespace SpaceProgramFunding.Source
 
 			bigProject.isEnabled = GUILayout.Toggle(bigProject.isEnabled, "Divert funding to Big-Project reserve?");
 			if (bigProject.isEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
 					GUILayout.MaxWidth(labelWidth - 50));
 				bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 50,
@@ -582,9 +574,9 @@ namespace SpaceProgramFunding.Source
 			}
 
 			if (bigProject.fundsAccumulator > 0) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label(
-					"Big-Project: " + bigProject.fundsAccumulator.ToString("n0") + " / " + bigProject.MaximumBigBudget().ToString("n0"),
+					"Big-Project: " + bigProject.fundsAccumulator.ToString("n0") + " / " + bigProject.MaximumBigProject().ToString("n0"),
 					label_style, GUILayout.MaxWidth(labelWidth - 50));
 				if (GUILayout.Button("Extract all Funds")) bigProject.WithdrawFunds();
 
@@ -594,11 +586,11 @@ namespace SpaceProgramFunding.Source
 			}
 
 
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_budgetWidth));
+			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			if (GUILayout.Button("Settings")) showSettingsDialog = !showSettingsDialog;
 
 			if (GUILayout.Button("Close")) {
-				showBudgetDialog = false;
+				showFundingDialog = false;
 				showSettingsDialog = false;
 			}
 
@@ -617,16 +609,16 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void OnGUI()
 		{
-			if (_visibleGui && showBudgetDialog) {
+			if (_visibleGui && showFundingDialog) {
 				GUI.skin = HighLogic.Skin;
 				//GUIPosition.height = 30;	// tighten up height each time
-				_budgetDialogPosition = GUILayout.Window(0, _budgetDialogPosition, WindowGUI, "Space Program Funding",
-					GUILayout.Width(_budgetWidth));
+				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding",
+					GUILayout.Width(_fundingWidth));
 			}
 
 			if (_visibleGui && showSettingsDialog && BudgetSettings.Instance != null) {
-				_settingsDialogPosition.x = _budgetDialogPosition.x + _budgetDialogPosition.width;
-				_settingsDialogPosition.y = _budgetDialogPosition.y;
+				_settingsDialogPosition.x = _fundingDialogPosition.x + _fundingDialogPosition.width;
+				_settingsDialogPosition.y = _fundingDialogPosition.y;
 				GUI.skin = HighLogic.Skin;
 				_settingsDialogPosition = GUILayout.Window(1, _settingsDialogPosition, BudgetSettings.Instance.SettingsGUI,
 					"Space Program Funding Settings", GUILayout.MaxHeight(BudgetSettings._settingsHeight));
@@ -646,33 +638,12 @@ namespace SpaceProgramFunding.Source
 		}
 
 
-#if false
-		public void DoPopUp(string message)
-		{
-			PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f),
-				new Vector2(0.5f, 0.5f),
-				new MultiOptionDialog("TEST",
-					message,
-					"Debug Window",
-					HighLogic.UISkin,
-					new Rect(0.5f, 0.5f, 350f, 260f),
-					new DialogGUIFlexibleSpace(),
-					new DialogGUIVerticalLayout(
-						new DialogGUIFlexibleSpace(),
-						new DialogGUIButton("Close", () => { }, 140.0f, 30.0f, true)
-					)),
-				false,
-				HighLogic.UISkin);
-		}
-#endif
-
-
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> There is a quirk with the game such that modules get saved/loaded around the SPH or
 		/// 		  VAB but other game settings do not. This means anything that adjusts the game
 		/// 		  funds will persist after leaving the ship editor, but the mod modules will have
 		/// 		  their state restored. The result is that unless this is handled in a special way,
-		/// 		  extracting funds from the big-project budget will magically be restored when
+		/// 		  extracting funds from the big-project account will magically be restored when
 		/// 		  returning to the Space Center -- a HUG exploit. This handles that quirk.</summary>
 		public void VABHack()
 		{
@@ -780,9 +751,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Figures out the monthly maintenance cost for all vessels. This is based on the mass
-		/// 		  of the vessel. The presumption is that larger vessels need more Space Center
-		/// 		  support on an ongoing basis.</summary>
+		/// <summary> Figures out the monthly maintenance cost for all vessels. This is based on the mass of the
+		/// 		  vessel. The presumption is that larger vessels need more Space Center support on an ongoing
+		/// 		  basis.</summary>
 		///
 		/// <returns> The sum cost of maintenance cost for all vessels.</returns>
 		public int CostVessels()
@@ -805,10 +776,10 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Determines the total costs -- accumulated so far -- for launches during this budget
-		/// 		  period. These costs cover janitorial maintenance and handy-man repair work
-		/// 		  necessary when the launch facility is used for heavy vehicles. The heavier the
-		/// 		  launch vehicle, the more expensive it is to clean up afterward.</summary>
+		/// <summary> Determines the total costs -- accumulated so far -- for launches during this funding period.
+		/// 		  These costs cover janitorial maintenance and handy-man repair work necessary when the launch
+		/// 		  facility is used for heavy vehicles. The heavier the launch vehicle, the more expensive it is
+		/// 		  to clean up afterward.</summary>
 		///
 		/// <returns> The total, so far, of launch costs.</returns>
 		public int CostLaunches()
@@ -823,9 +794,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Calculates all the non-discretionary spending for the current budget period.</summary>
+		/// <summary> Calculates all the non-discretionary spending for the current funding period.</summary>
 		///
-		/// <returns> The non-discretionary bill for this budget period.</returns>
+		/// <returns> The non-discretionary bill for this funding period.</returns>
 		public int CostCalculate()
 		{
 			var costs = ActiveCostWages();
@@ -842,8 +813,8 @@ namespace SpaceProgramFunding.Source
 		///
 		/// <param name="facility"> The facility to fetch the level for.</param>
 		///
-		/// <returns> The level of the facility. This will be 1..3 where 1 is the initial level on a new
-		/// 		  career game and 3 is fully upgraded.</returns>
+		/// <returns> The level of the facility. This will be 1..3 where 1 is the initial level on a new career game
+		/// 		  and 3 is fully upgraded.</returns>
 		private int FacilityLevel(SpaceCenterFacility facility)
 		{
 			var level = ScenarioUpgradeableFacilities.GetFacilityLevel(facility); // 0 .. 1

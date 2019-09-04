@@ -70,7 +70,7 @@ namespace SpaceProgramFunding.Source
 
 			if (HighLogic.LoadedScene != GameScenes.EDITOR) SpaceProgramFunding.Instance.VABHack();
 
-			SpaceProgramFunding.Instance.showBudgetDialog = !SpaceProgramFunding.Instance.showBudgetDialog;
+			SpaceProgramFunding.Instance.showFundingDialog = !SpaceProgramFunding.Instance.showFundingDialog;
 			SpaceProgramFunding.Instance.showSettingsDialog = false;
 		}
 
@@ -84,7 +84,7 @@ namespace SpaceProgramFunding.Source
 		{
 			if (_toolbarButton == null) return;
 
-			SpaceProgramFunding.Instance.showBudgetDialog = false;
+			SpaceProgramFunding.Instance.showFundingDialog = false;
 			SpaceProgramFunding.Instance.showSettingsDialog = false;
 
 			if (data.to == GameScenes.EDITOR) {

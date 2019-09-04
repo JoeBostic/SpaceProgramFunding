@@ -41,7 +41,6 @@ namespace SpaceProgramFunding.Source
 				return;
 			}
 
-			//if (!BudgetSettings.Instance.masterSwitch) Destroy(this);
 			DontDestroyOnLoad(this);
 			_instance = this;
 
