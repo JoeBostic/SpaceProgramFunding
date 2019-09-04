@@ -53,6 +53,12 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> Should the budget period be logged in Kerbal Alarm Clock? If true, the player will be
+		/// 		  aware when the budget period will end.</summary>
+		public bool isAlarmClockPerBudget = true;
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Length of the day expressed in hours. This might be different than stock Kerbin (6
 		/// 		  hours).</summary>
 		public double dayLength;
@@ -80,6 +86,8 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Records the total of all launch costs that have accumulated during this budget period.</summary>
 		public int launchCostsAccumulator;
+
+		public int cachedVesselMaintenance;
 
 
 		private Rect _settingsDialogPosition;
@@ -185,7 +193,7 @@ namespace SpaceProgramFunding.Source
 			if (time_since_last_update >= BudgetInterval()) Budget();
 
 			// Always try to keep KAC populated with the budget alarm.
-			if (!KACWrapper.AssemblyExists || !BudgetSettings.Instance.isAlarmClockPerBudget) return;
+			if (!KACWrapper.AssemblyExists || !isAlarmClockPerBudget) return;
 			if (!KACWrapper.APIReady) return;
 			var alarms = KACWrapper.KAC.Alarms;
 			if (alarms.Count >= 0)
@@ -219,6 +227,7 @@ namespace SpaceProgramFunding.Source
 		{
 			node.SetValue("LastBudgetUpdate", lastUpdate, true);
 			node.SetValue("LaunchCosts", launchCostsAccumulator, true);
+			node.SetValue("StopTimeWarp", isAlarmClockPerBudget, true);
 
 
 			publicRelations.OnSave(node);
@@ -235,6 +244,7 @@ namespace SpaceProgramFunding.Source
 		{
 			node.TryGetValue("LastBudgetUpdate", ref lastUpdate);
 			node.TryGetValue("LaunchCosts", ref launchCostsAccumulator);
+			node.TryGetValue("StopTimeWarp", ref isAlarmClockPerBudget);
 
 
 			publicRelations.OnLoad(node);
@@ -298,7 +308,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Performs the main budget action. This is where funds are collected from the Kerbal
+		/// <summary> Performs the main funding action. This is where funds are collected from the Kerbal
 		/// 		  government and distributed to all the necessary recipients. The core function of
 		/// 		  this mod is handled by the logic in this method.</summary>
 		private void Budget()
@@ -342,10 +352,11 @@ namespace SpaceProgramFunding.Source
 				/*
 				 * netBudget now becomes the amount of funds to add to the player's bank account.
 				 */
-				if (current_funds < net_budget)
+				if (current_funds < net_budget) {
 					net_budget = (float) (net_budget - current_funds);
-				else
+				} else {
 					net_budget = 0;
+				}
 
 
 				/*
@@ -355,6 +366,20 @@ namespace SpaceProgramFunding.Source
 				Funding.Instance.AddFunds(net_budget, TransactionReasons.None);
 				var net_funds = Funding.Instance.Funds;
 
+				/*
+				 * Decay reputation if the game settings indicate. Never reduce to below minimum reputation allowed.
+				 */
+				if (BudgetSettings.Instance.isRepDecayEnabled) {
+					if (Reputation.CurrentRep > BudgetSettings.Instance.minimumRep) {
+						var amount_to_decay = BudgetSettings.Instance.repDecayRate;
+						if (amount_to_decay > 0) {
+							Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.Strategies);
+							if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
+								Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Strategies);
+							}
+						}
+					}
+				}
 
 				/*
 				 * Divert some funds to Public Relations in order to keep reputation points up.
@@ -384,26 +409,10 @@ namespace SpaceProgramFunding.Source
 				 */
 				lastUpdate += BudgetInterval();
 
-
-				/*
-				 * Decay reputation if the game settings indicate. Never reduce to below minimum reputation allowed.
-				 */
-				if (BudgetSettings.Instance.isRepDecayEnabled) {
-					if (Reputation.CurrentRep > BudgetSettings.Instance.minimumRep) {
-						var amount_to_decay = BudgetSettings.Instance.repDecayRate;
-						if (amount_to_decay > 0) {
-							Reputation.Instance.AddReputation(-amount_to_decay, TransactionReasons.Strategies);
-							if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
-								Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Strategies);
-							}
-						}
-					}
-				}
-
 				/*
 				 * Add Alarm Clock reminder.
 				 */
-				if (!KACWrapper.AssemblyExists && BudgetSettings.Instance.isAlarmClockPerBudget) TimeWarp.SetRate(0, true);
+				if (!KACWrapper.AssemblyExists && isAlarmClockPerBudget) TimeWarp.SetRate(0, true);
 			} catch {
 				if (HighLogic.LoadedScene != GameScenes.MAINMENU)
 					Debug.Log("[MonthlyBudgets]: Problem calculating the budget");
@@ -420,6 +429,24 @@ namespace SpaceProgramFunding.Source
 			if (BudgetSettings.Instance == null) return "<error>";
 
 			if (homeWorld == null) PopulateHomeWorldData();
+
+#if true
+			var next_update_raw = lastUpdate + BudgetSettings.Instance.budgetIntervalDays * dayLength;
+			var next_update_delta = next_update_raw - Planetarium.GetUniversalTime();
+
+			var f = new KSPUtil.DefaultDateTimeFormatter();
+			string date_string = "T- " + f.PrintDateDeltaCompact(next_update_delta, true, false, true);
+#if false
+			string dstring = f.PrintTimeCompact(next_update_delta, false) + " \r" + 
+			                 f.PrintDate(next_update_delta, true) + " \r" + 
+			                 f.PrintDateDelta(next_update_delta, true, false, false) + " \r" +
+			                 f.PrintDateDeltaCompact(next_update_delta, true, false, false);
+#endif
+			return date_string;
+
+#else
+
+
 			var next_update_raw = lastUpdate + BudgetSettings.Instance.budgetIntervalDays * dayLength;
 			var next_update_refine = next_update_raw / dayLength;
 			var year = 1;
@@ -431,6 +458,7 @@ namespace SpaceProgramFunding.Source
 
 			day += (int) next_update_refine;
 			return "Year " + year + ", Day " + day;
+#endif
 		}
 
 
@@ -514,6 +542,7 @@ namespace SpaceProgramFunding.Source
 				GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
+			isAlarmClockPerBudget = GUILayout.Toggle(isAlarmClockPerBudget, "Set Alarm-Clock on funding period?");
 
 			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert funding to Public Relations?");
 			if (publicRelations.isPREnabled) {
@@ -761,6 +790,10 @@ namespace SpaceProgramFunding.Source
 			if (BudgetSettings.Instance == null) return 0;
 
 			if (!BudgetSettings.Instance.isActiveVesselCost) return 0;
+
+			if (HighLogic.LoadedSceneIsEditor) {
+				return cachedVesselMaintenance;
+			}
 
 			var vessels = FlightGlobals.Vessels.Where(v =>
 				v.vesselType != VesselType.Debris && v.vesselType != VesselType.Flag &&

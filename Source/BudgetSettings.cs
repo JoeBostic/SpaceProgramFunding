@@ -96,12 +96,6 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should the budget period be logged in Kerbal Alarm Clock? If true, the player will be
-		/// 		  aware when the budget period will end.</summary>
-		public bool isAlarmClockPerBudget = true;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should maintenance costs be applied for the Kerbal Space Center? This makes upgrading
 		/// 		  the space center have a tradeoff due to higher maintenance costs. Maintenance
 		/// 		  costs are a non-discretionary expenditure that is taken out of the budget first.</summary>
@@ -271,7 +265,6 @@ namespace SpaceProgramFunding.Source
 			savedNode.SetValue("ContractInterceptor", isContractInterceptor, true);
 			savedNode.SetValue("FundsPerRep", fundsPerRep, true);
 			savedNode.SetValue("CoverCosts", isCostsCovered, true);
-			savedNode.SetValue("StopTimeWarp", isAlarmClockPerBudget, true);
 			savedNode.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
 			savedNode.SetValue("DecayEnabled", isRepDecayEnabled, true);
 			savedNode.SetValue("MinimumRep", minimumRep, true);
@@ -313,7 +306,6 @@ namespace SpaceProgramFunding.Source
 			node.TryGetValue("ContractInterceptor", ref isContractInterceptor);
 			node.TryGetValue("FundsPerRep", ref fundsPerRep);
 			node.TryGetValue("CoverCosts", ref isCostsCovered);
-			node.TryGetValue("StopTimeWarp", ref isAlarmClockPerBudget);
 			node.TryGetValue("KerbalDeathPenaltyActive", ref isKerbalDeathPenalty);
 			node.TryGetValue("DecayEnabled", ref isRepDecayEnabled);
 			node.TryGetValue("RepDecay", ref repDecayRate);
@@ -401,7 +393,7 @@ namespace SpaceProgramFunding.Source
 			Boolean.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
 			Int32.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
 			Boolean.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
-			Boolean.TryParse(settings.GetValue("stopTimewarp"), out isAlarmClockPerBudget);
+			//Boolean.TryParse(settings.GetValue("stopTimewarp"), out isAlarmClockPerBudget);
 			Boolean.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
 			Single.TryParse(settings.GetValue("friendlyInterval"), out budgetIntervalDays);
 			Int32.TryParse(settings.GetValue("repDecay"), out repDecayRate);
@@ -495,10 +487,6 @@ namespace SpaceProgramFunding.Source
 
 			isCostsCovered = GUILayout.Toggle(isCostsCovered,
 				"Fixed costs above funding level are forgiven?", GUILayout.MaxWidth(modWidth));
-
-			isAlarmClockPerBudget = GUILayout.Toggle(
-				isAlarmClockPerBudget, "Stop Time-warp / Set KAC Alarm on funding period?",
-				GUILayout.MaxWidth(modWidth));
 
 			isRepDecayEnabled = GUILayout.Toggle(isRepDecayEnabled,
 				"Decay Reputation each funding period?", GUILayout.MaxWidth(modWidth));

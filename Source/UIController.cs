@@ -87,6 +87,10 @@ namespace SpaceProgramFunding.Source
 			SpaceProgramFunding.Instance.showBudgetDialog = false;
 			SpaceProgramFunding.Instance.showSettingsDialog = false;
 
+			if (data.to == GameScenes.EDITOR) {
+				SpaceProgramFunding.Instance.cachedVesselMaintenance = SpaceProgramFunding.Instance.CostVessels();
+			}
+
 			// When leaving the space center, update the archived building costs since we know they are valid.
 			if (data.from == GameScenes.SPACECENTER) SpaceProgramFunding.Instance.CalculateBuildingCosts();
 
