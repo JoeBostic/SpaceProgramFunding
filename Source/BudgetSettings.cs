@@ -59,30 +59,30 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The emergency budget is capped at a multiple of the gross budget. This prevents the
-		/// 		  exploit of letting the emergency budget accumulate indefinitely. The value is the
+		/// <summary> The big-project is capped at a multiple of the gross funding. This prevents the
+		/// 		  exploit of letting the big-project accumulate indefinitely. The value is the
 		/// 		  number of reputation points per multiple. For example, reputation of 150 would be
 		/// 		  3x multiple for a value of 50.</summary>
 		public int bigProjectMultiple = 50;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The budget is run every month (typically). This specifies the number of days in a
-		/// 		  budget period.</summary>
-		public float budgetIntervalDays = 30;
+		/// <summary> The funding is run every month (typically). This specifies the number of days in a
+		/// 		  funding period.</summary>
+		public float fundingIntervalDays = 30;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The budget funds to grant is based on a multiple of the current reputation value. To
-		/// 		  get more budget, get a higher reputation.</summary>
-		public int budgetRepMultiplier = 2200;
+		/// <summary> The funds to grant is based on a multiple of the current reputation value. To
+		/// 		  get more funding, get a higher reputation.</summary>
+		public int fundingRepMultiplier = 2200;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Fee cost to moving money into the emergency budget fund. This needs to be large
-		/// 		  enough to discourage keeping maximum funds flowing into emergency budget. The
-		/// 		  emergency budget should just be used for big projects.</summary>
-		public int emergencyBudgetFee = 20;
+		/// <summary> Fee cost to moving money into the big-project fund. This needs to be large
+		/// 		  enough to discourage keeping maximum funds flowing into big-project. The
+		/// 		  big-project account should just be used for big-projects.</summary>
+		public int bigProjectFee = 20;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,15 +96,9 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should the budget period be logged in Kerbal Alarm Clock? If true, the player will be
-		/// 		  aware when the budget period will end.</summary>
-		public bool isAlarmClockPerBudget = true;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should maintenance costs be applied for the Kerbal Space Center? This makes upgrading
 		/// 		  the space center have a tradeoff due to higher maintenance costs. Maintenance
-		/// 		  costs are a non-discretionary expenditure that is taken out of the budget first.</summary>
+		/// 		  costs are a non-discretionary expenditure that is taken out of the funding first.</summary>
 		public bool isBuildingCostsEnabled = true;
 
 
@@ -115,7 +109,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should non-discretionary costs that happen to exceed the current budget be forgiven
+		/// <summary> Should non-discretionary costs that happen to exceed the current funding be forgiven
 		/// 		  rather than charged to the player's current bank account? A responsible Kerbal
 		/// 		  government would take care of these costs and this flag would be true. A more
 		/// 		  mercenary government would set this flag to false and make the player pay these
@@ -138,7 +132,7 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should Kerbals be paid wages? Wages are a non-discretionary expenditure that is taken
-		/// 		  out of the budget first.</summary>
+		/// 		  out of the funding first.</summary>
 		public bool isKerbalWages = true;
 
 
@@ -150,7 +144,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Is reputation decay per budget period enabled? Reputation decay means the player must
+		/// <summary> Is reputation decay per funding period enabled? Reputation decay means the player must
 		/// 		  always pat attention to reputation and perform missions as necessary to keep the
 		/// 		  reputation level sustained.</summary>
 		public bool isRepDecayEnabled;
@@ -179,19 +173,19 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The minimum reputation to use when calculating gross budget. There is always a loyal
-		/// 		  cadre within the Kerbal government that ensures a minimum budget.</summary>
+		/// <summary> The minimum reputation to use when calculating gross funding. There is always a loyal
+		/// 		  cadre within the Kerbal government that ensures a minimum funding.</summary>
 		public int minimumRep = 20;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The number of reputation points deducted per budget period if reputation decay has
+		/// <summary> The number of reputation points deducted per funding period if reputation decay has
 		/// 		  been enabled.</summary>
 		public int repDecayRate = 5;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> When diverting budget to create science points, this is the number of credits it
+		/// <summary> When diverting funds to create science points, this is the number of credits it
 		/// 		  takes to create one science point.</summary>
 		public int sciencePointCost = 10000;
 
@@ -266,18 +260,17 @@ namespace SpaceProgramFunding.Source
 		public void OnSave(ConfigNode savedNode)
 		{
 			savedNode.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
-			savedNode.SetValue("EmergencyFundFee", emergencyBudgetFee, true);
+			savedNode.SetValue("EmergencyFundFee", bigProjectFee, true);
 			savedNode.SetValue("sciencePointCost", sciencePointCost, true);
 			savedNode.SetValue("ContractInterceptor", isContractInterceptor, true);
 			savedNode.SetValue("FundsPerRep", fundsPerRep, true);
 			savedNode.SetValue("CoverCosts", isCostsCovered, true);
-			savedNode.SetValue("StopTimeWarp", isAlarmClockPerBudget, true);
 			savedNode.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
 			savedNode.SetValue("DecayEnabled", isRepDecayEnabled, true);
 			savedNode.SetValue("MinimumRep", minimumRep, true);
 			savedNode.SetValue("RepDecay", repDecayRate, true);
-			savedNode.SetValue("Multiplier", budgetRepMultiplier, true);
-			savedNode.SetValue("FriendlyInterval", budgetIntervalDays, true);
+			savedNode.SetValue("Multiplier", fundingRepMultiplier, true);
+			savedNode.SetValue("FriendlyInterval", fundingIntervalDays, true);
 			savedNode.SetValue("KerbalWageActive", isKerbalWages, true);
 			savedNode.SetValue("AvailableWages", baseKerbalWage, true);
 			savedNode.SetValue("AssignedWages", assignedKerbalWage, true);
@@ -308,18 +301,17 @@ namespace SpaceProgramFunding.Source
 			//masterSwitch = true;
 
 			node.TryGetValue("EmergencyFundMultiple", ref bigProjectMultiple);
-			node.TryGetValue("EmergencyFundFee", ref emergencyBudgetFee);
+			node.TryGetValue("EmergencyFundFee", ref bigProjectFee);
 			node.TryGetValue("sciencePointCost", ref sciencePointCost);
 			node.TryGetValue("ContractInterceptor", ref isContractInterceptor);
 			node.TryGetValue("FundsPerRep", ref fundsPerRep);
 			node.TryGetValue("CoverCosts", ref isCostsCovered);
-			node.TryGetValue("StopTimeWarp", ref isAlarmClockPerBudget);
 			node.TryGetValue("KerbalDeathPenaltyActive", ref isKerbalDeathPenalty);
 			node.TryGetValue("DecayEnabled", ref isRepDecayEnabled);
 			node.TryGetValue("RepDecay", ref repDecayRate);
 			node.TryGetValue("MinimumRep", ref minimumRep);
-			node.TryGetValue("Multiplier", ref budgetRepMultiplier);
-			node.TryGetValue("FriendlyInterval", ref budgetIntervalDays);
+			node.TryGetValue("Multiplier", ref fundingRepMultiplier);
+			node.TryGetValue("FriendlyInterval", ref fundingIntervalDays);
 			node.TryGetValue("KerbalWageActive", ref isKerbalWages);
 			node.TryGetValue("AvailableWages", ref baseKerbalWage);
 			node.TryGetValue("AssignedWages", ref assignedKerbalWage);
@@ -401,12 +393,11 @@ namespace SpaceProgramFunding.Source
 			Boolean.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
 			Int32.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
 			Boolean.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
-			Boolean.TryParse(settings.GetValue("stopTimewarp"), out isAlarmClockPerBudget);
 			Boolean.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
-			Single.TryParse(settings.GetValue("friendlyInterval"), out budgetIntervalDays);
+			Single.TryParse(settings.GetValue("friendlyInterval"), out fundingIntervalDays);
 			Int32.TryParse(settings.GetValue("repDecay"), out repDecayRate);
 			Int32.TryParse(settings.GetValue("minimumRep"), out minimumRep);
-			Int32.TryParse(settings.GetValue("multiplier"), out budgetRepMultiplier);
+			Int32.TryParse(settings.GetValue("multiplier"), out fundingRepMultiplier);
 			Int32.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
 			Int32.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
 			Single.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
@@ -427,7 +418,7 @@ namespace SpaceProgramFunding.Source
 			Int32.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
 			Int32.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
 			Int32.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
-			Int32.TryParse(settings.GetValue("emergencyBudgetFee"), out emergencyBudgetFee);
+			Int32.TryParse(settings.GetValue("emergencyBudgetFee"), out bigProjectFee);
 		}
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -454,20 +445,20 @@ namespace SpaceProgramFunding.Source
 
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
 			GUILayout.Label("Funding Interval: ", label_style);
-			var day_string = GUILayout.TextField(budgetIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
+			var day_string = GUILayout.TextField(fundingIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
 			if (Int32.TryParse(day_string, out var day_number)) {
 				day_number = Math.Max(day_number, 1);
-				budgetIntervalDays = day_number;
+				fundingIntervalDays = day_number;
 			}
 			GUILayout.Label(" days", label_style);
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
 			GUILayout.Label(
-				"Funding Multiplier times Rep: " + budgetRepMultiplier.ToString("n0"),
+				"Funding Multiplier times Rep: " + fundingRepMultiplier.ToString("n0"),
 				label_style, GUILayout.MinWidth(labelWidth));
-			budgetRepMultiplier =
-				(int)GUILayout.HorizontalSlider(budgetRepMultiplier / 100.0f, 0, 50,
+			fundingRepMultiplier =
+				(int)GUILayout.HorizontalSlider(fundingRepMultiplier / 100.0f, 0, 50,
 					GUILayout.MinWidth(ledgerWidth)) * 100;
 			GUILayout.EndHorizontal();
 
@@ -495,10 +486,6 @@ namespace SpaceProgramFunding.Source
 
 			isCostsCovered = GUILayout.Toggle(isCostsCovered,
 				"Fixed costs above funding level are forgiven?", GUILayout.MaxWidth(modWidth));
-
-			isAlarmClockPerBudget = GUILayout.Toggle(
-				isAlarmClockPerBudget, "Stop Time-warp / Set KAC Alarm on funding period?",
-				GUILayout.MaxWidth(modWidth));
 
 			isRepDecayEnabled = GUILayout.Toggle(isRepDecayEnabled,
 				"Decay Reputation each funding period?", GUILayout.MaxWidth(modWidth));
@@ -561,10 +548,10 @@ namespace SpaceProgramFunding.Source
 
 			// Big-Project penalty
 			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-			GUILayout.Label("Big-Project Fund Transfer Fee: " + emergencyBudgetFee + "%",
+			GUILayout.Label("Big-Project Fund Transfer Fee: " + bigProjectFee + "%",
 				label_style, GUILayout.MinWidth(labelWidth));
-			emergencyBudgetFee =
-				(int)GUILayout.HorizontalSlider(emergencyBudgetFee, 0, 50,
+			bigProjectFee =
+				(int)GUILayout.HorizontalSlider(bigProjectFee, 0, 50,
 					GUILayout.MinWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 

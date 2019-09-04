@@ -11,11 +11,11 @@ namespace SpaceProgramFunding.Source
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// <summary> The "big project" is like a savings account with constraints on withdrawal and
 	/// 		  depositing. It is designed to allow accumulation of funds far in excess of normal
-	/// 		  monthly budget so that big purchases can be made.</summary>
+	/// 		  monthly funding so that big purchases can be made.</summary>
 	public class BigProject
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The percentage of funds to siphon off of the discretionary budget.</summary>
+		/// <summary> The percentage of funds to siphon off of the discretionary funding.</summary>
 		public float divertPercentage;
 
 
@@ -25,7 +25,7 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Should some money be siphoned off of the budget to store in the "savings account" for
+		/// <summary> Should some money be siphoned off of the funding to store in the "savings account" for
 		/// 		  a big project?</summary>
 		public bool isEnabled;
 
@@ -33,10 +33,10 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Hack to fix a quirk with extracting funds in VAB or SPH. The values of this class get
 		/// 		  restored when leaving the vessel editor, but changes to the global funds balance
-		/// 		  does not. This means that one could extract the big-budget funds in the VAB and
+		/// 		  does not. This means that one could extract the big-project funds in the VAB and
 		/// 		  then when returning to the Space Center, the funds will have magically returned
 		/// 		  yet the global funds balance would still reflect the withdrawal -- exploitable to
-		/// 		  get infinite funds. If this flag is true, then the big-budget funds will be
+		/// 		  get infinite funds. If this flag is true, then the big-project funds will be
 		/// 		  zeroed out as soon as we know we are no longer inside the vessel editor.</summary>
 		public bool isHack;
 
@@ -48,7 +48,7 @@ namespace SpaceProgramFunding.Source
 		/// </summary>
 		private void Update()
 		{
-			if (fundsAccumulator > MaximumBigBudget()) fundsAccumulator = MaximumBigBudget();
+			if (fundsAccumulator > MaximumBigProject()) fundsAccumulator = MaximumBigProject();
 		}
 
 
@@ -74,26 +74,26 @@ namespace SpaceProgramFunding.Source
 		{
 			if (funds <= 0 || !isEnabled) return funds;
 
-			var max_allowed = MaximumBigBudget() - fundsAccumulator;
+			var max_allowed = MaximumBigProject() - fundsAccumulator;
 			var desired_amount = funds * (divertPercentage / 100.0);
 			var actual_amount = Math.Min(desired_amount, max_allowed);
 
 			funds -= actual_amount;
-			if (BudgetSettings.Instance != null) actual_amount -= actual_amount * (BudgetSettings.Instance.emergencyBudgetFee / 100.0);
+			if (BudgetSettings.Instance != null) actual_amount -= actual_amount * (BudgetSettings.Instance.bigProjectFee / 100.0);
 			fundsAccumulator += actual_amount;
 			return funds;
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> Maximum emergency budget allowed. This is based on budget and multiplier specified in
+		/// <summary> Maximum big-project allowed. This is based on funding and multiplier specified in
 		/// 		  settings.</summary>
 		///
-		/// <returns> The maximum that the emergency budget can hold.</returns>
-		public float MaximumBigBudget()
+		/// <returns> The maximum that the big-project can hold.</returns>
+		public float MaximumBigProject()
 		{
 			if (BudgetSettings.Instance == null) return 0;
-			return SpaceProgramFunding.Instance.GrossBudget() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
+			return SpaceProgramFunding.Instance.GrossFunding() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
 		}
 
 
