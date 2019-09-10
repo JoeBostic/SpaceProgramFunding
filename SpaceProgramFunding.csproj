@@ -83,6 +83,7 @@
     <None Include="GameData\SpaceProgramFunding\NormalDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\ForStrategia.cfg" />
     <None Include="GameData\SpaceProgramFunding\SpaceProgramFunding.version" />
+    <None Include="GameData\SpaceProgramFunding\WorldFirst.cfg" />
     <None Include="README.md" />
     <None Include="Support\SpaceProgramFunding.netkan" />
   </ItemGroup>

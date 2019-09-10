@@ -482,7 +482,7 @@ namespace SpaceProgramFunding.Source
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Current Reputation:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label(Math.Max(Reputation.CurrentRep, BudgetSettings.Instance.minimumRep).ToString("n0"),
+			GUILayout.Label(Reputation.CurrentRep.ToString("n0"),
 				ledger_style, GUILayout.MaxWidth(ledgerWidth));
 			GUILayout.EndHorizontal();
 
