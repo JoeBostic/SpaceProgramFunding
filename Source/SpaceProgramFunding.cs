@@ -139,6 +139,9 @@ namespace SpaceProgramFunding.Source
 		/// 		  calculation of costs cannot be performed.</summary>
 		private int _buildingCostsArchive;
 
+		private static Texture2D closeIcon;
+		private static Texture2D settingsIcon;
+
 		#endregion
 
 
@@ -165,6 +168,9 @@ namespace SpaceProgramFunding.Source
 		private void Start()
 		{
 			if (_initialized) return;
+
+			closeIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/close", false);
+			settingsIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/settings", false);
 
 			_fundingDialogPosition.width = _fundingWidth;
 			_fundingDialogPosition.height = _fundingHeight;
@@ -474,7 +480,6 @@ namespace SpaceProgramFunding.Source
 
 			GUILayout.BeginVertical(GUILayout.Width(_fundingWidth));
 
-
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			GUILayout.Label("Next Funding Period:", label_style, GUILayout.MaxWidth(labelWidth));
 			GUILayout.Label(NextFundingDateString(), ledger_style, GUILayout.MaxWidth(ledgerWidth));
@@ -586,6 +591,7 @@ namespace SpaceProgramFunding.Source
 			}
 
 
+#if false
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 			if (GUILayout.Button("Settings")) showSettingsDialog = !showSettingsDialog;
 
@@ -593,9 +599,8 @@ namespace SpaceProgramFunding.Source
 				showFundingDialog = false;
 				showSettingsDialog = false;
 			}
-
 			GUILayout.EndHorizontal();
-
+#endif
 
 			GUILayout.EndVertical();
 
@@ -610,10 +615,22 @@ namespace SpaceProgramFunding.Source
 		private void OnGUI()
 		{
 			if (_visibleGui && showFundingDialog) {
+				GUI.depth = 0;
 				GUI.skin = HighLogic.Skin;
 				//GUIPosition.height = 30;	// tighten up height each time
-				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding",
-					GUILayout.Width(_fundingWidth));
+				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding", GUILayout.Width(_fundingWidth));
+
+				const int icon_size = 28;
+				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size+2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), closeIcon, GUI.skin.button)) {
+					showFundingDialog = false;
+					showSettingsDialog = false;
+				}
+
+				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size*2 + 2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), settingsIcon, GUI.skin.button)) {
+					showSettingsDialog = !showSettingsDialog;
+				}
+
+
 			}
 
 			if (_visibleGui && showSettingsDialog && BudgetSettings.Instance != null) {

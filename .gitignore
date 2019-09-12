@@ -60,3 +60,4 @@ Temporary Items
 *.ide
 *.csproj.CopyComplete
 
+*.dll

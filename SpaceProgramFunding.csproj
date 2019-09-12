@@ -88,8 +88,11 @@
     <None Include="Support\SpaceProgramFunding.netkan" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="GameData\SpaceProgramFunding\close.png" />
     <Content Include="GameData\SpaceProgramFunding\License.txt" />
+    <Content Include="GameData\SpaceProgramFunding\settings.png" />
     <Content Include="GameData\SpaceProgramFunding\SpaceProgramFunding.png" />
+    <Content Include="Support\Icons.psd" />
     <Content Include="Support\SpaceProgramFunding.psd" />
   </ItemGroup>
   <ItemGroup />
