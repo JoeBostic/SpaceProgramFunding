@@ -33,8 +33,8 @@ namespace SpaceProgramFunding.Source
 			Hard
 		}
 
-		public const float _settingsWidth = 500;
-		public const float _settingsHeight = 600;
+		public const float SETTINGS_WIDTH = 500;
+		public const float SETTINGS_HEIGHT = 600;
 		private Vector2 _settingsScrollViewPosition = new Vector2(0, 0);
 
 
@@ -360,7 +360,7 @@ namespace SpaceProgramFunding.Source
 					throw new ArgumentOutOfRangeException(nameof(diff), diff, null);
 			}
 
-			return KSPUtil.ApplicationRootPath + "/GameData/SpaceProgramFunding/" + filename;
+			return KSPUtil.ApplicationRootPath + "/GameData/SpaceProgramFunding/Config/" + filename;
 		}
 
 
@@ -427,23 +427,31 @@ namespace SpaceProgramFunding.Source
 		/// <param name="windowID"> Identifier for the window.</param>
 		public void SettingsGUI(int windowID)
 		{
-			const int ledgerWidth = 185;
-			const int labelWidth = 270;
-			const int indentWidth = 35;
-			const int modWidth = ledgerWidth + labelWidth;
+			const int ledger_width = 185;
+			const int label_width = 270;
+			const int indent_width = 35;
+			const int mod_width = ledger_width + label_width;
 
-			Assert.IsTrue(BudgetSettings.Instance != null);
-			if (BudgetSettings.Instance == null) return;
+			Assert.IsTrue(Instance != null);
+			if (Instance == null) return;
 
 			var label_style = new GUIStyle(GUI.skin.label);
 			label_style.normal.textColor = label_style.normal.textColor = Color.white;
 
-			GUILayout.BeginVertical(GUILayout.Width(_settingsWidth));
+			GUILayout.BeginVertical(GUILayout.Width(SETTINGS_WIDTH));
+
+			// Preset configuration buttons
+			GUILayout.BeginHorizontal();
+			if (GUILayout.Button("Balanced")) LoadSettings(DifficultyEnum.Easy);
+			if (GUILayout.Button("Normal")) LoadSettings(DifficultyEnum.Normal);
+			if (GUILayout.Button("Hard")) LoadSettings(DifficultyEnum.Hard);
+			GUILayout.EndHorizontal();
+
 
 			_settingsScrollViewPosition = GUILayout.BeginScrollView(_settingsScrollViewPosition,
-				GUILayout.Width(_settingsWidth), GUILayout.Height(_settingsHeight));
+				GUILayout.Width(SETTINGS_WIDTH), GUILayout.Height(SETTINGS_HEIGHT));
 
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("Funding Interval: ", label_style);
 			var day_string = GUILayout.TextField(fundingIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
 			if (Int32.TryParse(day_string, out var day_number)) {
@@ -453,216 +461,216 @@ namespace SpaceProgramFunding.Source
 			GUILayout.Label(" days", label_style);
 			GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label(
 				"Funding Multiplier times Rep: " + fundingRepMultiplier.ToString("n0"),
-				label_style, GUILayout.MinWidth(labelWidth));
+				label_style, GUILayout.MinWidth(label_width));
 			fundingRepMultiplier =
 				(int)GUILayout.HorizontalSlider(fundingRepMultiplier / 100.0f, 0, 50,
-					GUILayout.MinWidth(ledgerWidth)) * 100;
+					GUILayout.MinWidth(ledger_width)) * 100;
 			GUILayout.EndHorizontal();
 
 
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("Minimum Reputation: " + minimumRep, label_style,
-				GUILayout.MinWidth(labelWidth));
-			minimumRep = (int)GUILayout.HorizontalSlider(minimumRep * 10, 0, 100, GUILayout.MinWidth(ledgerWidth)) / 10;
+				GUILayout.MinWidth(label_width));
+			minimumRep = (int)GUILayout.HorizontalSlider(minimumRep * 10, 0, 100, GUILayout.MinWidth(ledger_width)) / 10;
 			GUILayout.EndHorizontal();
 
 
 			isContractInterceptor = GUILayout.Toggle(
 				isContractInterceptor, "Contracts pay rep instead of funds?",
-				GUILayout.MaxWidth(modWidth));
+				GUILayout.MaxWidth(mod_width));
 			if (isContractInterceptor) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Funds per Reputation Point: " + fundsPerRep.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				fundsPerRep =
 					(int)GUILayout.HorizontalSlider(fundsPerRep / 1000.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 			}
 
 			isCostsCovered = GUILayout.Toggle(isCostsCovered,
-				"Fixed costs above funding level are forgiven?", GUILayout.MaxWidth(modWidth));
+				"Fixed costs above funding level are forgiven?", GUILayout.MaxWidth(mod_width));
 
 			isRepDecayEnabled = GUILayout.Toggle(isRepDecayEnabled,
-				"Decay Reputation each funding period?", GUILayout.MaxWidth(modWidth));
+				"Decay Reputation each funding period?", GUILayout.MaxWidth(mod_width));
 			if (isRepDecayEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Reputation Decay per period: " + repDecayRate, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				repDecayRate =
 					(int)GUILayout.HorizontalSlider(repDecayRate, 0, 50,
-						GUILayout.MinWidth(ledgerWidth));
+						GUILayout.MinWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 
 			isKerbalWages = GUILayout.Toggle(isKerbalWages,
-				"Enable Kerbal wages (per Kerbal per XP level)?", GUILayout.MaxWidth(modWidth));
+				"Enable Kerbal wages (per Kerbal per XP level)?", GUILayout.MaxWidth(mod_width));
 			if (isKerbalWages) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Assigned Kerbal Wage: " + assignedKerbalWage.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				assignedKerbalWage =
 					(int)GUILayout.HorizontalSlider(assignedKerbalWage / 100.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
+						GUILayout.MinWidth(ledger_width)) * 100;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Unassigned Kerbal Wage: " + baseKerbalWage.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				baseKerbalWage =
 					(int)GUILayout.HorizontalSlider(baseKerbalWage / 100.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
+						GUILayout.MinWidth(ledger_width)) * 100;
 				GUILayout.EndHorizontal();
 			}
 
 			isKerbalDeathPenalty =
 				GUILayout.Toggle(isKerbalDeathPenalty,
-					"Enable Kerbal death penalty (Rep per XP level)?", GUILayout.MaxWidth(modWidth));
+					"Enable Kerbal death penalty (Rep per XP level)?", GUILayout.MaxWidth(mod_width));
 			if (isKerbalDeathPenalty) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Reputation penalty: " + kerbalDeathPenalty, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				kerbalDeathPenalty =
 					(int)GUILayout.HorizontalSlider(kerbalDeathPenalty, 0, 100,
-						GUILayout.MinWidth(ledgerWidth));
+						GUILayout.MinWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 			// Big-Project multiple
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("Big-Project multiple: " + bigProjectMultiple, label_style,
-				GUILayout.MinWidth(labelWidth));
+				GUILayout.MinWidth(label_width));
 			bigProjectMultiple =
 				(int)GUILayout.HorizontalSlider(bigProjectMultiple / 10.0f, 0, 25,
-					GUILayout.MinWidth(ledgerWidth)) * 10;
+					GUILayout.MinWidth(ledger_width)) * 10;
 			GUILayout.EndHorizontal();
 
 			// Big-Project penalty
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("Big-Project Fund Transfer Fee: " + bigProjectFee + "%",
-				label_style, GUILayout.MinWidth(labelWidth));
+				label_style, GUILayout.MinWidth(label_width));
 			bigProjectFee =
 				(int)GUILayout.HorizontalSlider(bigProjectFee, 0, 50,
-					GUILayout.MinWidth(ledgerWidth));
+					GUILayout.MinWidth(ledger_width));
 			GUILayout.EndHorizontal();
 
 			// Cost per science point
-			GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
+			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("R&D cost per science point : " + sciencePointCost.ToString("n0"),
-				label_style, GUILayout.MinWidth(labelWidth));
+				label_style, GUILayout.MinWidth(label_width));
 			sciencePointCost =
 				(int)GUILayout.HorizontalSlider(sciencePointCost / 1000.0f, 0, 50,
-					GUILayout.MinWidth(ledgerWidth)) * 1000;
+					GUILayout.MinWidth(ledger_width)) * 1000;
 			GUILayout.EndHorizontal();
 
 
 			isBuildingCostsEnabled =
 				GUILayout.Toggle(isBuildingCostsEnabled,
-					"Structure maintenance costs (per Structure per level)", GUILayout.MaxWidth(modWidth));
+					"Structure maintenance costs (per Structure per level)", GUILayout.MaxWidth(mod_width));
 			if (isBuildingCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Space-Plane Hangar: " + structureCostSph.ToString("n0"), label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				structureCostSph =
 					(int)GUILayout.HorizontalSlider(structureCostSph / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Mission Control: " + structureCostMissionControl.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostMissionControl =
 					(int)GUILayout.HorizontalSlider(structureCostMissionControl / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Astronaut Complex: " + structureCostAstronautComplex.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostAstronautComplex =
 					(int)GUILayout.HorizontalSlider(structureCostAstronautComplex / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Administration: " + structureCostAdministration.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostAdministration =
 					(int)GUILayout.HorizontalSlider(structureCostAdministration / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Vehicle Assembly Building: " + structureCostVab.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostVab =
 					(int)GUILayout.HorizontalSlider(structureCostVab / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Tracking Station: " + structureCostTrackingStation.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostTrackingStation =
 					(int)GUILayout.HorizontalSlider(structureCostTrackingStation / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("R&D Facility: " + structureCostRnD.ToString("n0"), label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				structureCostRnD =
 					(int)GUILayout.HorizontalSlider(structureCostRnD / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label(
 					"Other Facilities (non-stock): " + structureCostOtherFacility.ToString("n0"),
-					label_style, GUILayout.MinWidth(labelWidth - indentWidth));
+					label_style, GUILayout.MinWidth(label_width - indent_width));
 				structureCostOtherFacility =
 					(int)GUILayout.HorizontalSlider(structureCostOtherFacility / 1000.0f, 0, 10,
-						GUILayout.MinWidth(ledgerWidth)) * 1000;
+						GUILayout.MinWidth(ledger_width)) * 1000;
 				GUILayout.EndHorizontal();
 			}
 
 			isLaunchCostsEnabled =
 				GUILayout.Toggle(isLaunchCostsEnabled,
-					"Launch costs (per launch per level per 100t)?", GUILayout.MaxWidth(modWidth));
+					"Launch costs (per launch per level per 100t)?", GUILayout.MaxWidth(mod_width));
 			if (isLaunchCostsEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Runway launch cost: " + launchCostsRunway, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				launchCostsRunway =
 					(int)GUILayout.HorizontalSlider(launchCostsRunway / 10.0f, 0, 100,
-						GUILayout.MinWidth(ledgerWidth)) * 10;
+						GUILayout.MinWidth(ledger_width)) * 10;
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Launch-pad launch cost: " + launchCostsLaunchPad, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				launchCostsLaunchPad =
 					(int)GUILayout.HorizontalSlider(launchCostsLaunchPad / 100.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
+						GUILayout.MinWidth(ledger_width)) * 100;
 				GUILayout.EndHorizontal();
 			}
 
@@ -670,25 +678,20 @@ namespace SpaceProgramFunding.Source
 			// Ship maintenance cost
 			isActiveVesselCost =
 				GUILayout.Toggle(isActiveVesselCost,
-					"Enable monthly maintenance costs for vessels (per 100t)?", GUILayout.MaxWidth(modWidth));
+					"Enable monthly maintenance costs for vessels (per 100t)?", GUILayout.MaxWidth(mod_width));
 			if (isActiveVesselCost) {
-				GUILayout.BeginHorizontal(GUILayout.Width(modWidth));
-				GUILayout.Space(indentWidth);
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
 				GUILayout.Label("Maintenance cost: " + activeVesselCost, label_style,
-					GUILayout.MinWidth(labelWidth - indentWidth));
+					GUILayout.MinWidth(label_width - indent_width));
 				activeVesselCost =
 					(int)GUILayout.HorizontalSlider(activeVesselCost / 100.0f, 0, 50,
-						GUILayout.MinWidth(ledgerWidth)) * 100;
+						GUILayout.MinWidth(ledger_width)) * 100;
 				GUILayout.EndHorizontal();
 			}
 
 			GUILayout.EndScrollView();
 
-			GUILayout.BeginHorizontal();
-			if (GUILayout.Button("Balanced")) LoadSettings(BudgetSettings.DifficultyEnum.Easy);
-			if (GUILayout.Button("Normal")) LoadSettings(BudgetSettings.DifficultyEnum.Normal);
-			if (GUILayout.Button("Hard")) LoadSettings(BudgetSettings.DifficultyEnum.Hard);
-			GUILayout.EndHorizontal();
 
 			GUILayout.EndVertical();
 		}

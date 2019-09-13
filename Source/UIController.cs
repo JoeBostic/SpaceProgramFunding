@@ -115,7 +115,7 @@ namespace SpaceProgramFunding.Source
 				_toolbarButton = ApplicationLauncher.Instance.AddModApplication(ApplicationButtonClicked,
 					ApplicationButtonClicked, null, null,
 					null, null, ApplicationLauncher.AppScenes.ALWAYS,
-					GameDatabase.Instance.GetTexture("SpaceProgramFunding/SpaceProgramFunding", false));
+					GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/SpaceProgramFunding", false));
 		}
 	}
 }

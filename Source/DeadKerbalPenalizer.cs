@@ -4,7 +4,6 @@
 // License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
 using JetBrains.Annotations;
 using UnityEngine;
 

@@ -76,22 +76,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="GameData\SpaceProgramFunding\BalancedDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\BalancedDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\Changelog.cfg" />
-    <None Include="GameData\SpaceProgramFunding\Blacklist.cfg" />
-    <None Include="GameData\SpaceProgramFunding\HardDefaults.cfg" />
-    <None Include="GameData\SpaceProgramFunding\NormalDefaults.cfg" />
-    <None Include="GameData\SpaceProgramFunding\ForStrategia.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\Blacklist.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\HardDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\NormalDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Patches\ForStrategia.cfg" />
     <None Include="GameData\SpaceProgramFunding\SpaceProgramFunding.version" />
-    <None Include="GameData\SpaceProgramFunding\WorldFirst.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Patches\WorldFirst.cfg" />
     <None Include="README.md" />
     <None Include="Support\SpaceProgramFunding.netkan" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GameData\SpaceProgramFunding\close.png" />
+    <Content Include="GameData\SpaceProgramFunding\Icons\close.png" />
     <Content Include="GameData\SpaceProgramFunding\License.txt" />
-    <Content Include="GameData\SpaceProgramFunding\settings.png" />
-    <Content Include="GameData\SpaceProgramFunding\SpaceProgramFunding.png" />
+    <Content Include="GameData\SpaceProgramFunding\Icons\settings.png" />
+    <Content Include="GameData\SpaceProgramFunding\Icons\SpaceProgramFunding.png" />
     <Content Include="Support\Icons.psd" />
     <Content Include="Support\SpaceProgramFunding.psd" />
   </ItemGroup>
@@ -99,7 +99,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y "$(TargetPath)" "$(ProjectDir)GameData\SpaceProgramFunding\"
-copy /y "$(ProjectDir)GameData\SpaceProgramFunding\*.*" "D:\Games\Steam\SteamApps\common\Kerbal Space Program\GameData\SpaceProgramFunding"
+xcopy /s /y "$(ProjectDir)GameData\SpaceProgramFunding\*.*" "D:\Games\Steam\SteamApps\common\Kerbal Space Program\GameData\SpaceProgramFunding"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

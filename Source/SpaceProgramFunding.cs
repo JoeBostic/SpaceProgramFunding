@@ -139,8 +139,8 @@ namespace SpaceProgramFunding.Source
 		/// 		  calculation of costs cannot be performed.</summary>
 		private int _buildingCostsArchive;
 
-		private static Texture2D closeIcon;
-		private static Texture2D settingsIcon;
+		private static Texture2D _closeIcon;
+		private static Texture2D _settingsIcon;
 
 		#endregion
 
@@ -169,16 +169,16 @@ namespace SpaceProgramFunding.Source
 		{
 			if (_initialized) return;
 
-			closeIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/close", false);
-			settingsIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/settings", false);
+			_closeIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/close", false);
+			_settingsIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/settings", false);
 
 			_fundingDialogPosition.width = _fundingWidth;
 			_fundingDialogPosition.height = _fundingHeight;
 			_fundingDialogPosition.x = (Screen.width - _fundingDialogPosition.width) / 2;
 			_fundingDialogPosition.y = (Screen.height - _fundingDialogPosition.height) / 2;
 
-			_settingsDialogPosition.height = BudgetSettings._settingsHeight;
-			_settingsDialogPosition.height = BudgetSettings._settingsWidth;
+			_settingsDialogPosition.height = BudgetSettings.SETTINGS_HEIGHT;
+			_settingsDialogPosition.height = BudgetSettings.SETTINGS_WIDTH;
 			_settingsDialogPosition = _fundingDialogPosition;
 			_settingsDialogPosition.x = _fundingDialogPosition.x + _fundingDialogPosition.width;
 
@@ -466,8 +466,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="windowID"> Identifier for the window.</param>
 		protected void WindowGUI(int windowID)
 		{
-			const int ledgerWidth = 120;
-			const int labelWidth = 230;
+			const int ledger_width = 120;
+			const int label_width = 230;
 
 			Assert.IsTrue(BudgetSettings.Instance != null);
 			if (BudgetSettings.Instance == null) return;
@@ -481,62 +481,62 @@ namespace SpaceProgramFunding.Source
 			GUILayout.BeginVertical(GUILayout.Width(_fundingWidth));
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-			GUILayout.Label("Next Funding Period:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label(NextFundingDateString(), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+			GUILayout.Label("Next Funding Period:", label_style, GUILayout.MaxWidth(label_width));
+			GUILayout.Label(NextFundingDateString(), ledger_style, GUILayout.MaxWidth(ledger_width));
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-			GUILayout.Label("Current Reputation:", label_style, GUILayout.MaxWidth(labelWidth));
+			GUILayout.Label("Current Reputation:", label_style, GUILayout.MaxWidth(label_width));
 			GUILayout.Label(Reputation.CurrentRep.ToString("n0"),
-				ledger_style, GUILayout.MaxWidth(ledgerWidth));
+				ledger_style, GUILayout.MaxWidth(ledger_width));
 			GUILayout.EndHorizontal();
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-			GUILayout.Label("Estimated Gross Funding:", label_style, GUILayout.MaxWidth(labelWidth));
-			GUILayout.Label(GrossFunding().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+			GUILayout.Label("Estimated Gross Funding:", label_style, GUILayout.MaxWidth(label_width));
+			GUILayout.Label(GrossFunding().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledger_width));
 			GUILayout.EndHorizontal();
 
 
 			if (BudgetSettings.Instance.isBuildingCostsEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Space Center Costs:", label_style, GUILayout.MaxWidth(labelWidth));
+				GUILayout.Label("Space Center Costs:", label_style, GUILayout.MaxWidth(label_width));
 				GUILayout.Label(CostBuildings() == 0 ? "???" : CostBuildings().ToString("n0"), ledger_style,
-					GUILayout.MaxWidth(ledgerWidth));
+					GUILayout.MaxWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 			if (BudgetSettings.Instance.isKerbalWages) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Assigned Kerbal Wages:", label_style, GUILayout.MaxWidth(labelWidth));
-				GUILayout.Label(ActiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+				GUILayout.Label("Assigned Kerbal Wages:", label_style, GUILayout.MaxWidth(label_width));
+				GUILayout.Label(ActiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledger_width));
 				GUILayout.EndHorizontal();
 
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Unassigned Kerbal Wages:", label_style, GUILayout.MaxWidth(labelWidth));
-				GUILayout.Label(InactiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+				GUILayout.Label("Unassigned Kerbal Wages:", label_style, GUILayout.MaxWidth(label_width));
+				GUILayout.Label(InactiveCostWages().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 
 			if (BudgetSettings.Instance.isActiveVesselCost) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Vessel Maintenance:", label_style, GUILayout.MaxWidth(labelWidth));
-				GUILayout.Label(CostVessels().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+				GUILayout.Label("Vessel Maintenance:", label_style, GUILayout.MaxWidth(label_width));
+				GUILayout.Label(CostVessels().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 
 			if (BudgetSettings.Instance.isLaunchCostsEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Launch Costs:", label_style, GUILayout.MaxWidth(labelWidth));
-				GUILayout.Label(CostLaunches().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledgerWidth));
+				GUILayout.Label("Launch Costs:", label_style, GUILayout.MaxWidth(label_width));
+				GUILayout.Label(CostLaunches().ToString("n0"), ledger_style, GUILayout.MaxWidth(ledger_width));
 				GUILayout.EndHorizontal();
 			}
 
 			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-			GUILayout.Label("Estimated Net Funding:", label_style, GUILayout.MaxWidth(labelWidth));
+			GUILayout.Label("Estimated Net Funding:", label_style, GUILayout.MaxWidth(label_width));
 			GUILayout.Label((GrossFunding() - CostCalculate()).ToString("n0"), ledger_style,
-				GUILayout.MaxWidth(ledgerWidth));
+				GUILayout.MaxWidth(ledger_width));
 			GUILayout.EndHorizontal();
 
 			isAlarmClockOn = GUILayout.Toggle(isAlarmClockOn, "Set Alarm-Clock on funding period?");
@@ -545,9 +545,9 @@ namespace SpaceProgramFunding.Source
 			if (publicRelations.isPREnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(labelWidth - 50));
+					GUILayout.MaxWidth(label_width - 50));
 				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledgerWidth + 50));
+					GUILayout.MaxWidth(ledger_width + 50));
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds diverted to Public Relations.");
@@ -558,9 +558,9 @@ namespace SpaceProgramFunding.Source
 			if (researchLab.isRNDEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(labelWidth - 50));
+					GUILayout.MaxWidth(label_width - 50));
 				researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledgerWidth + 50));
+					GUILayout.MaxWidth(ledger_width + 50));
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds diverted to create science points.");
@@ -570,9 +570,9 @@ namespace SpaceProgramFunding.Source
 			if (bigProject.isEnabled) {
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
-					GUILayout.MaxWidth(labelWidth - 50));
+					GUILayout.MaxWidth(label_width - 50));
 				bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledgerWidth + 50));
+					GUILayout.MaxWidth(ledger_width + 50));
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds being diverted to Big-Project.");
@@ -582,25 +582,13 @@ namespace SpaceProgramFunding.Source
 				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
 				GUILayout.Label(
 					"Big-Project: " + bigProject.fundsAccumulator.ToString("n0") + " / " + bigProject.MaximumBigProject().ToString("n0"),
-					label_style, GUILayout.MaxWidth(labelWidth - 50));
+					label_style, GUILayout.MaxWidth(label_width - 50));
 				if (GUILayout.Button("Extract all Funds")) bigProject.WithdrawFunds();
 
 				GUILayout.EndHorizontal();
 			} else {
 				GUILayout.Label("No funds available in Big-Project reserve.");
 			}
-
-
-#if false
-			GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-			if (GUILayout.Button("Settings")) showSettingsDialog = !showSettingsDialog;
-
-			if (GUILayout.Button("Close")) {
-				showFundingDialog = false;
-				showSettingsDialog = false;
-			}
-			GUILayout.EndHorizontal();
-#endif
 
 			GUILayout.EndVertical();
 
@@ -620,13 +608,13 @@ namespace SpaceProgramFunding.Source
 				//GUIPosition.height = 30;	// tighten up height each time
 				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding", GUILayout.Width(_fundingWidth));
 
-				const int icon_size = 28;
-				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size+2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), closeIcon, GUI.skin.button)) {
+				const int icon_size = 24;
+				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size+2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), _closeIcon, GUI.skin.button)) {
 					showFundingDialog = false;
 					showSettingsDialog = false;
 				}
 
-				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size*2 + 2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), settingsIcon, GUI.skin.button)) {
+				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size*2 + 2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), _settingsIcon, GUI.skin.button)) {
 					showSettingsDialog = !showSettingsDialog;
 				}
 
@@ -638,7 +626,7 @@ namespace SpaceProgramFunding.Source
 				_settingsDialogPosition.y = _fundingDialogPosition.y;
 				GUI.skin = HighLogic.Skin;
 				_settingsDialogPosition = GUILayout.Window(1, _settingsDialogPosition, BudgetSettings.Instance.SettingsGUI,
-					"Space Program Funding Settings", GUILayout.MaxHeight(BudgetSettings._settingsHeight));
+					"Space Program Funding Settings", GUILayout.MaxHeight(BudgetSettings.SETTINGS_HEIGHT));
 			}
 		}
 

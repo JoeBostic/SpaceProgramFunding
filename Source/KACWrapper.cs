@@ -19,7 +19,7 @@ using Debug = UnityEngine.Debug;
 namespace SpaceProgramFunding.Source
 {
 	///////////////////////////////////////////////////////////////////////////////////////////
-	// BELOW HERE SHOULD NOT BE EDITED - this links to the loaded KAC module without requiring a Hard Dependancy
+	// BELOW HERE SHOULD NOT BE EDITED - this links to the loaded KAC module without requiring a Hard Dependency
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 

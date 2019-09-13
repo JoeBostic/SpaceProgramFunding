@@ -4,9 +4,11 @@
 // License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Contracts;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -67,15 +69,16 @@ namespace SpaceProgramFunding.Source
 		/// 		  from them.</summary>
 		private void LoadBlacklist()
 		{
-			string filename = KSPUtil.ApplicationRootPath + "/GameData/SpaceProgramFunding/Blacklist.cfg";
-			if (!File.Exists(filename)) {
-				return;
-			}
+			try {
+				var node = ConfigNode.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/Config/Blacklist.cfg");
 
-			var agencies = File.ReadAllLines(filename);
-			foreach(string s in agencies) {
-				var a = s.Trim();
-				if (a != "") _blacklistedAgencies.Add(a);
+				foreach (var blacklisted_agency in node.GetValues("BLACKLISTED")) {
+					if (!_blacklistedAgencies.Contains(blacklisted_agency)) {
+						_blacklistedAgencies.Add(blacklisted_agency);
+					}
+				}
+			} catch (Exception e) {
+				Debug.LogError("[SPF] LoadBlacklist(): " + e);
 			}
 		}
 

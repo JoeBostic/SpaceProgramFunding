@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using JetBrains.Annotations;
 
 namespace SpaceProgramFunding.Source
 {
@@ -46,6 +47,7 @@ namespace SpaceProgramFunding.Source
 		///     Makes sure that the big-project balance never exceeds the maximum. This is an issue when
 		///     reputation drops and the player is at or near maximum big-project balance.
 		/// </summary>
+		[UsedImplicitly]
 		private void Update()
 		{
 			if (fundsAccumulator > MaximumBigProject()) fundsAccumulator = MaximumBigProject();
