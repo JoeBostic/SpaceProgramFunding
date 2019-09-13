@@ -61,3 +61,4 @@ Temporary Items
 *.csproj.CopyComplete
 
 *.dll
+GameData/SpaceProgramFunding/SpaceProgramFunding.dll
