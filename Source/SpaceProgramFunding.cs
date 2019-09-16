@@ -463,8 +463,8 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Handles the layout of the main interface window for the mod.</summary>
 		///
-		/// <param name="windowID"> Identifier for the window.</param>
-		protected void WindowGUI(int windowID)
+		/// <param name="window_id"> Identifier for the window.</param>
+		protected void WindowGUI(int window_id)
 		{
 			const int ledger_width = 120;
 			const int label_width = 230;
@@ -608,7 +608,7 @@ namespace SpaceProgramFunding.Source
 				//GUIPosition.height = 30;	// tighten up height each time
 				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding", GUILayout.Width(_fundingWidth));
 
-				const int icon_size = 24;
+				const int icon_size = 28;
 				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size+2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), _closeIcon, GUI.skin.button)) {
 					showFundingDialog = false;
 					showSettingsDialog = false;

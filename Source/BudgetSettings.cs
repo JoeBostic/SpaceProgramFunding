@@ -256,40 +256,40 @@ namespace SpaceProgramFunding.Source
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the save action which saves all the current settings to the save-game file. </summary>
-		/// <param name="savedNode"> The saved node. </param>
-		public void OnSave(ConfigNode savedNode)
+		/// <param name="node"> The saved node. </param>
+		public void OnSave(ConfigNode node)
 		{
-			savedNode.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
-			savedNode.SetValue("EmergencyFundFee", bigProjectFee, true);
-			savedNode.SetValue("sciencePointCost", sciencePointCost, true);
-			savedNode.SetValue("ContractInterceptor", isContractInterceptor, true);
-			savedNode.SetValue("FundsPerRep", fundsPerRep, true);
-			savedNode.SetValue("CoverCosts", isCostsCovered, true);
-			savedNode.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
-			savedNode.SetValue("DecayEnabled", isRepDecayEnabled, true);
-			savedNode.SetValue("MinimumRep", minimumRep, true);
-			savedNode.SetValue("RepDecay", repDecayRate, true);
-			savedNode.SetValue("Multiplier", fundingRepMultiplier, true);
-			savedNode.SetValue("FriendlyInterval", fundingIntervalDays, true);
-			savedNode.SetValue("KerbalWageActive", isKerbalWages, true);
-			savedNode.SetValue("AvailableWages", baseKerbalWage, true);
-			savedNode.SetValue("AssignedWages", assignedKerbalWage, true);
-			savedNode.SetValue("VesselCostEnabled", isActiveVesselCost, true);
-			savedNode.SetValue("VesselCost", activeVesselCost, true);
-			savedNode.SetValue("FirstRun", isFirstRun, true);
-			savedNode.SetValue("BuildingCostsEnabled", isBuildingCostsEnabled, true);
-			savedNode.SetValue("sphCost", structureCostSph, true);
-			savedNode.SetValue("missionControlCost", structureCostMissionControl, true);
-			savedNode.SetValue("astronautComplexCost", structureCostAstronautComplex, true);
-			savedNode.SetValue("administrationCost", structureCostAdministration, true);
-			savedNode.SetValue("vabCost", structureCostVab, true);
-			savedNode.SetValue("trackingStationCost", structureCostTrackingStation, true);
-			savedNode.SetValue("rndCost", structureCostRnD, true);
-			savedNode.SetValue("otherFacilityCost", structureCostOtherFacility, true);
-			savedNode.SetValue("LaunchCostsEnabled", isLaunchCostsEnabled, true);
-			savedNode.SetValue("LaunchCostsVAB", launchCostsLaunchPad, true);
-			savedNode.SetValue("LaunchCostsSPH", launchCostsRunway, true);
-			savedNode.SetValue("kerbalDeathPenalty", kerbalDeathPenalty, true);
+			node.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
+			node.SetValue("EmergencyFundFee", bigProjectFee, true);
+			node.SetValue("sciencePointCost", sciencePointCost, true);
+			node.SetValue("ContractInterceptor", isContractInterceptor, true);
+			node.SetValue("FundsPerRep", fundsPerRep, true);
+			node.SetValue("CoverCosts", isCostsCovered, true);
+			node.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
+			node.SetValue("DecayEnabled", isRepDecayEnabled, true);
+			node.SetValue("MinimumRep", minimumRep, true);
+			node.SetValue("RepDecay", repDecayRate, true);
+			node.SetValue("Multiplier", fundingRepMultiplier, true);
+			node.SetValue("FriendlyInterval", fundingIntervalDays, true);
+			node.SetValue("KerbalWageActive", isKerbalWages, true);
+			node.SetValue("AvailableWages", baseKerbalWage, true);
+			node.SetValue("AssignedWages", assignedKerbalWage, true);
+			node.SetValue("VesselCostEnabled", isActiveVesselCost, true);
+			node.SetValue("VesselCost", activeVesselCost, true);
+			node.SetValue("FirstRun", isFirstRun, true);
+			node.SetValue("BuildingCostsEnabled", isBuildingCostsEnabled, true);
+			node.SetValue("sphCost", structureCostSph, true);
+			node.SetValue("missionControlCost", structureCostMissionControl, true);
+			node.SetValue("astronautComplexCost", structureCostAstronautComplex, true);
+			node.SetValue("administrationCost", structureCostAdministration, true);
+			node.SetValue("vabCost", structureCostVab, true);
+			node.SetValue("trackingStationCost", structureCostTrackingStation, true);
+			node.SetValue("rndCost", structureCostRnD, true);
+			node.SetValue("otherFacilityCost", structureCostOtherFacility, true);
+			node.SetValue("LaunchCostsEnabled", isLaunchCostsEnabled, true);
+			node.SetValue("LaunchCostsVAB", launchCostsLaunchPad, true);
+			node.SetValue("LaunchCostsSPH", launchCostsRunway, true);
+			node.SetValue("kerbalDeathPenalty", kerbalDeathPenalty, true);
 		}
 
 
