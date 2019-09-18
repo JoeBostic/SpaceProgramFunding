@@ -287,8 +287,7 @@ namespace SpaceProgramFunding.Source
 		/// <param name="scene"> The scene that is loaded.</param>
 		private void OnGameSceneLoad(GameScenes scene)
 		{
-			if (scene == GameScenes.FLIGHT || scene == GameScenes.TRACKSTATION || scene == GameScenes.EDITOR ||
-			    scene == GameScenes.SPACECENTER) return;
+			//if (scene == GameScenes.FLIGHT || scene == GameScenes.TRACKSTATION || scene == GameScenes.EDITOR || scene == GameScenes.SPACECENTER) return;
 			showFundingDialog = false;
 			showSettingsDialog = false;
 		}
