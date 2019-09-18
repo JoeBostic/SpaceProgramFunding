@@ -408,19 +408,25 @@ namespace SpaceProgramFunding.Source
 			/*
 			 * Divert some funds to Public Relations in order to keep reputation points up.
 			 */
-			net_funds = publicRelations.SiphonFunds(net_funds);
+			if (BudgetSettings.Instance.isReputationAllowed) {
+				net_funds = publicRelations.SiphonFunds(net_funds);
+			}
 
 
 			/*
 			 * Do R&D before funding big project reserve. It typically costs 10,000 funds for 1 science point!
 			 */
-			net_funds = researchLab.SiphonFunds(net_funds);
+			if (BudgetSettings.Instance.isScienceAllowed) {
+				net_funds = researchLab.SiphonFunds(net_funds);
+			}
 
 
 			/*
 			 * Divert some portion of available funds of the current net funding toward the big-project reserve.
 			 */
-			net_funds = bigProject.SiphonFunds(net_funds);
+			if (BudgetSettings.Instance.isBigProjectAllowed) {
+				net_funds = bigProject.SiphonFunds(net_funds);
+			}
 
 
 			/*
@@ -540,41 +546,46 @@ namespace SpaceProgramFunding.Source
 
 			isAlarmClockOn = GUILayout.Toggle(isAlarmClockOn, "Set Alarm-Clock on funding period?");
 
-			publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert funding to Public Relations?");
-			if (publicRelations.isPREnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(label_width - 50));
-				publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledger_width + 50));
-				GUILayout.EndHorizontal();
-			} else {
-				GUILayout.Label("No funds diverted to Public Relations.");
+			if (BudgetSettings.Instance.isReputationAllowed) {
+				publicRelations.isPREnabled = GUILayout.Toggle(publicRelations.isPREnabled, "Divert funding to Public Relations?");
+				if (publicRelations.isPREnabled) {
+					GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
+					GUILayout.Label("Funds diverted : " + publicRelations.reputationDivertPercentage + "%", label_style,
+						GUILayout.MaxWidth(label_width - 50));
+					publicRelations.reputationDivertPercentage = (int) GUILayout.HorizontalSlider((int) publicRelations.reputationDivertPercentage, 1, 50,
+						GUILayout.MaxWidth(ledger_width + 50));
+					GUILayout.EndHorizontal();
+				} else {
+					GUILayout.Label("No funds diverted to Public Relations.");
+				}
 			}
 
-
-			researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert funding to science research?");
-			if (researchLab.isRNDEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
-					GUILayout.MaxWidth(label_width - 50));
-				researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledger_width + 50));
-				GUILayout.EndHorizontal();
-			} else {
-				GUILayout.Label("No funds diverted to create science points.");
+			if (BudgetSettings.Instance.isScienceAllowed) {
+				researchLab.isRNDEnabled = GUILayout.Toggle(researchLab.isRNDEnabled, "Divert funding to science research?");
+				if (researchLab.isRNDEnabled) {
+					GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
+					GUILayout.Label("Funds diverted : " + researchLab.scienceDivertPercentage + "%", label_style,
+						GUILayout.MaxWidth(label_width - 50));
+					researchLab.scienceDivertPercentage = (int) GUILayout.HorizontalSlider((int) researchLab.scienceDivertPercentage, 1, 50,
+						GUILayout.MaxWidth(ledger_width + 50));
+					GUILayout.EndHorizontal();
+				} else {
+					GUILayout.Label("No funds diverted to create science points.");
+				}
 			}
 
-			bigProject.isEnabled = GUILayout.Toggle(bigProject.isEnabled, "Divert funding to Big-Project reserve?");
-			if (bigProject.isEnabled) {
-				GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
-				GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
-					GUILayout.MaxWidth(label_width - 50));
-				bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 50,
-					GUILayout.MaxWidth(ledger_width + 50));
-				GUILayout.EndHorizontal();
-			} else {
-				GUILayout.Label("No funds being diverted to Big-Project.");
+			if (BudgetSettings.Instance.isBigProjectAllowed) {
+				bigProject.isEnabled = GUILayout.Toggle(bigProject.isEnabled, "Divert funding to Big-Project reserve?");
+				if (bigProject.isEnabled) {
+					GUILayout.BeginHorizontal(GUILayout.MaxWidth(_fundingWidth));
+					GUILayout.Label("Funds diverted : " + bigProject.divertPercentage + "%", label_style,
+						GUILayout.MaxWidth(label_width - 50));
+					bigProject.divertPercentage = (int) GUILayout.HorizontalSlider((int) bigProject.divertPercentage, 1, 50,
+						GUILayout.MaxWidth(ledger_width + 50));
+					GUILayout.EndHorizontal();
+				} else {
+					GUILayout.Label("No funds being diverted to Big-Project.");
+				}
 			}
 
 			if (bigProject.fundsAccumulator > 0) {
@@ -604,7 +615,7 @@ namespace SpaceProgramFunding.Source
 			if (_visibleGui && showFundingDialog) {
 				GUI.depth = 0;
 				GUI.skin = HighLogic.Skin;
-				//GUIPosition.height = 30;	// tighten up height each time
+				_fundingDialogPosition.height = 30;	// tighten up height each time
 				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding", GUILayout.Width(_fundingWidth));
 
 				const int icon_size = 28;

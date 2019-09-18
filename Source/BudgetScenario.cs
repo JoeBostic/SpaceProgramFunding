@@ -16,22 +16,11 @@ namespace SpaceProgramFunding.Source
 	internal class BudgetScenario : ScenarioModule
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The current version of the mod.</summary>
-		private const string _currentVersion = "1.0";
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The mod version number as saved.</summary>
-		private string _saveGameVersion = "0.0";
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Executes the save action which persists all dynamic data into the saved-game file.</summary>
 		///
 		/// <param name="node"> The handle to the saved game file node.</param>
 		public override void OnSave(ConfigNode node)
 		{
-			node.SetValue("saveGameVersion", _currentVersion, true);
 			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnSave(node);
 			if (BudgetSettings.Instance != null) BudgetSettings.Instance.OnSave(node);
 		}
@@ -43,13 +32,11 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The handle to the saved game file node.</param>
 		public override void OnLoad(ConfigNode node)
 		{
-			node.TryGetValue("saveGameVersion", ref _saveGameVersion);
 			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnLoad(node);
-			if (BudgetSettings.Instance != null) {
-				BudgetSettings.Instance.OnLoad(node);
 
-				if (BudgetSettings.Instance.isFirstRun) BudgetSettings.Instance.FirstRun();
-			}
+			if (BudgetSettings.Instance == null) return;
+			BudgetSettings.Instance.OnLoad(node);
+			if (BudgetSettings.Instance.isFirstRun) BudgetSettings.Instance.FirstRun();
 		}
 	}
 }

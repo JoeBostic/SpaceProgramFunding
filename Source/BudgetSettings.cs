@@ -39,6 +39,16 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The current version of the mod.</summary>
+		public const string currentVersion = "1.1";
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The mod version number as saved.</summary>
+		public string saveGameVersion = "0.0";
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The active vessel cost is determined from the mass of the vessel expressed as cost
 		/// 		  per 100 tons. This represents the Mission Control staff and equipment expenses
 		/// 		  that all ongoing missions require. Small vessels (such as tiny relay satellites)
@@ -59,14 +69,6 @@ namespace SpaceProgramFunding.Source
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary> The big-project is capped at a multiple of the gross funding. This prevents the
-		/// 		  exploit of letting the big-project accumulate indefinitely. The value is the
-		/// 		  number of reputation points per multiple. For example, reputation of 150 would be
-		/// 		  3x multiple for a value of 50.</summary>
-		public int bigProjectMultiple = 50;
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The funding is run every month (typically). This specifies the number of days in a
 		/// 		  funding period.</summary>
 		public float fundingIntervalDays = 30;
@@ -76,6 +78,18 @@ namespace SpaceProgramFunding.Source
 		/// <summary> The funds to grant is based on a multiple of the current reputation value. To
 		/// 		  get more funding, get a higher reputation.</summary>
 		public int fundingRepMultiplier = 2200;
+
+
+		public bool isBigProjectAllowed = true;
+		public bool isReputationAllowed = true;
+		public bool isScienceAllowed = true;
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary> The big-project is capped at a multiple of the gross funding. This prevents the
+		/// 		  exploit of letting the big-project accumulate indefinitely. The value is the
+		/// 		  number of reputation points per multiple. For example, reputation of 150 would be
+		/// 		  3x multiple for a value of 50.</summary>
+		public int bigProjectMultiple = 50;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,10 +261,10 @@ namespace SpaceProgramFunding.Source
 				return;
 			}
 
-			if (Instance == null) {
-				Instance = this;
-				DontDestroyOnLoad(this);
-			}
+			if (Instance != null) return;
+
+			Instance = this;
+			DontDestroyOnLoad(this);
 		}
 
 
@@ -259,6 +273,13 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The saved node. </param>
 		public void OnSave(ConfigNode node)
 		{
+			node.SetValue("saveGameVersion", currentVersion, true);
+
+			// New as of v1.1
+			node.SetValue("IsBigProjectAllowed", isBigProjectAllowed, true);
+			node.SetValue("IsReputationAllowed", isReputationAllowed, true);
+			node.SetValue("IsScienceAllowed", isScienceAllowed, true);
+
 			node.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
 			node.SetValue("EmergencyFundFee", bigProjectFee, true);
 			node.SetValue("sciencePointCost", sciencePointCost, true);
@@ -299,6 +320,24 @@ namespace SpaceProgramFunding.Source
 		public void OnLoad(ConfigNode node)
 		{
 			//masterSwitch = true;
+
+			node.TryGetValue("saveGameVersion", ref saveGameVersion);
+
+			/*
+			 * Old games don't store these options, so set them to default values when such an old
+			 * game is loaded. Afterwards, these values get saved and loaded normally.
+			 */
+			if (saveGameVersion == "1.0" || saveGameVersion == "0.0") {
+				isBigProjectAllowed = true;
+				isReputationAllowed = true;
+				isScienceAllowed = true;
+			} else {
+				// New as of v1.1
+				node.TryGetValue("IsBigProjectAllowed", ref isBigProjectAllowed);
+				node.TryGetValue("IsReputationAllowed", ref isReputationAllowed);
+				node.TryGetValue("IsScienceAllowed", ref isScienceAllowed);
+			}
+
 
 			node.TryGetValue("EmergencyFundMultiple", ref bigProjectMultiple);
 			node.TryGetValue("EmergencyFundFee", ref bigProjectFee);
@@ -389,43 +428,48 @@ namespace SpaceProgramFunding.Source
 
 			var settings = ConfigNode.Load(filename);
 
+			// New as of v1.1
+			bool.TryParse(settings.GetValue("isBigProjectAllowed"), out isBigProjectAllowed);
+			bool.TryParse(settings.GetValue("isReputationAllowed"), out isReputationAllowed);
+			bool.TryParse(settings.GetValue("isScienceAllowed"), out isScienceAllowed);
 
-			Boolean.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
-			Int32.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
-			Boolean.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
-			Boolean.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
-			Single.TryParse(settings.GetValue("friendlyInterval"), out fundingIntervalDays);
-			Int32.TryParse(settings.GetValue("repDecay"), out repDecayRate);
-			Int32.TryParse(settings.GetValue("minimumRep"), out minimumRep);
-			Int32.TryParse(settings.GetValue("multiplier"), out fundingRepMultiplier);
-			Int32.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
-			Int32.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
-			Single.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
-			Boolean.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
-			Boolean.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
-			Boolean.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
-			Int32.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
-			Int32.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
-			Int32.TryParse(settings.GetValue("sphCost"), out structureCostSph);
-			Int32.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
-			Int32.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
-			Int32.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
-			Int32.TryParse(settings.GetValue("vabCost"), out structureCostVab);
-			Int32.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
-			Int32.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
-			Int32.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
-			Boolean.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
-			Int32.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
-			Int32.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
-			Int32.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
-			Int32.TryParse(settings.GetValue("emergencyBudgetFee"), out bigProjectFee);
+
+			bool.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
+			int.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
+			bool.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
+			bool.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
+			float.TryParse(settings.GetValue("friendlyInterval"), out fundingIntervalDays);
+			int.TryParse(settings.GetValue("repDecay"), out repDecayRate);
+			int.TryParse(settings.GetValue("minimumRep"), out minimumRep);
+			int.TryParse(settings.GetValue("multiplier"), out fundingRepMultiplier);
+			int.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
+			int.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
+			float.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
+			bool.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
+			bool.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
+			bool.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
+			int.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
+			int.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
+			int.TryParse(settings.GetValue("sphCost"), out structureCostSph);
+			int.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
+			int.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
+			int.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
+			int.TryParse(settings.GetValue("vabCost"), out structureCostVab);
+			int.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
+			int.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
+			int.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
+			bool.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
+			int.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
+			int.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
+			int.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
+			int.TryParse(settings.GetValue("emergencyBudgetFee"), out bigProjectFee);
 		}
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Handles the layout of the settings window.</summary>
 		///
-		/// <param name="windowID"> Identifier for the window.</param>
-		public void SettingsGUI(int windowID)
+		/// <param name="window_id"> Identifier for the window.</param>
+		public void SettingsGUI(int window_id)
 		{
 			const int ledger_width = 185;
 			const int label_width = 270;
@@ -454,7 +498,7 @@ namespace SpaceProgramFunding.Source
 			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
 			GUILayout.Label("Funding Interval: ", label_style);
 			var day_string = GUILayout.TextField(fundingIntervalDays.ToString(CultureInfo.CurrentCulture), GUILayout.Width(50));
-			if (Int32.TryParse(day_string, out var day_number)) {
+			if (int.TryParse(day_string, out var day_number)) {
 				day_number = Math.Max(day_number, 1);
 				fundingIntervalDays = day_number;
 			}
@@ -545,23 +589,27 @@ namespace SpaceProgramFunding.Source
 				GUILayout.EndHorizontal();
 			}
 
-			// Big-Project multiple
-			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
-			GUILayout.Label("Big-Project multiple: " + bigProjectMultiple, label_style,
-				GUILayout.MinWidth(label_width));
-			bigProjectMultiple =
-				(int)GUILayout.HorizontalSlider(bigProjectMultiple / 10.0f, 0, 25,
-					GUILayout.MinWidth(ledger_width)) * 10;
-			GUILayout.EndHorizontal();
+			isBigProjectAllowed = GUILayout.Toggle(isBigProjectAllowed, "Is Big-Project savings account allowed?", GUILayout.MaxWidth(mod_width));
+			if (isBigProjectAllowed) {
 
-			// Big-Project penalty
-			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
-			GUILayout.Label("Big-Project Fund Transfer Fee: " + bigProjectFee + "%",
-				label_style, GUILayout.MinWidth(label_width));
-			bigProjectFee =
-				(int)GUILayout.HorizontalSlider(bigProjectFee, 0, 50,
-					GUILayout.MinWidth(ledger_width));
-			GUILayout.EndHorizontal();
+				// Big-Project multiple
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
+				GUILayout.Label("Big-Project multiple: " + bigProjectMultiple, label_style, GUILayout.MinWidth(label_width - indent_width));
+				bigProjectMultiple = (int) GUILayout.HorizontalSlider(bigProjectMultiple / 10.0f, 0, 25, GUILayout.MinWidth(ledger_width)) * 10;
+				GUILayout.EndHorizontal();
+
+				// Big-Project penalty
+				GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
+				GUILayout.Space(indent_width);
+				GUILayout.Label("Big-Project Fund Transfer Fee: " + bigProjectFee + "%", label_style, GUILayout.MinWidth(label_width - indent_width));
+				bigProjectFee = (int) GUILayout.HorizontalSlider(bigProjectFee, 0, 50, GUILayout.MinWidth(ledger_width));
+				GUILayout.EndHorizontal();
+			}
+
+			isScienceAllowed = GUILayout.Toggle(isScienceAllowed, "Is diverting funds to create science points allowed?", GUILayout.MaxWidth(mod_width));
+
+			isReputationAllowed = GUILayout.Toggle(isReputationAllowed, "Is diverting funds to increase reputation allowed?", GUILayout.MaxWidth(mod_width));
 
 			// Cost per science point
 			GUILayout.BeginHorizontal(GUILayout.Width(mod_width));
@@ -571,6 +619,8 @@ namespace SpaceProgramFunding.Source
 				(int)GUILayout.HorizontalSlider(sciencePointCost / 1000.0f, 0, 50,
 					GUILayout.MinWidth(ledger_width)) * 1000;
 			GUILayout.EndHorizontal();
+
+
 
 
 			isBuildingCostsEnabled =
