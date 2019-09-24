@@ -612,13 +612,14 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void OnGUI()
 		{
+			const int icon_size = 28;
+
 			if (_visibleGui && showFundingDialog) {
 				GUI.depth = 0;
 				GUI.skin = HighLogic.Skin;
 				_fundingDialogPosition.height = 30;	// tighten up height each time
 				_fundingDialogPosition = GUILayout.Window(0, _fundingDialogPosition, WindowGUI, "Space Program Funding", GUILayout.Width(_fundingWidth));
 
-				const int icon_size = 28;
 				if (GUI.Button(new Rect(_fundingDialogPosition.xMax - (icon_size+2), _fundingDialogPosition.yMin + 2, icon_size, icon_size), _closeIcon, GUI.skin.button)) {
 					showFundingDialog = false;
 					showSettingsDialog = false;
@@ -635,8 +636,14 @@ namespace SpaceProgramFunding.Source
 				_settingsDialogPosition.x = _fundingDialogPosition.x + _fundingDialogPosition.width;
 				_settingsDialogPosition.y = _fundingDialogPosition.y;
 				GUI.skin = HighLogic.Skin;
+
 				_settingsDialogPosition = GUILayout.Window(1, _settingsDialogPosition, BudgetSettings.Instance.SettingsGUI,
 					"Space Program Funding Settings", GUILayout.MaxHeight(BudgetSettings.SETTINGS_HEIGHT));
+
+				if (GUI.Button(new Rect(_settingsDialogPosition.xMax - (icon_size + 2), _settingsDialogPosition.yMin + 2, icon_size, icon_size), _closeIcon, GUI.skin.button)) {
+					showSettingsDialog = false;
+				}
+
 			}
 		}
 
