@@ -792,6 +792,19 @@ namespace SpaceProgramFunding.Source
 				v.vesselType != VesselType.Debris && v.vesselType != VesselType.Flag &&
 				v.vesselType != VesselType.SpaceObject && v.vesselType != VesselType.Unknown &&
 				v.vesselType != VesselType.EVA);
+#if false
+			float total_costs = 0;
+			int part_count = 0;
+			foreach (var vv in vessels) {
+				part_count += vv.Parts.Count;
+				foreach (var p in vv.Parts) {
+					if (p.partInfo.costsFunds) {
+						total_costs += p.partInfo.cost;
+					}
+				}
+			}
+			Debug.Log("[SPF] Total (vessel count=" + vessels.Count() + ")(part count=" + part_count + ") costs = " + total_costs);
+#endif
 
 			return vessels.Sum(v => (int) (v.GetTotalMass() / 100.0 * BudgetSettings.Instance.activeVesselCost));
 		}
