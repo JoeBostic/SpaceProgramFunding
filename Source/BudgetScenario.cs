@@ -22,7 +22,6 @@ namespace SpaceProgramFunding.Source
 		public override void OnSave(ConfigNode node)
 		{
 			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnSave(node);
-			if (BudgetSettings.Instance != null) BudgetSettings.Instance.OnSave(node);
 		}
 
 
@@ -34,9 +33,9 @@ namespace SpaceProgramFunding.Source
 		{
 			if (SpaceProgramFunding.Instance != null) SpaceProgramFunding.Instance.OnLoad(node);
 
-			if (BudgetSettings.Instance == null) return;
-			BudgetSettings.Instance.OnLoad(node);
-			if (BudgetSettings.Instance.isFirstRun) BudgetSettings.Instance.FirstRun();
+			//if (BudgetSettings.Instance == null) return;
+			//BudgetSettings.Instance.OnLoad(node);
+			//if (BudgetSettings.Instance.isFirstRun) BudgetSettings.Instance.FirstRun();
 		}
 	}
 }

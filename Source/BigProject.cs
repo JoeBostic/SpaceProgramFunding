@@ -6,6 +6,7 @@
 
 using System;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace SpaceProgramFunding.Source
 {
@@ -81,7 +82,7 @@ namespace SpaceProgramFunding.Source
 			var actual_amount = Math.Min(desired_amount, max_allowed);
 
 			funds -= actual_amount;
-			if (BudgetSettings.Instance != null) actual_amount -= actual_amount * (BudgetSettings.Instance.bigProjectFee / 100.0);
+			if (SpaceProgramFunding.Instance != null) actual_amount -= actual_amount * SpaceProgramFunding.Instance._misc.bigProjectFee;
 			fundsAccumulator += actual_amount;
 			return funds;
 		}
@@ -94,8 +95,9 @@ namespace SpaceProgramFunding.Source
 		/// <returns> The maximum that the big-project can hold.</returns>
 		public float MaximumBigProject()
 		{
-			if (BudgetSettings.Instance == null) return 0;
-			return SpaceProgramFunding.Instance.GrossFunding() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
+			if (SpaceProgramFunding.Instance == null) return 0;
+			return SpaceProgramFunding.Instance.GrossFunding() * SpaceProgramFunding.Instance._misc.bigProjectMultiple;
+//			return SpaceProgramFunding.Instance.GrossFunding() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
 		}
 
 

@@ -48,20 +48,20 @@ namespace SpaceProgramFunding.Source
 		/// <param name="statusTo">   The status to.</param>
 		private void OnKerbalStatusChange(ProtoCrewMember p, ProtoCrewMember.RosterStatus statusFrom, ProtoCrewMember.RosterStatus statusTo)
 		{
-			if (BudgetSettings.Instance == null) return;
+			if (SpaceProgramFunding.Instance == null) return;
 
-			if (!BudgetSettings.Instance.isKerbalDeathPenalty) return;
+			if (SpaceProgramFunding.Instance._settings.kerbalDeathPenalty > 0) return;
 
 			if (statusTo != ProtoCrewMember.RosterStatus.Dead && statusTo != ProtoCrewMember.RosterStatus.Missing) return;
 
-			if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) return;
+			if (Reputation.CurrentRep < SpaceProgramFunding.Instance._settings.minimumRep) return;
 
-			var actual_penalty = BudgetSettings.Instance.kerbalDeathPenalty * (p.experienceLevel + 1);
+			var actual_penalty = SpaceProgramFunding.Instance._settings.kerbalDeathPenalty * (p.experienceLevel + 1);
 			if (actual_penalty > 0) Reputation.Instance.AddReputation(-actual_penalty, TransactionReasons.ContractPenalty);
 
 			// Don't lower reputation below minimum
-			if (Reputation.CurrentRep < BudgetSettings.Instance.minimumRep) {
-				Reputation.Instance.SetReputation(BudgetSettings.Instance.minimumRep, TransactionReasons.Cheating);
+			if (Reputation.CurrentRep < SpaceProgramFunding.Instance._settings.minimumRep) {
+				Reputation.Instance.SetReputation(SpaceProgramFunding.Instance._settings.minimumRep, TransactionReasons.Cheating);
 			}
 		}
 	}

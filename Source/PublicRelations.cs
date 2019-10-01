@@ -37,15 +37,14 @@ namespace SpaceProgramFunding.Source
 			if (funds <= 0) return funds;
 			if (!isPREnabled) return funds;
 			if (reputationDivertPercentage <= 0) return funds;
-			if (BudgetSettings.Instance == null) return funds;
 
 			var percent_diverted_to_pr = reputationDivertPercentage / 100;
-			var max_reputation_points = (float) (funds / BudgetSettings.Instance.fundsPerRep);
+			var max_reputation_points = (float) (funds / SpaceProgramFunding.Instance._settings.fundsPerRep);
 			var desired_reputation_points = (float) Math.Round(max_reputation_points * percent_diverted_to_pr, 1);
 
 			// Add the reputation.
 			Reputation.Instance.AddReputation(desired_reputation_points, TransactionReasons.None);
-			funds -= desired_reputation_points * BudgetSettings.Instance.fundsPerRep;
+			funds -= desired_reputation_points * SpaceProgramFunding.Instance._settings.fundsPerRep;
 
 			// Let the player know what happened.
 			ScreenMessages.PostScreenMessage("Public Relations generated " + Math.Round(desired_reputation_points, 1) + " reputation");

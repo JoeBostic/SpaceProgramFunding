@@ -57,18 +57,18 @@ namespace SpaceProgramFunding.Source
 			if (funds <= 0) return funds;
 			if (!isRNDEnabled) return funds;
 			if (scienceDivertPercentage <= 0) return funds;
-			if (BudgetSettings.Instance == null) return funds;
+			if (SpaceProgramFunding.Instance == null) return funds;
 
 			var percent_diverted_to_science = scienceDivertPercentage / 100;
-			var max_science_points = (float) (funds / BudgetSettings.Instance.sciencePointCost);
+			var max_science_points = (float) (funds / SpaceProgramFunding.Instance._misc.sciencePointCost);
 			var desired_science_points = (float) Math.Round(max_science_points * percent_diverted_to_science, 1);
 
 			// Add the science.
 			ResearchAndDevelopment.Instance.AddScience(desired_science_points, TransactionReasons.RnDs);
-			funds -= desired_science_points * BudgetSettings.Instance.sciencePointCost;
+			funds -= desired_science_points * SpaceProgramFunding.Instance._misc.sciencePointCost;
 
 			// Apply reputation penalty.
-			var max_decay = Reputation.CurrentRep - BudgetSettings.Instance.minimumRep;
+			var max_decay = Reputation.CurrentRep - SpaceProgramFunding.Instance._settings.minimumRep;
 			var amount_to_decay = Math.Min(desired_science_points, max_decay);
 			Reputation.Instance.addReputation_discrete(-amount_to_decay, TransactionReasons.RnDs);
 

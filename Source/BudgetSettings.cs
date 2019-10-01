@@ -4,6 +4,9 @@
 // License: https://github.com/JoeBostic/SpaceProgramFunding/wiki/MIT-License
 // --------------------------------------------------------------------------------------------------------------------
 
+
+#if false
+
 using System;
 using System.Globalization;
 using System.IO;
@@ -53,73 +56,73 @@ namespace SpaceProgramFunding.Source
 		/// 		  per 100 tons. This represents the Mission Control staff and equipment expenses
 		/// 		  that all ongoing missions require. Small vessels (such as tiny relay satellites)
 		/// 		  imply low-maintenance missions so have less maintenance cost, as they should.</summary>
-		public float activeVesselCost = 500.0f;
+		//public float activeVesselCost = 500.0f;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The assigned kerbal wage is paid to each Kerbal that is on a mission (not in the
 		/// 		  Astronaut Complex). The wage is multiplied by the XP level of the Kerbal.</summary>
-		public int assignedKerbalWage = 2000;
+		//public int assignedKerbalWage = 2000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The base kerbal wage is paid to each Kerbal that is sitting around in the Astronaut
 		/// 		  Complex. The wage is multiplied by the XP level of the Kerbal.</summary>
-		public int baseKerbalWage = 1000;
+		//public int baseKerbalWage = 1000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The funding is run every month (typically). This specifies the number of days in a
 		/// 		  funding period.</summary>
-		public float fundingIntervalDays = 30;
+		//public float fundingIntervalDays = 30;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The funds to grant is based on a multiple of the current reputation value. To
 		/// 		  get more funding, get a higher reputation.</summary>
-		public int fundingRepMultiplier = 2200;
+		//public int fundingRepMultiplier = 2200;
 
 
-		public bool isBigProjectAllowed = true;
-		public bool isReputationAllowed = true;
-		public bool isScienceAllowed = true;
+		//public bool isBigProjectAllowed = true;
+		//public bool isReputationAllowed = true;
+		//public bool isScienceAllowed = true;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The big-project is capped at a multiple of the gross funding. This prevents the
 		/// 		  exploit of letting the big-project accumulate indefinitely. The value is the
 		/// 		  number of reputation points per multiple. For example, reputation of 150 would be
 		/// 		  3x multiple for a value of 50.</summary>
-		public int bigProjectMultiple = 50;
+		//public int bigProjectMultiple = 50;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Fee cost to moving money into the big-project fund. This needs to be large
 		/// 		  enough to discourage keeping maximum funds flowing into big-project. The
 		/// 		  big-project account should just be used for big-projects.</summary>
-		public int bigProjectFee = 20;
+		//public int bigProjectFee = 20;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Mission reward funds are converted to reputation at the follow rate./summary></summary>
-		public int fundsPerRep = 10000;
+		//public int fundsPerRep = 10000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> If all active vessels require a maintenance cost, then this will be true.</summary>
-		public bool isActiveVesselCost = true;
+		//public bool isActiveVesselCost = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should maintenance costs be applied for the Kerbal Space Center? This makes upgrading
 		/// 		  the space center have a tradeoff due to higher maintenance costs. Maintenance
 		/// 		  costs are a non-discretionary expenditure that is taken out of the funding first.</summary>
-		public bool isBuildingCostsEnabled = true;
+		//public bool isBuildingCostsEnabled = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should contracts reward reputation instead of funds? Typically, this is what you want
 		/// 		  to do to fit with the philosophy of this mod.</summary>
-		public bool isContractInterceptor = true;
+		//public bool isContractInterceptor = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +131,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  government would take care of these costs and this flag would be true. A more
 		/// 		  mercenary government would set this flag to false and make the player pay these
 		/// 		  costs regardless.</summary>
-		public bool isCostsCovered;
+		//public bool isCostsCovered;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,33 +144,33 @@ namespace SpaceProgramFunding.Source
 		/// <summary> Should a hit to reputation occur if a Kerbal is killed? As with all reputation hits,
 		/// 		  it hurts the most when the reputation level is highest since gaining reputation
 		/// 		  at high levels is extremely difficult.</summary>
-		public bool isKerbalDeathPenalty = true;
+		//public bool isKerbalDeathPenalty = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should Kerbals be paid wages? Wages are a non-discretionary expenditure that is taken
 		/// 		  out of the funding first.</summary>
-		public bool isKerbalWages = true;
+		//public bool isKerbalWages = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Should costs for each launch (to cover wear-n-tear on launch facility) be charged
 		/// 		  whenever a vessel is launched? Heavy vessels, and particularly with the launch-
 		/// 		  pad, cause the launch costs to increase. This cost is a one-time charge.</summary>
-		public bool isLaunchCostsEnabled = true;
+		//public bool isLaunchCostsEnabled = true;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Is reputation decay per funding period enabled? Reputation decay means the player must
 		/// 		  always pat attention to reputation and perform missions as necessary to keep the
 		/// 		  reputation level sustained.</summary>
-		public bool isRepDecayEnabled;
+		//public bool isRepDecayEnabled;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The number of reputation points (per Kerbal XP level) to reduce when a Kerbal is
 		/// 		  killed.</summary>
-		public int kerbalDeathPenalty = 15;
+		//public int kerbalDeathPenalty = 15;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +178,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  cost. This is the cost per level of the launch-pad where the initial level equals
 		/// 		  zero. This represents the wear-n-tear of the launch-pad where heavier rockets
 		/// 		  cause more damage.</summary>
-		public int launchCostsLaunchPad = 1000;
+		//public int launchCostsLaunchPad = 1000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,65 +186,65 @@ namespace SpaceProgramFunding.Source
 		/// 		  cost which should be pretty low. This is the cost per level of the runway where
 		/// 		  the initial runway level equals zero. This number should be small (or even zero)
 		/// 		  to encourage space-plane use.</summary>
-		public int launchCostsRunway;
+		//public int launchCostsRunway;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The minimum reputation to use when calculating gross funding. There is always a loyal
 		/// 		  cadre within the Kerbal government that ensures a minimum funding.</summary>
-		public int minimumRep = 20;
+//		public int minimumRep = 20;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The number of reputation points deducted per funding period if reputation decay has
 		/// 		  been enabled.</summary>
-		public int repDecayRate = 5;
+//		public int repDecayRate = 5;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> When diverting funds to create science points, this is the number of credits it
 		/// 		  takes to create one science point.</summary>
-		public int sciencePointCost = 10000;
+//		public int sciencePointCost = 10000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Administration Structure. </summary>
-		public int structureCostAdministration = 4000;
+//		public int structureCostAdministration = 4000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Astronaut Complex. </summary>
-		public int structureCostAstronautComplex = 2000;
+//		public int structureCostAstronautComplex = 2000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Mission Control Structure. </summary>
-		public int structureCostMissionControl = 6000;
+//		public int structureCostMissionControl = 6000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Other structures (added by mods) </summary>
-		public int structureCostOtherFacility = 5000;
+//		public int structureCostOtherFacility = 5000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Research & Development Structure. </summary>
-		public int structureCostRnD = 8000;
+//		public int structureCostRnD = 8000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Space-Plane Hangar. </summary>
-		public int structureCostSph = 8000;
+//		public int structureCostSph = 8000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Tracking-Station. </summary>
-		public int structureCostTrackingStation = 4000;
+//		public int structureCostTrackingStation = 4000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Vehicle Assembly Building. </summary>
-		public int structureCostVab = 8000;
+//		public int structureCostVab = 8000;
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,41 +279,41 @@ namespace SpaceProgramFunding.Source
 			node.SetValue("saveGameVersion", currentVersion, true);
 
 			// New as of v1.1
-			node.SetValue("IsBigProjectAllowed", isBigProjectAllowed, true);
-			node.SetValue("IsReputationAllowed", isReputationAllowed, true);
-			node.SetValue("IsScienceAllowed", isScienceAllowed, true);
+			//node.SetValue("IsBigProjectAllowed", isBigProjectAllowed, true);
+			//node.SetValue("IsReputationAllowed", isReputationAllowed, true);
+			//node.SetValue("IsScienceAllowed", isScienceAllowed, true);
 
-			node.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
-			node.SetValue("EmergencyFundFee", bigProjectFee, true);
-			node.SetValue("sciencePointCost", sciencePointCost, true);
-			node.SetValue("ContractInterceptor", isContractInterceptor, true);
-			node.SetValue("FundsPerRep", fundsPerRep, true);
-			node.SetValue("CoverCosts", isCostsCovered, true);
-			node.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
-			node.SetValue("DecayEnabled", isRepDecayEnabled, true);
-			node.SetValue("MinimumRep", minimumRep, true);
-			node.SetValue("RepDecay", repDecayRate, true);
-			node.SetValue("Multiplier", fundingRepMultiplier, true);
-			node.SetValue("FriendlyInterval", fundingIntervalDays, true);
-			node.SetValue("KerbalWageActive", isKerbalWages, true);
-			node.SetValue("AvailableWages", baseKerbalWage, true);
-			node.SetValue("AssignedWages", assignedKerbalWage, true);
-			node.SetValue("VesselCostEnabled", isActiveVesselCost, true);
-			node.SetValue("VesselCost", activeVesselCost, true);
+			//node.SetValue("EmergencyFundMultiple", bigProjectMultiple, true);
+			//node.SetValue("EmergencyFundFee", bigProjectFee, true);
+			//node.SetValue("sciencePointCost", sciencePointCost, true);
+			//node.SetValue("ContractInterceptor", isContractInterceptor, true);
+			//node.SetValue("FundsPerRep", fundsPerRep, true);
+			//node.SetValue("CoverCosts", isCostsCovered, true);
+			//node.SetValue("KerbalDeathPenaltyActive", isKerbalDeathPenalty, true);
+			//node.SetValue("DecayEnabled", isRepDecayEnabled, true);
+			//node.SetValue("MinimumRep", minimumRep, true);
+			//node.SetValue("RepDecay", repDecayRate, true);
+			//node.SetValue("Multiplier", fundingRepMultiplier, true);
+			//node.SetValue("FriendlyInterval", fundingIntervalDays, true);
+			//node.SetValue("KerbalWageActive", isKerbalWages, true);
+			//node.SetValue("AvailableWages", baseKerbalWage, true);
+			//node.SetValue("AssignedWages", assignedKerbalWage, true);
+			//node.SetValue("VesselCostEnabled", isActiveVesselCost, true);
+			//node.SetValue("VesselCost", activeVesselCost, true);
 			node.SetValue("FirstRun", isFirstRun, true);
-			node.SetValue("BuildingCostsEnabled", isBuildingCostsEnabled, true);
-			node.SetValue("sphCost", structureCostSph, true);
-			node.SetValue("missionControlCost", structureCostMissionControl, true);
-			node.SetValue("astronautComplexCost", structureCostAstronautComplex, true);
-			node.SetValue("administrationCost", structureCostAdministration, true);
-			node.SetValue("vabCost", structureCostVab, true);
-			node.SetValue("trackingStationCost", structureCostTrackingStation, true);
-			node.SetValue("rndCost", structureCostRnD, true);
-			node.SetValue("otherFacilityCost", structureCostOtherFacility, true);
-			node.SetValue("LaunchCostsEnabled", isLaunchCostsEnabled, true);
-			node.SetValue("LaunchCostsVAB", launchCostsLaunchPad, true);
-			node.SetValue("LaunchCostsSPH", launchCostsRunway, true);
-			node.SetValue("kerbalDeathPenalty", kerbalDeathPenalty, true);
+			//node.SetValue("BuildingCostsEnabled", isBuildingCostsEnabled, true);
+			//node.SetValue("sphCost", structureCostSph, true);
+			//node.SetValue("missionControlCost", structureCostMissionControl, true);
+			//node.SetValue("astronautComplexCost", structureCostAstronautComplex, true);
+			//node.SetValue("administrationCost", structureCostAdministration, true);
+			//node.SetValue("vabCost", structureCostVab, true);
+			//node.SetValue("trackingStationCost", structureCostTrackingStation, true);
+			//node.SetValue("rndCost", structureCostRnD, true);
+			//node.SetValue("otherFacilityCost", structureCostOtherFacility, true);
+			//node.SetValue("LaunchCostsEnabled", isLaunchCostsEnabled, true);
+			//node.SetValue("LaunchCostsVAB", launchCostsLaunchPad, true);
+			//node.SetValue("LaunchCostsSPH", launchCostsRunway, true);
+			//node.SetValue("kerbalDeathPenalty", kerbalDeathPenalty, true);
 		}
 
 
@@ -328,48 +331,48 @@ namespace SpaceProgramFunding.Source
 			 * game is loaded. Afterwards, these values get saved and loaded normally.
 			 */
 			if (saveGameVersion == "1.0" || saveGameVersion == "0.0") {
-				isBigProjectAllowed = true;
-				isReputationAllowed = true;
-				isScienceAllowed = true;
+				//isBigProjectAllowed = true;
+				//isReputationAllowed = true;
+				//isScienceAllowed = true;
 			} else {
 				// New as of v1.1
-				node.TryGetValue("IsBigProjectAllowed", ref isBigProjectAllowed);
-				node.TryGetValue("IsReputationAllowed", ref isReputationAllowed);
-				node.TryGetValue("IsScienceAllowed", ref isScienceAllowed);
+				//node.TryGetValue("IsBigProjectAllowed", ref isBigProjectAllowed);
+				//node.TryGetValue("IsReputationAllowed", ref isReputationAllowed);
+				//node.TryGetValue("IsScienceAllowed", ref isScienceAllowed);
 			}
 
 
-			node.TryGetValue("EmergencyFundMultiple", ref bigProjectMultiple);
-			node.TryGetValue("EmergencyFundFee", ref bigProjectFee);
-			node.TryGetValue("sciencePointCost", ref sciencePointCost);
-			node.TryGetValue("ContractInterceptor", ref isContractInterceptor);
-			node.TryGetValue("FundsPerRep", ref fundsPerRep);
-			node.TryGetValue("CoverCosts", ref isCostsCovered);
-			node.TryGetValue("KerbalDeathPenaltyActive", ref isKerbalDeathPenalty);
-			node.TryGetValue("DecayEnabled", ref isRepDecayEnabled);
-			node.TryGetValue("RepDecay", ref repDecayRate);
-			node.TryGetValue("MinimumRep", ref minimumRep);
-			node.TryGetValue("Multiplier", ref fundingRepMultiplier);
-			node.TryGetValue("FriendlyInterval", ref fundingIntervalDays);
-			node.TryGetValue("KerbalWageActive", ref isKerbalWages);
-			node.TryGetValue("AvailableWages", ref baseKerbalWage);
-			node.TryGetValue("AssignedWages", ref assignedKerbalWage);
-			node.TryGetValue("VesselCostEnabled", ref isActiveVesselCost);
-			node.TryGetValue("VesselCost", ref activeVesselCost);
+			//node.TryGetValue("EmergencyFundMultiple", ref bigProjectMultiple);
+			//node.TryGetValue("EmergencyFundFee", ref bigProjectFee);
+			//node.TryGetValue("sciencePointCost", ref sciencePointCost);
+			//node.TryGetValue("ContractInterceptor", ref isContractInterceptor);
+			//node.TryGetValue("FundsPerRep", ref fundsPerRep);
+			//node.TryGetValue("CoverCosts", ref isCostsCovered);
+			//node.TryGetValue("KerbalDeathPenaltyActive", ref isKerbalDeathPenalty);
+			//node.TryGetValue("DecayEnabled", ref isRepDecayEnabled);
+			//node.TryGetValue("RepDecay", ref repDecayRate);
+			//node.TryGetValue("MinimumRep", ref minimumRep);
+			//node.TryGetValue("Multiplier", ref fundingRepMultiplier);
+			//node.TryGetValue("FriendlyInterval", ref fundingIntervalDays);
+			//node.TryGetValue("KerbalWageActive", ref isKerbalWages);
+			//node.TryGetValue("AvailableWages", ref baseKerbalWage);
+			//node.TryGetValue("AssignedWages", ref assignedKerbalWage);
+			//node.TryGetValue("VesselCostEnabled", ref isActiveVesselCost);
+			//node.TryGetValue("VesselCost", ref activeVesselCost);
 			node.TryGetValue("FirstRun", ref isFirstRun);
-			node.TryGetValue("BuildingCostsEnabled", ref isBuildingCostsEnabled);
-			node.TryGetValue("sphCost", ref structureCostSph);
-			node.TryGetValue("missionControlCost", ref structureCostMissionControl);
-			node.TryGetValue("astronautComplexCost", ref structureCostAstronautComplex);
-			node.TryGetValue("administrationCost", ref structureCostAdministration);
-			node.TryGetValue("vabCost", ref structureCostVab);
-			node.TryGetValue("trackingStationCost", ref structureCostTrackingStation);
-			node.TryGetValue("rndCost", ref structureCostRnD);
-			node.TryGetValue("otherFacilityCost", ref structureCostOtherFacility);
-			node.TryGetValue("LaunchCostsEnabled", ref isLaunchCostsEnabled);
-			node.TryGetValue("LaunchCostsVAB", ref launchCostsLaunchPad);
-			node.TryGetValue("LaunchCostsSPH", ref launchCostsRunway);
-			node.TryGetValue("kerbalDeathPenalty", ref kerbalDeathPenalty);
+			//node.TryGetValue("BuildingCostsEnabled", ref isBuildingCostsEnabled);
+			//node.TryGetValue("sphCost", ref structureCostSph);
+			//node.TryGetValue("missionControlCost", ref structureCostMissionControl);
+			//node.TryGetValue("astronautComplexCost", ref structureCostAstronautComplex);
+			//node.TryGetValue("administrationCost", ref structureCostAdministration);
+			//node.TryGetValue("vabCost", ref structureCostVab);
+			//node.TryGetValue("trackingStationCost", ref structureCostTrackingStation);
+			//node.TryGetValue("rndCost", ref structureCostRnD);
+			//node.TryGetValue("otherFacilityCost", ref structureCostOtherFacility);
+			//node.TryGetValue("LaunchCostsEnabled", ref isLaunchCostsEnabled);
+			//node.TryGetValue("LaunchCostsVAB", ref launchCostsLaunchPad);
+			//node.TryGetValue("LaunchCostsSPH", ref launchCostsRunway);
+			//node.TryGetValue("kerbalDeathPenalty", ref kerbalDeathPenalty);
 		}
 
 
@@ -429,42 +432,43 @@ namespace SpaceProgramFunding.Source
 			var settings = ConfigNode.Load(filename);
 
 			// New as of v1.1
-			bool.TryParse(settings.GetValue("isBigProjectAllowed"), out isBigProjectAllowed);
-			bool.TryParse(settings.GetValue("isReputationAllowed"), out isReputationAllowed);
-			bool.TryParse(settings.GetValue("isScienceAllowed"), out isScienceAllowed);
+			//bool.TryParse(settings.GetValue("isBigProjectAllowed"), out isBigProjectAllowed);
+			//bool.TryParse(settings.GetValue("isReputationAllowed"), out isReputationAllowed);
+			//bool.TryParse(settings.GetValue("isScienceAllowed"), out isScienceAllowed);
 
 
-			bool.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
-			int.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
-			bool.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
-			bool.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
-			float.TryParse(settings.GetValue("friendlyInterval"), out fundingIntervalDays);
-			int.TryParse(settings.GetValue("repDecay"), out repDecayRate);
-			int.TryParse(settings.GetValue("minimumRep"), out minimumRep);
-			int.TryParse(settings.GetValue("multiplier"), out fundingRepMultiplier);
-			int.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
-			int.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
-			float.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
-			bool.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
-			bool.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
-			bool.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
-			int.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
-			int.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
-			int.TryParse(settings.GetValue("sphCost"), out structureCostSph);
-			int.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
-			int.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
-			int.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
-			int.TryParse(settings.GetValue("vabCost"), out structureCostVab);
-			int.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
-			int.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
-			int.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
-			bool.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
-			int.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
-			int.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
-			int.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
-			int.TryParse(settings.GetValue("emergencyBudgetFee"), out bigProjectFee);
+			//bool.TryParse(settings.GetValue("contractInterceptor"), out isContractInterceptor);
+			//int.TryParse(settings.GetValue("FundsPerRep"), out fundsPerRep);
+			//bool.TryParse(settings.GetValue("coverCosts"), out isCostsCovered);
+			//bool.TryParse(settings.GetValue("decayEnabled"), out isRepDecayEnabled);
+			//float.TryParse(settings.GetValue("friendlyInterval"), out fundingIntervalDays);
+			//int.TryParse(settings.GetValue("repDecay"), out repDecayRate);
+			//int.TryParse(settings.GetValue("minimumRep"), out minimumRep);
+			//int.TryParse(settings.GetValue("multiplier"), out fundingRepMultiplier);
+			//int.TryParse(settings.GetValue("availableWages"), out baseKerbalWage);
+			//int.TryParse(settings.GetValue("assignedWages"), out assignedKerbalWage);
+			//float.TryParse(settings.GetValue("activeVesselCost"), out activeVesselCost);
+			//bool.TryParse(settings.GetValue("VesselCostsEnabled"), out isActiveVesselCost);
+			//bool.TryParse(settings.GetValue("buildingCostsEnabled"), out isBuildingCostsEnabled);
+			//bool.TryParse(settings.GetValue("launchCostsEnabled"), out isLaunchCostsEnabled);
+			//int.TryParse(settings.GetValue("launchCostsVAB"), out launchCostsLaunchPad);
+			//int.TryParse(settings.GetValue("launchCostsSPH"), out launchCostsRunway);
+			//int.TryParse(settings.GetValue("sphCost"), out structureCostSph);
+			//int.TryParse(settings.GetValue("missionControlCost"), out structureCostMissionControl);
+			//int.TryParse(settings.GetValue("astronautComplexCost"), out structureCostAstronautComplex);
+			//int.TryParse(settings.GetValue("administrationCost"), out structureCostAdministration);
+			//int.TryParse(settings.GetValue("vabCost"), out structureCostVab);
+			//int.TryParse(settings.GetValue("trackingStationCost"), out structureCostTrackingStation);
+			//int.TryParse(settings.GetValue("rndCost"), out structureCostRnD);
+			//int.TryParse(settings.GetValue("otherFacilityCost"), out structureCostOtherFacility);
+			//bool.TryParse(settings.GetValue("kerbalDeathPenaltyActive"), out isKerbalDeathPenalty);
+			//int.TryParse(settings.GetValue("kerbalDeathPenalty"), out kerbalDeathPenalty);
+			//int.TryParse(settings.GetValue("sciencePointCost"), out sciencePointCost);
+			//int.TryParse(settings.GetValue("emergencyBudgetMultiple"), out bigProjectMultiple);
+			//int.TryParse(settings.GetValue("emergencyBudgetFee"), out bigProjectFee);
 		}
 
+#if false
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Handles the layout of the settings window.</summary>
 		///
@@ -745,5 +749,9 @@ namespace SpaceProgramFunding.Source
 
 			GUILayout.EndVertical();
 		}
+#endif
+
 	}
 }
+
+#endif

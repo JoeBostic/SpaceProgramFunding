@@ -82,10 +82,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="GameData\SpaceProgramFunding\Config\BalancedDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\EasyDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\Changelog.cfg" />
     <None Include="GameData\SpaceProgramFunding\Config\Blacklist.cfg" />
     <None Include="GameData\SpaceProgramFunding\Config\HardDefaults.cfg" />
+    <None Include="GameData\SpaceProgramFunding\Config\ModerateDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\Config\NormalDefaults.cfg" />
     <None Include="GameData\SpaceProgramFunding\Patches\ForStrategia.cfg" />
     <None Include="GameData\SpaceProgramFunding\SpaceProgramFunding.version" />
@@ -96,7 +97,6 @@
   <ItemGroup>
     <Content Include="GameData\SpaceProgramFunding\Icons\close.png" />
     <Content Include="GameData\SpaceProgramFunding\License.txt" />
-    <Content Include="GameData\SpaceProgramFunding\Icons\settings.png" />
     <Content Include="GameData\SpaceProgramFunding\Icons\SpaceProgramFunding.png" />
     <Content Include="Support\Icons.psd" />
     <Content Include="Support\SpaceProgramFunding.psd" />

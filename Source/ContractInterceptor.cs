@@ -113,12 +113,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="contract"> The contract that is being offered.</param>
 		private void OnOffered(Contract contract)
 		{
-			if (BudgetSettings.Instance == null) {
-				return;
-			}
-
 			// If the game is not career mode or contract modification has been specifically turned off, bail.
-			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !BudgetSettings.Instance.isContractInterceptor) {
+			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !SpaceProgramFunding.Instance._settings.isContractInterceptor) {
 				return;
 			}
 
@@ -132,7 +128,7 @@ namespace SpaceProgramFunding.Source
 				return;
 			}
 
-			var funds_per_rep = BudgetSettings.Instance.fundsPerRep;
+			var funds_per_rep = SpaceProgramFunding.Instance._settings.fundsPerRep;
 
 			/*
 			 * Take the funds advance and funds on failure and combine them to get the net-cost-of-failure. Just convert
