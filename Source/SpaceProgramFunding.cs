@@ -95,6 +95,10 @@ namespace SpaceProgramFunding.Source
 
 		#region Private Properties
 
+		private BudgetParameters _settings;
+		private MaintenanceParameters _maintenance;
+
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Width of the funding pop-up dialog (in dialog units).</summary>
 		private const float _fundingWidth = 350;
@@ -169,6 +173,21 @@ namespace SpaceProgramFunding.Source
 		{
 			if (_initialized) return;
 
+
+			_settings = HighLogic.CurrentGame.Parameters.CustomParams<BudgetParameters>();
+			if (_settings == null) {
+				Instance = null;
+				Destroy(this);
+				return;
+			}
+			_maintenance = HighLogic.CurrentGame.Parameters.CustomParams<MaintenanceParameters>();
+			if (_maintenance == null) {
+				Instance = null;
+				Destroy(this);
+				return;
+			}
+
+
 			_closeIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/close", false);
 			_settingsIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/settings", false);
 
@@ -192,6 +211,7 @@ namespace SpaceProgramFunding.Source
 			GameEvents.onHideUI.Add(OnHideUI);
 			GameEvents.onShowUI.Add(OnShowUI);
 			GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoad);
+			GameEvents.OnGameSettingsApplied.Add(OnSettingsApplied);
 
 			_initialized = true;
 		}
@@ -243,6 +263,14 @@ namespace SpaceProgramFunding.Source
 			//GameEvents.onGameSceneSwitchRequested.Remove(OnSceneSwitch);
 			GameEvents.onHideUI.Remove(OnHideUI);
 			GameEvents.onShowUI.Remove(OnShowUI);
+			GameEvents.OnGameSettingsApplied.Remove(OnSettingsApplied);
+		}
+
+
+		private void OnSettingsApplied()
+		{
+			_settings = HighLogic.CurrentGame.Parameters.CustomParams<BudgetParameters>();
+			_maintenance = HighLogic.CurrentGame.Parameters.CustomParams<MaintenanceParameters>();
 		}
 
 
