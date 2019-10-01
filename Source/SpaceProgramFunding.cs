@@ -95,9 +95,9 @@ namespace SpaceProgramFunding.Source
 
 		#region Private Properties
 
-		private BudgetParameters _settings;
-		private MaintenanceParameters _maintenance;
-
+		private FundingParameters _settings = null;
+		private MaintenanceParameters _maintenance = null;
+		private MiscParameters _misc = null;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Width of the funding pop-up dialog (in dialog units).</summary>
@@ -146,7 +146,7 @@ namespace SpaceProgramFunding.Source
 		private static Texture2D _closeIcon;
 		private static Texture2D _settingsIcon;
 
-		#endregion
+#endregion
 
 
 
@@ -173,20 +173,14 @@ namespace SpaceProgramFunding.Source
 		{
 			if (_initialized) return;
 
-
-			_settings = HighLogic.CurrentGame.Parameters.CustomParams<BudgetParameters>();
-			if (_settings == null) {
-				Instance = null;
-				Destroy(this);
-				return;
-			}
+			_settings = HighLogic.CurrentGame.Parameters.CustomParams<FundingParameters>();
 			_maintenance = HighLogic.CurrentGame.Parameters.CustomParams<MaintenanceParameters>();
-			if (_maintenance == null) {
+			_misc = HighLogic.CurrentGame.Parameters.CustomParams<MiscParameters>();
+			if (_settings == null || _maintenance == null || _misc == null) {
 				Instance = null;
 				Destroy(this);
 				return;
 			}
-
 
 			_closeIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/close", false);
 			_settingsIcon = GameDatabase.Instance.GetTexture("SpaceProgramFunding/Icons/settings", false);
@@ -269,8 +263,9 @@ namespace SpaceProgramFunding.Source
 
 		private void OnSettingsApplied()
 		{
-			_settings = HighLogic.CurrentGame.Parameters.CustomParams<BudgetParameters>();
+			_settings = HighLogic.CurrentGame.Parameters.CustomParams<FundingParameters>();
 			_maintenance = HighLogic.CurrentGame.Parameters.CustomParams<MaintenanceParameters>();
+			_misc = HighLogic.CurrentGame.Parameters.CustomParams<MiscParameters>();
 		}
 
 
@@ -979,5 +974,29 @@ namespace SpaceProgramFunding.Source
 					return 1;
 			}
 		}
+
+
+
+		public static string SettingsFilename(GameParameters.Preset diff)
+		{
+			string filename;
+			switch (diff) {
+				case GameParameters.Preset.Easy:
+					filename = "BalancedDefaults.cfg";
+					break;
+				case GameParameters.Preset.Normal:
+				case GameParameters.Preset.Moderate:
+					filename = "NormalDefaults.cfg";
+					break;
+				case GameParameters.Preset.Hard:
+					filename = "HardDefaults.cfg";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(diff), diff, null);
+			}
+
+			return KSPUtil.ApplicationRootPath + "/GameData/SpaceProgramFunding/Config/" + filename;
+		}
+
 	}
 }

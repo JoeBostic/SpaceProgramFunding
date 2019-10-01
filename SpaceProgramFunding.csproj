@@ -66,11 +66,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\BigProject.cs" />
-    <Compile Include="Source\BudgetParameters.cs" />
+    <Compile Include="Source\FundingParameters.cs" />
     <Compile Include="Source\BudgetScenario.cs" />
     <Compile Include="Source\BudgetSettings.cs" />
     <Compile Include="Source\ContractInterceptor.cs" />
     <Compile Include="Source\DeadKerbalPenalizer.cs" />
+    <Compile Include="Source\MiscParameters.cs" />
     <Compile Include="Source\MaintenanceParameters.cs" />
     <Compile Include="Source\PublicRelations.cs" />
     <Compile Include="Source\ResearchLab.cs" />
