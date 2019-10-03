@@ -39,12 +39,12 @@ namespace SpaceProgramFunding.Source
 			if (reputationDivertPercentage <= 0) return funds;
 
 			var percent_diverted_to_pr = reputationDivertPercentage / 100;
-			var max_reputation_points = (float) (funds / SpaceProgramFunding.Instance._settings.fundsPerRep);
+			var max_reputation_points = (float) (funds / SpaceProgramFunding.Instance.settings.fundsPerRep);
 			var desired_reputation_points = (float) Math.Round(max_reputation_points * percent_diverted_to_pr, 1);
 
 			// Add the reputation.
 			Reputation.Instance.AddReputation(desired_reputation_points, TransactionReasons.None);
-			funds -= desired_reputation_points * SpaceProgramFunding.Instance._settings.fundsPerRep;
+			funds -= desired_reputation_points * SpaceProgramFunding.Instance.settings.fundsPerRep;
 
 			// Let the player know what happened.
 			ScreenMessages.PostScreenMessage("Public Relations generated " + Math.Round(desired_reputation_points, 1) + " reputation");
@@ -59,8 +59,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The node.</param>
 		public void OnSave(ConfigNode node)
 		{
-			node.SetValue("PRPercent", reputationDivertPercentage, true);
-			node.SetValue("PREnabled", isPREnabled, true);
+			node.SetValue(nameof(reputationDivertPercentage), reputationDivertPercentage, true);
+			node.SetValue(nameof(isPREnabled), isPREnabled, true);
 		}
 
 
@@ -70,8 +70,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The node.</param>
 		public void OnLoad(ConfigNode node)
 		{
-			node.TryGetValue("PRPercent", ref reputationDivertPercentage);
-			node.TryGetValue("PREnabled", ref isPREnabled);
+			node.TryGetValue(nameof(reputationDivertPercentage), ref reputationDivertPercentage);
+			node.TryGetValue(nameof(isPREnabled), ref isPREnabled);
 		}
 	}
 }

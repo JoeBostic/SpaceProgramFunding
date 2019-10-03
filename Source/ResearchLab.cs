@@ -27,11 +27,11 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Saves the state to the saved game file.</summary>
 		///
-		/// <param name="savedNode"> The file node.</param>
-		public void OnSave(ConfigNode savedNode)
+		/// <param name="node"> The file node.</param>
+		public void OnSave(ConfigNode node)
 		{
-			savedNode.SetValue("RnD", scienceDivertPercentage, true);
-			savedNode.SetValue("RnDEnabled", isRNDEnabled, true);
+			node.SetValue(nameof(scienceDivertPercentage), scienceDivertPercentage, true);
+			node.SetValue(nameof(isRNDEnabled), isRNDEnabled, true);
 		}
 
 
@@ -41,8 +41,8 @@ namespace SpaceProgramFunding.Source
 		/// <param name="node"> The file node.</param>
 		public void OnLoad(ConfigNode node)
 		{
-			node.TryGetValue("RnD", ref scienceDivertPercentage);
-			node.TryGetValue("RnDEnabled", ref isRNDEnabled);
+			node.TryGetValue(nameof(scienceDivertPercentage), ref scienceDivertPercentage);
+			node.TryGetValue(nameof(isRNDEnabled), ref isRNDEnabled);
 		}
 
 
@@ -60,15 +60,15 @@ namespace SpaceProgramFunding.Source
 			if (SpaceProgramFunding.Instance == null) return funds;
 
 			var percent_diverted_to_science = scienceDivertPercentage / 100;
-			var max_science_points = (float) (funds / SpaceProgramFunding.Instance._misc.sciencePointCost);
+			var max_science_points = (float) (funds / SpaceProgramFunding.Instance.misc.sciencePointCost);
 			var desired_science_points = (float) Math.Round(max_science_points * percent_diverted_to_science, 1);
 
 			// Add the science.
 			ResearchAndDevelopment.Instance.AddScience(desired_science_points, TransactionReasons.RnDs);
-			funds -= desired_science_points * SpaceProgramFunding.Instance._misc.sciencePointCost;
+			funds -= desired_science_points * SpaceProgramFunding.Instance.misc.sciencePointCost;
 
 			// Apply reputation penalty.
-			var max_decay = Reputation.CurrentRep - SpaceProgramFunding.Instance._settings.minimumRep;
+			var max_decay = Reputation.CurrentRep - SpaceProgramFunding.Instance.settings.minimumRep;
 			var amount_to_decay = Math.Min(desired_science_points, max_decay);
 			Reputation.Instance.addReputation_discrete(-amount_to_decay, TransactionReasons.RnDs);
 

@@ -68,7 +68,6 @@
     <Compile Include="Source\BigProject.cs" />
     <Compile Include="Source\FundingParameters.cs" />
     <Compile Include="Source\BudgetScenario.cs" />
-    <Compile Include="Source\BudgetSettings.cs" />
     <Compile Include="Source\ContractInterceptor.cs" />
     <Compile Include="Source\DeadKerbalPenalizer.cs" />
     <Compile Include="Source\MiscParameters.cs" />

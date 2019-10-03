@@ -6,7 +6,6 @@
 
 using System;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace SpaceProgramFunding.Source
 {
@@ -82,7 +81,7 @@ namespace SpaceProgramFunding.Source
 			var actual_amount = Math.Min(desired_amount, max_allowed);
 
 			funds -= actual_amount;
-			if (SpaceProgramFunding.Instance != null) actual_amount -= actual_amount * SpaceProgramFunding.Instance._misc.bigProjectFee;
+			if (SpaceProgramFunding.Instance != null) actual_amount -= actual_amount * SpaceProgramFunding.Instance.misc.bigProjectFee;
 			fundsAccumulator += actual_amount;
 			return funds;
 		}
@@ -96,20 +95,19 @@ namespace SpaceProgramFunding.Source
 		public float MaximumBigProject()
 		{
 			if (SpaceProgramFunding.Instance == null) return 0;
-			return SpaceProgramFunding.Instance.GrossFunding() * SpaceProgramFunding.Instance._misc.bigProjectMultiple;
-//			return SpaceProgramFunding.Instance.GrossFunding() * (Reputation.CurrentRep / BudgetSettings.Instance.bigProjectMultiple);
+			return SpaceProgramFunding.Instance.GrossFunding() * SpaceProgramFunding.Instance.misc.bigProjectMultiple;
 		}
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Saves the state to the saved game file.</summary>
 		///
-		/// <param name="savedNode"> The file node.</param>
-		public void OnSave(ConfigNode savedNode)
+		/// <param name="node"> The file node.</param>
+		public void OnSave(ConfigNode node)
 		{
-			savedNode.SetValue("EmergencyFundingEnabled", isEnabled, true);
-			savedNode.SetValue("EmergencyFund", fundsAccumulator, true);
-			savedNode.SetValue("EmergencyFundPercent", divertPercentage, true);
+			node.SetValue("EmergencyFundingEnabled", isEnabled, true);
+			node.SetValue("EmergencyFund", fundsAccumulator, true);
+			node.SetValue("EmergencyFundPercent", divertPercentage, true);
 		}
 
 

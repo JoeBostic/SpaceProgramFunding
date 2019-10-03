@@ -44,24 +44,24 @@ namespace SpaceProgramFunding.Source
 		/// 		  then apply the reputation penalty.</summary>
 		///
 		/// <param name="p">		  A ProtoCrewMember to process.</param>
-		/// <param name="statusFrom"> The status from.</param>
-		/// <param name="statusTo">   The status to.</param>
-		private void OnKerbalStatusChange(ProtoCrewMember p, ProtoCrewMember.RosterStatus statusFrom, ProtoCrewMember.RosterStatus statusTo)
+		/// <param name="status_from"> The status from.</param>
+		/// <param name="status_to">   The status to.</param>
+		private void OnKerbalStatusChange(ProtoCrewMember p, ProtoCrewMember.RosterStatus status_from, ProtoCrewMember.RosterStatus status_to)
 		{
 			if (SpaceProgramFunding.Instance == null) return;
 
-			if (SpaceProgramFunding.Instance._settings.kerbalDeathPenalty > 0) return;
+			if (SpaceProgramFunding.Instance.settings.kerbalDeathPenalty > 0) return;
 
-			if (statusTo != ProtoCrewMember.RosterStatus.Dead && statusTo != ProtoCrewMember.RosterStatus.Missing) return;
+			if (status_to != ProtoCrewMember.RosterStatus.Dead && status_to != ProtoCrewMember.RosterStatus.Missing) return;
 
-			if (Reputation.CurrentRep < SpaceProgramFunding.Instance._settings.minimumRep) return;
+			if (Reputation.CurrentRep < SpaceProgramFunding.Instance.settings.minimumRep) return;
 
-			var actual_penalty = SpaceProgramFunding.Instance._settings.kerbalDeathPenalty * (p.experienceLevel + 1);
+			var actual_penalty = SpaceProgramFunding.Instance.settings.kerbalDeathPenalty * (p.experienceLevel + 1);
 			if (actual_penalty > 0) Reputation.Instance.AddReputation(-actual_penalty, TransactionReasons.ContractPenalty);
 
 			// Don't lower reputation below minimum
-			if (Reputation.CurrentRep < SpaceProgramFunding.Instance._settings.minimumRep) {
-				Reputation.Instance.SetReputation(SpaceProgramFunding.Instance._settings.minimumRep, TransactionReasons.Cheating);
+			if (Reputation.CurrentRep < SpaceProgramFunding.Instance.settings.minimumRep) {
+				Reputation.Instance.SetReputation(SpaceProgramFunding.Instance.settings.minimumRep, TransactionReasons.Cheating);
 			}
 		}
 	}

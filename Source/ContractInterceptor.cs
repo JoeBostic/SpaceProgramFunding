@@ -24,7 +24,7 @@ namespace SpaceProgramFunding.Source
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> The blacklisted agencies for whose contracts will be left intact. Typically, these
 		/// 		  are agency contracts specifically designed to raise money rather than reputation.</summary>
-		private List<string> _blacklistedAgencies = new List<string>();
+		private readonly List<string> _blacklistedAgencies = new List<string>();
 
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ namespace SpaceProgramFunding.Source
 		private void OnOffered(Contract contract)
 		{
 			// If the game is not career mode or contract modification has been specifically turned off, bail.
-			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !SpaceProgramFunding.Instance._settings.isContractInterceptor) {
+			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || !SpaceProgramFunding.Instance.settings.isContractInterceptor) {
 				return;
 			}
 
@@ -128,7 +128,7 @@ namespace SpaceProgramFunding.Source
 				return;
 			}
 
-			var funds_per_rep = SpaceProgramFunding.Instance._settings.fundsPerRep;
+			var funds_per_rep = SpaceProgramFunding.Instance.settings.fundsPerRep;
 
 			/*
 			 * Take the funds advance and funds on failure and combine them to get the net-cost-of-failure. Just convert
