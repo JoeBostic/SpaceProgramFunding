@@ -23,7 +23,7 @@ namespace SpaceProgramFunding.Source
 		[GameParameters.CustomParameterUI("Facility costs enabled", 
 			toolTip = "Are facility maintenance costs enabled? Facility costs are applied each funding period \n" + 
 			          "and multiplied by the specified value according to facility upgrade level. Level 1 multiplier \n" +
-			          "is 0. Level 2 multiplier is 2. Level 3 multiplier 4.", autoPersistance = true)]
+			          "is 0. Level 2 multiplier is 2. Level 3 multiplier is 4.", autoPersistance = true)]
 		public bool isBuildingCostsEnabled = true;
 
 

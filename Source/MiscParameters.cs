@@ -20,7 +20,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  wear-n-tear of the launch-pad where heavier rockets cause more damage.</summary>
 		[GameParameters.CustomIntParameterUI("Launchpad Launch Cost", 
 			toolTip = "Additional fee applied (to next funding period) for launches from the Launch Pad for \n" +
-			          "each 100 tons of vehicle weight for vehicles over 100 tons.", minValue = 0, maxValue = 5000, stepSize = 100, autoPersistance = true)]
+			          "each 100 tons of vehicle weight for vehicles over 100 tons.", minValue = 0, maxValue = 15000, stepSize = 1000, autoPersistance = true)]
 		public int launchCostsLaunchPad = 5000;
 
 
@@ -31,7 +31,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  to encourage space-plane use.</summary>
 		[GameParameters.CustomIntParameterUI("Runway Launch Cost", 
 			toolTip = "Additional fee applied (to next funding period) for launches from the Runway for \n" +
-			"each 100 tons of vehicle weight for vehicles over 100 tons.", minValue = 0, maxValue = 5000, stepSize = 100, autoPersistance = true)]
+			"each 100 tons of vehicle weight for vehicles over 100 tons.", minValue = 0, maxValue = 15000, stepSize = 1000, autoPersistance = true)]
 		public int launchCostsRunway;
 
 
@@ -42,7 +42,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  imply low-maintenance missions so have less maintenance cost, as they should.</summary>
 		[GameParameters.CustomIntParameterUI("Active vessel cost per 100 tons", 
 			toolTip = "Vessels in flight have a maintenance cost (per 100 tons) to reflect ground personnel \n" +
-			          "and equipment needed to maintain active missions.", minValue = 0, maxValue = 15000, stepSize = 100, autoPersistance = true)]
+			          "and equipment needed to maintain active missions.", minValue = 0, maxValue = 15000, stepSize = 1000, autoPersistance = true)]
 		public int activeVesselCost = 5000;
 
 
@@ -79,7 +79,7 @@ namespace SpaceProgramFunding.Source
 		/// 		  keeping maximum funds flowing into big-project. The big-project account should just be used
 		/// 		  for big-projects.</summary>
 		[GameParameters.CustomFloatParameterUI("Big-Project Fee", 
-			toolTip = "Funds transferred to the Big-Project savings account suffer a transaction fee of this percent.", asPercentage = true, minValue = 0, maxValue = 1, displayFormat = "N0", stepCount = 1, autoPersistance = true)]
+			toolTip = "Funds transferred to the Big-Project savings account suffer a transaction fee of this percent.", asPercentage = true, minValue = 0, maxValue = 1, displayFormat = "N", stepCount = 1, autoPersistance = true)]
 		public float bigProjectFee = 0.2f;
 
 
@@ -94,7 +94,7 @@ namespace SpaceProgramFunding.Source
 		/// <summary> When diverting funds to create science points, this is the number of credits it takes to create
 		/// 		  one science point.</summary>
 		[GameParameters.CustomIntParameterUI("Funds per science point",
-			toolTip = "The cost to create 1 science point. This is used when diverting funds toward science point gain.", minValue = 0, maxValue = 10000, stepSize = 100, autoPersistance = true)]
+			toolTip = "The cost to create 1 science point. This is used when diverting funds toward science point gain.", minValue = 0, maxValue = 15000, stepSize = 1000, autoPersistance = true)]
 		public int sciencePointCost = 10000;
 
 

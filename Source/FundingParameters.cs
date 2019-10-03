@@ -94,7 +94,7 @@ namespace SpaceProgramFunding.Source
 		/// <summary> Mission reward funds are converted to reputation at the follow rate./summary></summary>
 		[GameParameters.CustomIntParameterUI("Funds per reputation", 
 			toolTip = "The cost to create 1 reputation point. This is used when diverting funds toward \n" +
-			          "reputation gain or when converting contract rewards from funds to reputation.", minValue = 0, maxValue = 10000, stepSize = 100, autoPersistance = true)]
+			          "reputation gain or when converting contract rewards from funds to reputation.", minValue = 0, maxValue = 15000, stepSize = 1000, autoPersistance = true)]
 		public int fundsPerRep = 10000;
 
 

@@ -6,6 +6,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -75,6 +76,12 @@ namespace SpaceProgramFunding.Source
 			GameEvents.onShowUI.Add(OnShowUI);
 			GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoad);
 			GameEvents.OnGameSettingsApplied.Add(OnSettingsApplied);
+
+			// Fetch the version number from the DLL.
+			var assembly = AssemblyLoader.loadedAssemblies.GetByAssembly(Assembly.GetExecutingAssembly()).assembly;
+			var assembly_informational_version_attribute = Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
+			_version = assembly_informational_version_attribute != null ? assembly_informational_version_attribute.InformationalVersion : "";
+
 
 			_initialized = true;
 		}
@@ -740,7 +747,7 @@ namespace SpaceProgramFunding.Source
 		[UsedImplicitly]
 		private void OnGUI()
 		{
-			const int icon_size = 28;
+			const int icon_size = 26;
 
 			if (_visibleGui && showFundingDialog) {
 				GUI.depth = 0;
@@ -990,6 +997,8 @@ namespace SpaceProgramFunding.Source
 
 
 		#region Private Properties
+
+		private string _version;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary> Width of the funding pop-up dialog (in dialog units). </summary>
