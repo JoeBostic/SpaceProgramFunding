@@ -95,7 +95,7 @@ namespace SpaceProgramFunding.Source
 			if (data.from == GameScenes.SPACECENTER) SpaceProgramFunding.Instance.CalculateBuildingCosts();
 
 			// If going to the main menu, then make sure the button has been removed.
-			if (data.to == GameScenes.MAINMENU) {
+			if (data.to == GameScenes.MAINMENU || data.to == GameScenes.EDITOR) {
 				ApplicationLauncher.Instance.RemoveModApplication(_toolbarButton);
 				_toolbarButton = null;
 			}
@@ -109,7 +109,7 @@ namespace SpaceProgramFunding.Source
 		public void OnGUIApplicationLauncherReady()
 		{
 			// The button should appear in the toolbar only when not at the Main Menu and only for Career games.
-			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || HighLogic.LoadedScene == GameScenes.MAINMENU) return;
+			if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || HighLogic.LoadedScene == GameScenes.MAINMENU || HighLogic.LoadedScene == GameScenes.EDITOR) return;
 
 			if (_toolbarButton == null)
 				_toolbarButton = ApplicationLauncher.Instance.AddModApplication(ApplicationButtonClicked,
